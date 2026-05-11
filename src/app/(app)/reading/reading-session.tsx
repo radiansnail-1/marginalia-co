@@ -22,7 +22,6 @@ export function ReadingSession({
   pageCount,
   activeSessionId,
   activeStartedAt,
-  others,
 }: {
   userBookId: string;
   bookId: string;
@@ -32,7 +31,6 @@ export function ReadingSession({
   pageCount: number | null;
   activeSessionId: string | null;
   activeStartedAt: string | null;
-  others: { id: string; title: string }[];
 }) {
   const [sessionId, setSessionId] = useState<string | null>(activeSessionId);
   const [startedAt, setStartedAt] = useState<string | null>(activeStartedAt);
@@ -81,25 +79,11 @@ export function ReadingSession({
       <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-5 pt-4">
         <Link
           href="/home"
-          className="font-body uppercase"
-          style={{ fontSize: "10px", letterSpacing: "2.5px", color: "rgba(236,220,176,0.5)" }}
+          className="tap font-body uppercase"
+          style={{ fontSize: "11px", letterSpacing: "2.5px", color: "rgba(236,220,176,0.6)" }}
         >
           {"< back to room"}
         </Link>
-        {others.length > 0 && (
-          <div className="flex gap-2 overflow-x-auto">
-            {others.map((o) => (
-              <Link
-                key={o.id}
-                href={`/reading?book=${o.id}`}
-                className="rounded-full border border-brass/40 px-3 py-1 font-display italic text-brass-bright"
-                style={{ fontSize: "11px", whiteSpace: "nowrap" }}
-              >
-                {o.title}
-              </Link>
-            ))}
-          </div>
-        )}
       </div>
 
       <div className="absolute inset-x-0 z-10 text-center" style={{ top: "78px" }}>
@@ -176,7 +160,7 @@ export function ReadingSession({
             type="button"
             disabled={pending}
             onClick={onPause}
-            className="flex-1 border border-brass font-body uppercase text-brass-bright"
+            className="tap flex-1 border border-brass font-body uppercase text-brass-bright"
             style={{ padding: "14px", fontSize: "11px", letterSpacing: "2.5px", fontWeight: 600 }}
           >
             Pause &amp; put down
@@ -186,7 +170,7 @@ export function ReadingSession({
             type="button"
             disabled={pending}
             onClick={onBegin}
-            className="flex-1 border border-brass font-body uppercase text-brass-bright"
+            className="tap flex-1 border border-brass font-body uppercase text-brass-bright"
             style={{ padding: "14px", fontSize: "11px", letterSpacing: "2.5px", fontWeight: 600 }}
           >
             Begin chapter
@@ -195,7 +179,7 @@ export function ReadingSession({
         <button
           type="button"
           onClick={() => setShowFinish(true)}
-          className="flex-1 font-body uppercase"
+          className="tap flex-1 font-body uppercase"
           style={{
             padding: "14px",
             fontSize: "11px",

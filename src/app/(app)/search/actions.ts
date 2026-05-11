@@ -13,14 +13,44 @@ export type SearchActionResult =
   | { ok: true; books: SearchBook[] }
   | { ok: false; error: "api" | "rate-limit" | "timeout" | "unknown"; books: [] };
 
+// Strip edition/format suffixes so different printings collapse into one row.
+// "Katabasis: Standard Edition" → "katabasis", "The Bell Jar (Deluxe)" → "the bell jar".
+const EDITION_PATTERNS = [
+  /\b(?:standard|special|deluxe|collector'?s?|anniversary|illustrated|annotated|expanded|extended|abridged|unabridged|revised|updated|definitive|complete|reissue|signed|hardcover|paperback|trade|mass[- ]market|kindle|audio|ebook|enhanced|premium)\s+edition\b/gi,
+  /\b(?:edition|ed\.?)\s*[:\-–—]?\s*(?:\d+(?:st|nd|rd|th)?|i{1,3}|iv|v|vi{1,3}|ix|x)\b/gi,
+  /\((?:[^()]*(?:edition|ed\.?|reprint|reissue|hardcover|paperback)[^()]*)\)/gi,
+  /\[[^\]]*(?:edition|ed\.?|reprint|reissue|hardcover|paperback)[^\]]*\]/gi,
+  /\bvol(?:\.|ume)?\s*\d+\b/gi,
+];
+
+function normalizeTitle(t: string): string {
+  let out = t.toLowerCase();
+  for (const p of EDITION_PATTERNS) out = out.replace(p, " ");
+  out = out.replace(/[:;\-–—]/g, " ").replace(/[^\p{L}\p{N}\s]/gu, " ").replace(/\s+/g, " ").trim();
+  return out;
+}
+
+function dedupByEdition<T extends { title: string; author: string }>(books: T[]): T[] {
+  const seen = new Set<string>();
+  const out: T[] = [];
+  for (const b of books) {
+    const key = normalizeTitle(b.title) + "|" + (b.author || "").toLowerCase().trim();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(b);
+  }
+  return out;
+}
+
 export async function searchAction(query: string): Promise<SearchActionResult> {
   if (!query.trim()) return { ok: true, books: [] };
   try {
-    const [books, supabase, user] = await Promise.all([
-      searchBooks(query, 12),
+    const [rawBooks, supabase, user] = await Promise.all([
+      searchBooks(query, 18),
       createClient(),
       getCurrentUser(),
     ]);
+    const books = dedupByEdition(rawBooks).slice(0, 12);
     if (!user || books.length === 0) {
       return { ok: true, books: books.map((book) => ({ ...book, shelfStatus: null })) };
     }

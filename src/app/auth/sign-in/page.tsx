@@ -77,14 +77,14 @@ export default function SignInPage() {
         <button
           type="button"
           onClick={() => { setMode("signup"); resetFeedback(); }}
-          className={`rounded-full px-4 py-1.5 transition ${mode === "signup" ? "bg-brass text-mahogany" : "text-parchment-dim"}`}
+          className={`tap rounded-full px-4 py-1.5 transition ${mode === "signup" ? "bg-brass text-mahogany" : "text-parchment-dim"}`}
         >
           Create account
         </button>
         <button
           type="button"
           onClick={() => { setMode("signin"); resetFeedback(); }}
-          className={`rounded-full px-4 py-1.5 transition ${mode === "signin" ? "bg-brass text-mahogany" : "text-parchment-dim"}`}
+          className={`tap rounded-full px-4 py-1.5 transition ${mode === "signin" ? "bg-brass text-mahogany" : "text-parchment-dim"}`}
         >
           Sign in
         </button>
@@ -112,7 +112,7 @@ export default function SignInPage() {
         />
         <button
           disabled={status === "working"}
-          className="mt-4 w-full rounded-md bg-brass px-4 py-3 font-display text-mahogany shadow-lg transition hover:bg-brass-bright disabled:opacity-60"
+          className="tap mt-4 w-full rounded-md bg-brass px-4 py-3 font-display text-mahogany shadow-lg transition hover:bg-brass-bright disabled:opacity-60"
         >
           {status === "working" ? "Just a moment..." : mode === "signin" ? "Step inside" : "Create account"}
         </button>

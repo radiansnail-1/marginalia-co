@@ -61,6 +61,36 @@ export async function rereadBook(bookId: string) {
   return startReadingBook(bookId);
 }
 
+export async function saveReview(
+  userBookId: string,
+  rating: number | null,
+  review: string | null,
+) {
+  const [supabase, user] = await Promise.all([createClient(), getCurrentUser()]);
+  if (!user) return { error: "Not signed in" };
+
+  const { data: ub } = await supabase
+    .from("user_books")
+    .select("id, user_id, book_id")
+    .eq("id", userBookId)
+    .maybeSingle();
+  if (!ub || ub.user_id !== user.id) return { error: "Not found" };
+
+  const patch: Record<string, unknown> = {};
+  if (rating === null) patch.rating = null;
+  else if (rating >= 1 && rating <= 5) patch.rating = rating;
+
+  if (review === null) patch.review = null;
+  else {
+    const trimmed = review.trim();
+    patch.review = trimmed.length > 0 ? trimmed.slice(0, 4000) : null;
+  }
+
+  await supabase.from("user_books").update(patch).eq("id", ub.id);
+  revalidatePath(`/books/${ub.book_id}`);
+  return { ok: true };
+}
+
 export async function removeFromPile(userBookId: string) {
   const supabase = await createClient();
   await supabase.from("user_books").delete().eq("id", userBookId);

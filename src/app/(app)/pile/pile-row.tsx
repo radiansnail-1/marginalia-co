@@ -98,7 +98,7 @@ export function PileRow({
             type="button"
             disabled={pending}
             onClick={onStart}
-            className="border border-brass px-3 py-1.5 font-body uppercase text-brass-bright"
+            className="tap border border-brass px-3 py-1.5 font-body uppercase text-brass-bright"
             style={{ fontSize: "9px", letterSpacing: "1.5px" }}
           >
             Start
@@ -106,7 +106,7 @@ export function PileRow({
         ) : (
           <Link
             href={`/reading?book=${bookId}`}
-            className="border border-brass px-3 py-1.5 text-center font-body uppercase text-brass-bright"
+            className="tap border border-brass px-3 py-1.5 text-center font-body uppercase text-brass-bright"
             style={{ fontSize: "9px", letterSpacing: "1.5px" }}
           >
             Continue

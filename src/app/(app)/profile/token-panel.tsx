@@ -77,7 +77,7 @@ export function TokenPanel() {
           />
           <button
             disabled={pending}
-            className="rounded-md bg-brass px-4 py-2 font-display text-sm text-mahogany disabled:opacity-60"
+            className="tap rounded-md bg-brass px-4 py-2 font-display text-sm text-mahogany disabled:opacity-60"
           >
             {pending ? "..." : "New token"}
           </button>
@@ -112,7 +112,7 @@ export function TokenPanel() {
                   type="button"
                   onClick={() => onRevoke(t.id)}
                   disabled={pending}
-                  className="shrink-0 rounded-md border border-brass/40 px-2 py-1 text-[10px] uppercase tracking-widest text-brass-bright hover:bg-mahogany"
+                  className="tap shrink-0 rounded-md border border-brass/40 px-2 py-1 text-[10px] uppercase tracking-widest text-brass-bright hover:bg-mahogany"
                 >
                   Revoke
                 </button>

@@ -74,7 +74,7 @@ export function ShelfClient({ books, romanYear }: { books: ShelfBook[]; romanYea
                 key={c.key}
                 type="button"
                 onClick={() => setActive(c.key)}
-                className="rounded-full border font-body uppercase"
+                className="tap rounded-full border font-body uppercase"
                 style={{
                   padding: "6px 12px",
                   fontSize: "9px",

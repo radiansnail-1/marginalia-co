@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/lib/supabase/user";
 import { affiliateLinksForBook } from "@/lib/books/affiliate";
 import { AffiliateLinks } from "@/components/affiliate-links";
 import { ActionButtons } from "./action-buttons";
+import { ReviewEditor } from "./review-editor";
 
 export default async function BookDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -24,7 +25,7 @@ export default async function BookDetail({ params }: { params: Promise<{ id: str
   const { data: userBook } = user
     ? await supabase
         .from("user_books")
-        .select("id, status, rating, finished_at, started_at")
+        .select("id, status, rating, review, finished_at, started_at")
         .eq("user_id", user.id)
         .eq("book_id", id)
         .maybeSingle()
@@ -109,18 +110,15 @@ export default async function BookDetail({ params }: { params: Promise<{ id: str
           </div>
         )}
 
-        {userBook?.status === "finished" && userBook.rating && (
-          <div
-            className="mt-3 font-body uppercase"
-            style={{ fontSize: "10px", letterSpacing: "2px", color: "rgba(236,220,176,0.55)" }}
-          >
-            Rated <span style={{ color: "var(--color-brass-bright)", letterSpacing: 1 }}>
-              {"★".repeat(userBook.rating)}{"☆".repeat(5 - userBook.rating)}
-            </span>
-          </div>
-        )}
-
         <ActionButtons bookId={book.id} userBook={userBook ?? null} />
+
+        {userBook && (userBook.status === "finished" || userBook.status === "reading") && (
+          <ReviewEditor
+            userBookId={userBook.id}
+            initialRating={userBook.rating ?? null}
+            initialReview={(userBook as { review?: string | null }).review ?? null}
+          />
+        )}
 
         <AffiliateLinks links={affiliateLinks} />
 

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/user";
-import { ReadingSession } from "./reading-session";
+import { ReadingCarousel, type ReadingItem } from "./reading-carousel";
 
 type BookRow = {
   id: string;
@@ -38,12 +38,18 @@ export default async function ReadingPage({
     .eq("status", "reading")
     .order("started_at", { ascending: false });
 
-  const reading = (items ?? []).map((r) => ({
-    userBookId: r.id,
-    bookId: r.book_id as string,
-    currentPage: r.current_page as number | null,
-    book: pick<BookRow>(r.book)!,
-  }));
+  const reading = (items ?? [])
+    .map((r) => {
+      const book = pick<BookRow>(r.book);
+      if (!book) return null;
+      return {
+        userBookId: r.id as string,
+        bookId: r.book_id as string,
+        currentPage: r.current_page as number | null,
+        book,
+      };
+    })
+    .filter((r): r is NonNullable<typeof r> => !!r);
 
   if (reading.length === 0) {
     return (
@@ -57,14 +63,14 @@ export default async function ReadingPage({
         <div className="mt-8 flex gap-3">
           <Link
             href="/pile"
-            className="border border-brass px-5 py-3 font-body uppercase text-brass-bright"
+            className="tap border border-brass px-5 py-3 font-body uppercase text-brass-bright"
             style={{ fontSize: "11px", letterSpacing: "2.5px" }}
           >
             Open the pile
           </Link>
           <Link
             href="/search"
-            className="bg-brass px-5 py-3 font-body uppercase text-mahogany"
+            className="tap bg-brass px-5 py-3 font-body uppercase text-mahogany"
             style={{ fontSize: "11px", letterSpacing: "2.5px" }}
           >
             Find a new one
@@ -74,35 +80,40 @@ export default async function ReadingPage({
     );
   }
 
-  // Find the active session (if any) for the focused book.
-  const focusedIdx = Math.max(
-    0,
-    reading.findIndex((r) => r.bookId === params.book),
-  );
-  const focused = reading[focusedIdx === -1 ? 0 : focusedIdx] ?? reading[0];
-
-  const { data: activeSession } = await supabase
+  // Batch active-session lookup for every user_book in one round-trip.
+  const userBookIds = reading.map((r) => r.userBookId);
+  const { data: openSessions } = await supabase
     .from("reading_sessions")
-    .select("id, started_at")
-    .eq("user_book_id", focused.userBookId)
-    .is("ended_at", null)
-    .order("started_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .select("id, user_book_id, started_at")
+    .in("user_book_id", userBookIds)
+    .is("ended_at", null);
 
-  return (
-    <ReadingSession
-      userBookId={focused.userBookId}
-      bookId={focused.book.id}
-      title={focused.book.title}
-      author={focused.book.author}
-      coverUrl={focused.book.cover_url}
-      pageCount={focused.book.page_count}
-      activeSessionId={activeSession?.id ?? null}
-      activeStartedAt={activeSession?.started_at ?? null}
-      others={reading
-        .filter((r) => r.userBookId !== focused.userBookId)
-        .map((r) => ({ id: r.book.id, title: r.book.title }))}
-    />
+  const sessionByBook = new Map<string, { id: string; started_at: string }>();
+  for (const s of openSessions ?? []) {
+    sessionByBook.set(s.user_book_id as string, {
+      id: s.id as string,
+      started_at: s.started_at as string,
+    });
+  }
+
+  const carouselItems: ReadingItem[] = reading.map((r) => {
+    const sess = sessionByBook.get(r.userBookId) ?? null;
+    return {
+      userBookId: r.userBookId,
+      bookId: r.book.id,
+      title: r.book.title,
+      author: r.book.author,
+      coverUrl: r.book.cover_url,
+      pageCount: r.book.page_count,
+      activeSessionId: sess?.id ?? null,
+      activeStartedAt: sess?.started_at ?? null,
+    };
+  });
+
+  const initialIndex = Math.max(
+    0,
+    carouselItems.findIndex((r) => r.bookId === params.book),
   );
+
+  return <ReadingCarousel items={carouselItems} initialIndex={initialIndex === -1 ? 0 : initialIndex} />;
 }

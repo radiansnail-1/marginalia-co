@@ -54,11 +54,21 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   viewportFit: "cover",
+  userScalable: false,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en-SG" className={`${display.variable} ${body.variable} ${caveat.variable} h-full antialiased`}>
+      <head>
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="format-detection" content="telephone=no" />
+        <link rel="preconnect" href="https://books.google.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://books.google.com" />
+        <link rel="dns-prefetch" href="https://covers.openlibrary.org" />
+      </head>
       <body className="min-h-full bg-mahogany text-parchment font-body">{children}</body>
     </html>
   );

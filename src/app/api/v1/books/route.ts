@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticate, jsonError } from "@/lib/api/auth";
 import { createServiceClient } from "@/lib/supabase/service";
+import { searchBooks } from "@/lib/books/google-books";
 
 export const runtime = "nodejs";
 
@@ -14,6 +15,7 @@ const BookInputSchema = z.object({
   author: z.string().min(1),
   status: StatusEnum.default("pile"),
   rating: z.number().int().min(1).max(5).optional(),
+  review: z.string().max(4000).optional(),
   pageCount: z.number().int().positive().optional(),
   publishedYear: z.number().int().optional(),
   coverUrl: z.string().url().optional(),
@@ -30,7 +32,7 @@ export async function GET(req: NextRequest) {
 
   let query = supabase
     .from("user_books")
-    .select("id, status, rating, started_at, finished_at, added_to_pile_at, book:books(id, google_books_id, isbn_13, title, author, cover_url, page_count, published_year, subjects, average_rating, rating_count)")
+    .select("id, status, rating, review, started_at, finished_at, added_to_pile_at, book:books(id, google_books_id, isbn_13, title, author, cover_url, page_count, published_year, subjects, average_rating, rating_count)")
     .eq("user_id", auth.userId)
     .order("added_to_pile_at", { ascending: false })
     .limit(200);
@@ -47,6 +49,7 @@ export async function GET(req: NextRequest) {
         user_book_id: row.id,
         status: row.status,
         rating: row.rating,
+        review: row.review,
         started_at: row.started_at,
         finished_at: row.finished_at,
         added_to_pile_at: row.added_to_pile_at,
@@ -94,16 +97,40 @@ export async function POST(req: NextRequest) {
     bookId = data?.id;
   }
   if (!bookId) {
+    // Cover fallback: if the caller didn't provide one, try Google Books by
+    // title+author so API-added books still get a thumbnail. Best-effort; on
+    // failure we just store the book without a cover.
+    let resolvedCover = input.coverUrl ?? null;
+    let resolvedGoogleId = input.googleBooksId ?? null;
+    let resolvedIsbn = input.isbn13 ?? null;
+    let resolvedPages = input.pageCount ?? null;
+    let resolvedYear = input.publishedYear ?? null;
+    if (!resolvedCover) {
+      try {
+        const candidates = await searchBooks(`${input.title} ${input.author}`, 3);
+        const match = candidates[0];
+        if (match) {
+          resolvedCover = match.thumbnail ?? null;
+          if (!resolvedGoogleId) resolvedGoogleId = match.googleBooksId;
+          if (!resolvedIsbn) resolvedIsbn = match.isbn13;
+          if (!resolvedPages) resolvedPages = match.pageCount;
+          if (!resolvedYear) resolvedYear = match.publishedYear;
+        }
+      } catch {
+        // ignore — keep cover null
+      }
+    }
+
     const { data: inserted, error: insErr } = await supabase
       .from("books")
       .insert({
-        google_books_id: input.googleBooksId ?? null,
-        isbn_13: input.isbn13 ?? null,
+        google_books_id: resolvedGoogleId,
+        isbn_13: resolvedIsbn,
         title: input.title,
         author: input.author,
-        page_count: input.pageCount ?? null,
-        published_year: input.publishedYear ?? null,
-        cover_url: input.coverUrl ?? null,
+        page_count: resolvedPages,
+        published_year: resolvedYear,
+        cover_url: resolvedCover,
       })
       .select("id")
       .single();
@@ -123,6 +150,7 @@ export async function POST(req: NextRequest) {
     book_id: bookId,
     status: input.status,
     rating: input.rating ?? null,
+    review: input.review ? input.review.trim().slice(0, 4000) || null : null,
     started_at: input.startedAt ?? (input.status === "reading" || input.status === "finished" ? new Date().toISOString() : null),
     finished_at: input.finishedAt ?? (input.status === "finished" ? new Date().toISOString() : null),
     added_to_pile_at: existing ? undefined : new Date().toISOString(),

@@ -35,7 +35,23 @@
   --font-caveat: var(--font-caveat);
 }
 
-html, body { background-color: var(--color-mahogany); color: var(--color-parchment); }
+html, body {
+  background-color: var(--color-mahogany);
+  color: var(--color-parchment);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  overscroll-behavior-y: none;
+}
+
+button, a, [role="button"] { touch-action: manipulation; }
+
+/* Global tap-feel: scoped to interactive surfaces marked with .tap */
+.tap {
+  transition: transform 120ms cubic-bezier(.2,.7,.3,1), background-color 120ms ease, border-color 120ms ease, opacity 120ms ease;
+  will-change: transform;
+}
+.tap:active { transform: scale(0.965); }
+.tap:disabled, .tap[aria-disabled="true"] { transform: none; opacity: 0.55; }
 
 .font-caveat { font-family: var(--font-caveat), "Caveat", cursive; }
 

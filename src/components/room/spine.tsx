@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 export type SpineBook = {
   id: string;
   title: string;
@@ -48,8 +46,7 @@ export function Spine({ book }: { book: SpineBook }) {
   const width = spineWidthFor(book.id || book.title);
   const cream = bg.includes("#c8a878") || bg.includes("#b58c4a");
   return (
-    <Link
-      href={`/books/${book.id}`}
+    <span
       aria-label={`${book.title} by ${book.author}`}
       className="book relative mr-px flex h-[88%] shrink-0 items-center justify-center overflow-hidden rounded-sm"
       style={{
@@ -84,6 +81,6 @@ export function Spine({ book }: { book: SpineBook }) {
       >
         {book.title}
       </span>
-    </Link>
+    </span>
   );
 }
