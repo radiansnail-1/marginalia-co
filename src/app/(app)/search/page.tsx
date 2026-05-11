@@ -4,21 +4,29 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { searchAction, addToPile } from "./actions";
-import type { GoogleBook } from "@/lib/books/google-books";
+import type { SearchBook, UserBookStatus } from "./actions";
 
 type SearchState =
   | { kind: "idle" }
   | { kind: "searching"; query: string }
   | { kind: "empty"; query: string }
-  | { kind: "results"; query: string; books: GoogleBook[] }
+  | { kind: "results"; query: string; books: SearchBook[] }
   | { kind: "error"; query: string; error: "api" | "rate-limit" | "timeout" | "unknown" };
+
+const statusLabel: Record<UserBookStatus, string> = {
+  pile: "On pile",
+  reading: "Reading",
+  finished: "Finished",
+  abandoned: "Set aside",
+};
 
 export default function SearchPage() {
   const [q, setQ] = useState("");
   const [state, setState] = useState<SearchState>({ kind: "idle" });
-  const [pending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const [note, setNote] = useState<string | null>(null);
-  const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
+  const [localStatuses, setLocalStatuses] = useState<Record<string, UserBookStatus>>({});
+  const [savingIds, setSavingIds] = useState<Set<string>>(new Set());
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const requestIdRef = useRef(0);
@@ -34,7 +42,7 @@ export default function SearchPage() {
     setState({ kind: "searching", query: trimmed });
     startTransition(async () => {
       const res = await searchAction(trimmed);
-      // Stale response — ignore.
+      // Stale response ? ignore.
       if (myId !== requestIdRef.current) return;
       if (!res.ok) {
         setState({ kind: "error", query: trimmed, error: res.error });
@@ -64,24 +72,36 @@ export default function SearchPage() {
     runSearch(q);
   };
 
-  const onAdd = (g: GoogleBook) => {
-    startTransition(async () => {
-      const res = await addToPile(g);
-      if ("ok" in res) {
-        setAddedIds((prev) => {
-          const next = new Set(prev);
-          next.add(g.googleBooksId);
-          return next;
-        });
-        setNote(
-          res.alreadyExisted
-            ? `Already on your shelf (${res.status}).`
-            : `${g.title} → the pile.`,
-        );
-      } else {
-        setNote(res.error);
-      }
+  const onAdd = (g: SearchBook) => {
+    if (savingIds.has(g.googleBooksId) || localStatuses[g.googleBooksId] || g.shelfStatus) return;
+    setSavingIds((prev) => {
+      const next = new Set(prev);
+      next.add(g.googleBooksId);
+      return next;
     });
+
+    void (async () => {
+      try {
+        const res = await addToPile(g);
+        if ("ok" in res) {
+          setLocalStatuses((prev) => ({ ...prev, [g.googleBooksId]: res.status }));
+          setNote(
+            res.alreadyExisted
+              ? `Already on your shelf (${res.status}).`
+              : `${g.title} ? the pile.`,
+          );
+        } else {
+          setNote(res.error);
+        }
+      } catch {
+        setNote("Could not save that book. Try again.");
+      }
+      setSavingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(g.googleBooksId);
+        return next;
+      });
+    })();
   };
 
   // Auto-dismiss the note after a beat so it doesn't pile up.
@@ -101,7 +121,7 @@ export default function SearchPage() {
           className="font-body uppercase tracking-[2px] text-brass-bright"
           style={{ fontSize: "12px" }}
         >
-          ‹ back
+          ? back
         </Link>
         <div className="font-display italic" style={{ fontSize: "16px", color: "var(--color-cream)" }}>
           Add a volume
@@ -134,11 +154,15 @@ export default function SearchPage() {
       )}
 
       <ul className="mt-6 space-y-3">
-        {results.map((g) => (
-          <li
-            key={g.googleBooksId}
-            className="flex items-center gap-3 bg-mahogany-2/60 p-3 ring-1 ring-brass/20"
-          >
+        {results.map((g) => {
+          const shelfStatus = localStatuses[g.googleBooksId] ?? g.shelfStatus;
+          const saving = savingIds.has(g.googleBooksId);
+
+          return (
+            <li
+              key={g.googleBooksId}
+              className="flex items-center gap-3 bg-mahogany-2/60 p-3 ring-1 ring-brass/20"
+            >
             <div className="relative h-20 w-14 shrink-0 overflow-hidden bg-mahogany-3">
               {g.thumbnail ? (
                 <Image src={g.thumbnail} alt={g.title} fill sizes="56px" className="object-cover" />
@@ -152,20 +176,21 @@ export default function SearchPage() {
                 className="truncate font-body italic"
                 style={{ fontSize: "11px", color: "var(--color-parchment-dim)" }}
               >
-                {g.author}{g.publishedYear ? ` · ${g.publishedYear}` : ""}{g.pageCount ? ` · ${g.pageCount}pp` : ""}
+                {g.author}{g.publishedYear ? ` ? ${g.publishedYear}` : ""}{g.pageCount ? ` ? ${g.pageCount}pp` : ""}
               </div>
             </div>
             <button
               type="button"
-              disabled={pending || addedIds.has(g.googleBooksId)}
+              disabled={saving || !!shelfStatus}
               onClick={() => onAdd(g)}
               className="shrink-0 border border-brass px-3 py-2 font-body uppercase text-brass-bright disabled:opacity-50"
               style={{ fontSize: "10px", letterSpacing: "2px" }}
             >
-              {addedIds.has(g.googleBooksId) ? "On pile" : "+ Pile"}
+              {saving ? "Saving" : shelfStatus ? statusLabel[shelfStatus] : "+ Pile"}
             </button>
-          </li>
-        ))}
+            </li>
+          );
+        })}
 
         {state.kind === "idle" && (
           <li className="text-center font-caveat text-parchment-dim" style={{ fontSize: "16px" }}>

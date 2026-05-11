@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentUser } from "@/lib/supabase/user";
 import { PileRow } from "./pile-row";
 
 type BookRow = {
@@ -17,27 +16,22 @@ function pick<T>(b: T | T[] | null | undefined): T | null {
 }
 
 export default async function PilePage() {
-  const [supabase, user] = await Promise.all([createClient(), getCurrentUser()]);
-  const uid = user?.id ?? "";
+  const supabase = await createClient();
+  const { data: claimsResult } = await supabase.auth.getClaims();
+  const uid = claimsResult?.claims.sub ?? "";
 
-  const [{ data: pileRows }, { data: readingRows }] = await Promise.all([
-    supabase
-      .from("user_books")
-      .select(
-        "id, book_id, added_from, added_to_pile_at, book:books(id, title, author, cover_url, page_count)",
-      )
-      .eq("user_id", uid)
-      .eq("status", "pile")
-      .order("added_to_pile_at", { ascending: false }),
-    supabase
-      .from("user_books")
-      .select(
-        "id, book_id, started_at, book:books(id, title, author, cover_url, page_count)",
-      )
-      .eq("user_id", uid)
-      .eq("status", "reading")
-      .order("started_at", { ascending: false }),
-  ]);
+  const { data: rows } = await supabase
+    .from("user_books")
+    .select(
+      "id, book_id, status, added_from, added_to_pile_at, started_at, book:books(id, title, author, cover_url, page_count)",
+    )
+    .eq("user_id", uid)
+    .in("status", ["pile", "reading"])
+    .order("added_to_pile_at", { ascending: false, nullsFirst: false })
+    .order("started_at", { ascending: false, nullsFirst: false });
+
+  const pileRows = (rows ?? []).filter((r) => r.status === "pile");
+  const readingRows = (rows ?? []).filter((r) => r.status === "reading");
 
   const pile = (pileRows ?? []).map((r) => ({
     userBookId: r.id as string,
@@ -66,7 +60,7 @@ export default async function PilePage() {
           className="grid h-8 w-8 place-items-center rounded-full text-base text-parchment-dim hover:bg-brass/10"
           aria-label="Add a book"
         >
-          ⌕
+          ?
         </Link>
       </header>
 
@@ -77,7 +71,7 @@ export default async function PilePage() {
         className="mt-1 font-body uppercase"
         style={{ fontSize: "10px", letterSpacing: "3px", color: "rgba(236,220,176,0.5)" }}
       >
-        — books waiting for you
+        ? books waiting for you
       </p>
 
       {pile.length > 0 && (
@@ -85,7 +79,7 @@ export default async function PilePage() {
           className="mt-6 font-body uppercase"
           style={{ fontSize: "10px", letterSpacing: "3px", color: "var(--color-brass-bright)" }}
         >
-          Up next <span className="float-right text-parchment-dim">choose 1 →</span>
+          Up next <span className="float-right text-parchment-dim">choose 1 ?</span>
         </div>
       )}
 
