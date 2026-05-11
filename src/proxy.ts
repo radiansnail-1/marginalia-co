@@ -43,7 +43,7 @@ export async function proxy(request: NextRequest) {
   // hitting the supabase auth API; if the cookie is missing, we know the user
   // is anonymous without any round-trip.
   const { data: { session } } = await supabase.auth.getSession();
-  if (!session) {
+  if (!session || session.user?.is_anonymous) {
     const redirect = request.nextUrl.clone();
     redirect.pathname = "/auth/sign-in";
     return NextResponse.redirect(redirect);

@@ -87,7 +87,7 @@ export async function recommend(input: RecommendInput): Promise<RecommendResult>
   const apiKey = process.env.ANTHROPIC_API_KEY;
 
   if (!apiKey) {
-    return { mood: input.mood, picks: stubRecommendations(input.mood, shelf), source: "stub", note: "set ANTHROPIC_API_KEY for live recommendations" };
+    return { mood: input.mood, picks: stubRecommendations(input.mood, shelf), source: "stub" };
   }
 
   try {
@@ -133,12 +133,12 @@ Constraints:
         };
       });
     return { mood: input.mood, picks, source: "claude" };
-  } catch (err) {
+  } catch {
     return {
       mood: input.mood,
       picks: stubRecommendations(input.mood, shelf),
       source: "stub",
-      note: err instanceof Error ? err.message : "LLM call failed; showing shelf-based fallback",
+      note: "The Librarian is using your shelf while tonight's live picks are unavailable.",
     };
   }
 }

@@ -183,7 +183,7 @@ export function FinishPrompt({
                   border: "1px solid #c84838",
                 }}
               >
-                Place on the shelf →
+                Place on the shelf
               </button>
             </div>
           </div>
@@ -191,7 +191,7 @@ export function FinishPrompt({
       )}
       <ClosingBook
         show={closing}
-        meta={`${title} · ${rating ? "★".repeat(rating) : ""}`}
+        meta={`${title} - ${rating ? "*".repeat(rating) : ""}`}
       />
     </>
   );

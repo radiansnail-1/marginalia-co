@@ -87,27 +87,39 @@ export async function addToPile(g: GoogleBook): Promise<
 
   let bookId = (existingBookResult.data?.id as string | undefined);
   if (!bookId) {
-    // Upsert by google_books_id (unique index, migration 0005). Conflict path
-    // returns the existing row so we never lose a race with a parallel add.
+    // Use insert + duplicate fallback instead of Supabase upsert. Production may
+    // still have the partial google_books_id index, which cannot satisfy
+    // onConflict but still protects this race.
     const { data: inserted, error: insErr } = await supabase
       .from("books")
-      .upsert(
-        {
-          google_books_id: g.googleBooksId,
-          title: g.title,
-          author: g.author,
-          isbn_13: g.isbn13,
-          page_count: g.pageCount,
-          published_year: g.publishedYear,
-          subjects: g.subjects,
-          cover_url: g.thumbnail,
-        },
-        { onConflict: "google_books_id", ignoreDuplicates: false },
-      )
+      .insert({
+        google_books_id: g.googleBooksId,
+        title: g.title,
+        author: g.author,
+        isbn_13: g.isbn13,
+        page_count: g.pageCount,
+        published_year: g.publishedYear,
+        subjects: g.subjects,
+        cover_url: g.thumbnail,
+      })
       .select("id")
       .single();
-    if (insErr || !inserted) return { error: "Could not save that book. Try again." };
-    bookId = inserted.id;
+
+    if (insErr) {
+      if (insErr.code === "23505") {
+        const { data: racedBook } = await supabase
+          .from("books")
+          .select("id")
+          .eq("google_books_id", g.googleBooksId)
+          .maybeSingle();
+        bookId = racedBook?.id as string | undefined;
+      }
+      if (!bookId) return { error: "Could not save that book. Try again." };
+    } else {
+      bookId = inserted?.id as string | undefined;
+    }
+
+    if (!bookId) return { error: "Could not save that book. Try again." };
   }
 
   // Single round-trip: insert user_books, fall back to read on unique-violation.

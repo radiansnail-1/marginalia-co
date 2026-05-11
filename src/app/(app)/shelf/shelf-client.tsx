@@ -44,7 +44,7 @@ export function ShelfClient({ books, romanYear }: { books: ShelfBook[]; romanYea
           className="font-body uppercase tracking-[2px] text-brass-bright"
           style={{ fontSize: "12px" }}
         >
-          ‹ back
+          {"< back"}
         </Link>
         <div
           className="font-display italic"
@@ -62,7 +62,7 @@ export function ShelfClient({ books, romanYear }: { books: ShelfBook[]; romanYea
         className="mt-1 font-body uppercase"
         style={{ fontSize: "10px", letterSpacing: "3px", color: "rgba(236,220,176,0.5)" }}
       >
-        {romanYear} · {books.length > 0 ? "tap a spine" : "your collection lives here"}
+        {romanYear} - {books.length > 0 ? "tap a spine" : "your collection lives here"}
       </p>
 
       {books.length > 0 && (

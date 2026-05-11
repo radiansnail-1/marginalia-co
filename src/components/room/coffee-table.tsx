@@ -28,8 +28,7 @@ export function CoffeeTable({ readingBooks }: { readingBooks: ReadingBook[] }) {
           className="font-caveat absolute left-1/2 -translate-x-1/2 whitespace-nowrap text-[13px]"
           style={{ top: "-22px", color: "rgba(236,220,176,0.7)" }}
         >
-          {has ? "tap the table" : "your current read sits here"}
-          <span className="ml-1" style={{ color: "#d8b06a" }}>↓</span>
+          {has ? "tap the table" : "your current read sits here below"}
         </span>
 
         {/* Books resting on the table */}

@@ -84,7 +84,7 @@ export function ReadingSession({
           className="font-body uppercase"
           style={{ fontSize: "10px", letterSpacing: "2.5px", color: "rgba(236,220,176,0.5)" }}
         >
-          ‹ back to room
+          {"< back to room"}
         </Link>
         {others.length > 0 && (
           <div className="flex gap-2 overflow-x-auto">

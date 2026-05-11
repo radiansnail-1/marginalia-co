@@ -57,10 +57,10 @@ export default async function PilePage() {
         </div>
         <Link
           href="/search"
-          className="grid h-8 w-8 place-items-center rounded-full text-base text-parchment-dim hover:bg-brass/10"
+          className="grid h-8 w-8 place-items-center rounded-full font-body text-sm text-parchment-dim hover:bg-brass/10"
           aria-label="Add a book"
         >
-          ?
+          +
         </Link>
       </header>
 
@@ -71,7 +71,7 @@ export default async function PilePage() {
         className="mt-1 font-body uppercase"
         style={{ fontSize: "10px", letterSpacing: "3px", color: "rgba(236,220,176,0.5)" }}
       >
-        ? books waiting for you
+        {pile.length === 1 ? "1 book waiting for you" : `${pile.length} books waiting for you`}
       </p>
 
       {pile.length > 0 && (
@@ -79,7 +79,7 @@ export default async function PilePage() {
           className="mt-6 font-body uppercase"
           style={{ fontSize: "10px", letterSpacing: "3px", color: "var(--color-brass-bright)" }}
         >
-          Up next <span className="float-right text-parchment-dim">choose 1 ?</span>
+          Up next <span className="float-right text-parchment-dim">choose one</span>
         </div>
       )}
 

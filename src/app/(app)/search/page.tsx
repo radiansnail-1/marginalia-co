@@ -42,7 +42,7 @@ export default function SearchPage() {
     setState({ kind: "searching", query: trimmed });
     startTransition(async () => {
       const res = await searchAction(trimmed);
-      // Stale response ? ignore.
+      // Stale response - ignore.
       if (myId !== requestIdRef.current) return;
       if (!res.ok) {
         setState({ kind: "error", query: trimmed, error: res.error });
@@ -88,7 +88,7 @@ export default function SearchPage() {
           setNote(
             res.alreadyExisted
               ? `Already on your shelf (${res.status}).`
-              : `${g.title} ? the pile.`,
+              : `${g.title} is on your pile.`,
           );
         } else {
           setNote(res.error);
@@ -121,7 +121,7 @@ export default function SearchPage() {
           className="font-body uppercase tracking-[2px] text-brass-bright"
           style={{ fontSize: "12px" }}
         >
-          ? back
+          {"< back"}
         </Link>
         <div className="font-display italic" style={{ fontSize: "16px", color: "var(--color-cream)" }}>
           Add a volume
@@ -133,15 +133,36 @@ export default function SearchPage() {
         <h1 className="font-display" style={{ fontSize: "30px", fontWeight: 500 }}>
           search the <span className="italic text-brass-bright">world&rsquo;s</span> books
         </h1>
-        <input
-          type="search"
-          autoFocus
-          value={q}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="title, author, or ISBN"
-          className="mt-4 w-full border-b border-brass/30 bg-transparent pb-2 font-display text-parchment outline-none placeholder:text-parchment-dim/60"
-          style={{ fontSize: "20px" }}
-        />
+        <div className="mt-4 flex items-center border-b border-brass/30">
+          <input
+            type="text"
+            role="searchbox"
+            aria-label="title, author, or ISBN"
+            autoFocus
+            value={q}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="title, author, or ISBN"
+            className="min-w-0 flex-1 bg-transparent pb-2 font-display text-parchment outline-none placeholder:text-parchment-dim/60"
+            style={{ fontSize: "20px" }}
+          />
+          {q && (
+            <button
+              type="button"
+              aria-label="Clear search"
+              onClick={() => {
+                if (debounceRef.current) clearTimeout(debounceRef.current);
+                requestIdRef.current += 1;
+                setQ("");
+                setState({ kind: "idle" });
+                setNote(null);
+              }}
+              className="mb-2 grid h-8 w-8 place-items-center rounded-full font-body text-brass-bright hover:bg-brass/10"
+              style={{ fontSize: "14px" }}
+            >
+              X
+            </button>
+          )}
+        </div>
       </div>
 
       {note && (
@@ -176,7 +197,7 @@ export default function SearchPage() {
                 className="truncate font-body italic"
                 style={{ fontSize: "11px", color: "var(--color-parchment-dim)" }}
               >
-                {g.author}{g.publishedYear ? ` ? ${g.publishedYear}` : ""}{g.pageCount ? ` ? ${g.pageCount}pp` : ""}
+                {g.author}{g.publishedYear ? ` - ${g.publishedYear}` : ""}{g.pageCount ? ` - ${g.pageCount}pp` : ""}
               </div>
             </div>
             <button

@@ -14,7 +14,7 @@ export default async function BookDetail({ params }: { params: Promise<{ id: str
   const { data: book } = await supabase
     .from("books")
     .select(
-      "id, title, author, cover_url, subjects, page_count, published_year, isbn_13",
+      "id, title, author, cover_url, subjects, page_count, published_year, isbn_13, average_rating, rating_count",
     )
     .eq("id", id)
     .maybeSingle();
@@ -51,7 +51,7 @@ export default async function BookDetail({ params }: { params: Promise<{ id: str
             className="font-body uppercase tracking-[2px] text-brass-bright"
             style={{ fontSize: "11px" }}
           >
-            ‹ back to room
+            {"< back to room"}
           </Link>
           <div className="font-display italic" style={{ fontSize: "14px", color: "rgba(236,220,176,0.75)" }}>
             From the shelf
@@ -90,9 +90,24 @@ export default async function BookDetail({ params }: { params: Promise<{ id: str
         </h1>
         <p className="mt-1 font-display italic" style={{ fontSize: "15px", color: "rgba(236,220,176,0.7)" }}>
           {book.author}
-          {book.published_year ? ` · ${book.published_year}` : ""}
-          {book.page_count ? ` · ${book.page_count} pp` : ""}
+          {book.published_year ? ` - ${book.published_year}` : ""}
+          {book.page_count ? ` - ${book.page_count} pp` : ""}
         </p>
+
+        {book.rating_count > 0 && (
+          <div
+            className="mt-3 font-body uppercase"
+            style={{ fontSize: "10px", letterSpacing: "2px", color: "rgba(236,220,176,0.55)" }}
+          >
+            Readers average{" "}
+            <span style={{ color: "var(--color-brass-bright)", letterSpacing: 1 }}>
+              {Number(book.average_rating).toFixed(2)} / 5
+            </span>
+            <span className="ml-2 lowercase tracking-normal">
+              ({book.rating_count} {book.rating_count === 1 ? "rating" : "ratings"})
+            </span>
+          </div>
+        )}
 
         {userBook?.status === "finished" && userBook.rating && (
           <div
