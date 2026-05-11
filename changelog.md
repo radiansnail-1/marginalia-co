@@ -20,5 +20,10 @@
 - Moved API token creation behind "Advanced: API access" and removed user-facing `ANTHROPIC_API_KEY` fallback copy from Librarian.
 - Verified the focused fix set with `npm run lint`, `npx tsc --noEmit`, `node --test "src/app/(app)/search/shelf-status.test.ts"`, `npm run build`, and Browser QA on `http://127.0.0.1:3007`.
 - Pushed `codex/initial-little-alexandria-app` and opened draft PR #3: `https://github.com/radiansnail-1/marginalia-co/pull/3`.
+- Forced account creation by removing guest sign-in, treating anonymous sessions as unauthenticated, and requiring a real account before API token creation.
+- Added `supabase/migrations/0007_book_rating_aggregates.sql` so `books.average_rating` and `books.rating_count` are maintained from per-user `user_books.rating` values.
+- Exposed aggregate book ratings on book detail pages and `/api/v1/books`, and documented the fields in `/api/v1`.
+- Verified the account/rating follow-up with `npx tsc --noEmit`, focused ESLint on changed auth/API/book files, `node --test "src/app/(app)/search/shelf-status.test.ts"`, and `npm run build`. Full lint timed out in this environment after the follow-up, with no explicit lint error output.
+- Pushed `4a049cb require accounts and aggregate ratings` to PR #3.
 
 **Last updated:** 2026-05-11
