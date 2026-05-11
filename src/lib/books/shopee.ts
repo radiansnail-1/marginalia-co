@@ -1,0 +1,1 @@
+export { shopeeSearchUrl } from "./affiliate";
