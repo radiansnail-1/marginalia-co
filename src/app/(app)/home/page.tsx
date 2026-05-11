@@ -74,13 +74,16 @@ export default async function HomePage() {
   const volumeCount = finished.length;
 
   return (
-    <div className="room-vignette relative w-full overflow-hidden bg-ink" style={{ height: "calc(100dvh - 78px)" }}>
+    <div
+      className="room-vignette relative w-full overflow-hidden bg-ink"
+      style={{ height: "calc(100dvh - 72px - env(safe-area-inset-bottom, 0px))" }}
+    >
       {/* App header */}
-      <header className="absolute left-0 right-0 top-0 z-[80] flex items-center justify-between px-5 pt-3 pb-2">
+      <header className="absolute left-0 right-0 top-0 z-[80] flex items-center justify-between px-5 pt-4 pb-2">
         <div
           className="font-display uppercase"
           style={{
-            fontSize: "18px",
+            fontSize: "20px",
             fontWeight: 500,
             letterSpacing: "4px",
             color: "var(--color-cream)",
@@ -88,31 +91,41 @@ export default async function HomePage() {
         >
           Marginalia <i style={{ color: "var(--color-brass-bright)", fontWeight: 400 }}>&amp;</i> Co.
         </div>
-        <div className="flex items-center gap-3 text-parchment-dim">
+        <div className="flex items-center gap-2 text-parchment-dim">
           <Link
             href="/search"
             aria-label="Add a book"
-            className="grid h-8 w-8 place-items-center rounded-full font-body text-sm hover:bg-brass/10"
+            className="tap grid h-10 w-10 place-items-center rounded-full border border-brass/40"
+            style={{ fontFamily: "var(--font-display)", fontSize: "22px", color: "var(--color-brass-bright)", lineHeight: 1 }}
           >
             +
           </Link>
           <Link
             href="/profile"
-            aria-label="Settings"
-            className="grid h-8 w-8 place-items-center rounded-full font-body text-xs uppercase hover:bg-brass/10"
+            aria-label="Profile"
+            className="tap grid h-10 w-10 place-items-center rounded-full"
+            style={{
+              background: "linear-gradient(135deg, #5a2a18 0%, #2c140a 100%)",
+              border: "1px solid rgba(216,176,106,0.45)",
+              fontFamily: "var(--font-display)",
+              fontStyle: "italic",
+              fontSize: "16px",
+              color: "var(--color-brass-bright)",
+              fontWeight: 500,
+            }}
           >
-            Me
+            B
           </Link>
         </div>
       </header>
 
       {/* Stats row */}
-      <section className="absolute left-0 right-0 z-[70] flex items-end justify-between px-6 pt-1" style={{ top: "58px" }}>
+      <section className="absolute left-0 right-0 z-[70] flex items-end justify-between px-6 pt-1" style={{ top: "62px" }}>
         <div className="flex items-baseline gap-2.5">
           <div
             className="font-display italic"
             style={{
-              fontSize: "38px",
+              fontSize: "44px",
               lineHeight: 1,
               color: "var(--color-brass-bright)",
               fontWeight: 500,
@@ -127,20 +140,20 @@ export default async function HomePage() {
               letterSpacing: "2.5px",
               color: "rgba(236,220,176,0.55)",
               lineHeight: 1.4,
-              paddingBottom: "4px",
+              paddingBottom: "6px",
             }}
           >
             Volumes<br />
             {toRoman(year)}
           </div>
         </div>
-        <span className="font-caveat" style={{ fontSize: "15px", color: "rgba(236,220,176,0.7)" }}>
+        <span className="font-caveat" style={{ fontSize: "17px", color: "rgba(236,220,176,0.7)" }}>
           {timeOfDayCaveat()}
         </span>
       </section>
 
       {/* Room — absolute below header/stats */}
-      <div className="absolute inset-x-0 z-[10]" style={{ top: "124px", bottom: "0" }}>
+      <div className="absolute inset-x-0 z-[10]" style={{ top: "128px", bottom: "0" }}>
         <Room finished={finished} reading={reading} />
       </div>
     </div>

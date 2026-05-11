@@ -156,7 +156,7 @@ export default function SearchPage() {
                 setState({ kind: "idle" });
                 setNote(null);
               }}
-              className="mb-2 grid h-8 w-8 place-items-center rounded-full font-body text-brass-bright hover:bg-brass/10"
+              className="tap mb-2 grid h-8 w-8 place-items-center rounded-full font-body text-brass-bright hover:bg-brass/10"
               style={{ fontSize: "14px" }}
             >
               X
@@ -204,7 +204,7 @@ export default function SearchPage() {
               type="button"
               disabled={saving || !!shelfStatus}
               onClick={() => onAdd(g)}
-              className="shrink-0 border border-brass px-3 py-2 font-body uppercase text-brass-bright disabled:opacity-50"
+              className="tap shrink-0 border border-brass px-3 py-2 font-body uppercase text-brass-bright disabled:opacity-50"
               style={{ fontSize: "10px", letterSpacing: "2px" }}
             >
               {saving ? "Saving" : shelfStatus ? statusLabel[shelfStatus] : "+ Pile"}
@@ -240,7 +240,7 @@ export default function SearchPage() {
             <button
               type="button"
               onClick={onRetry}
-              className="mt-3 border border-brass px-4 py-2 font-body uppercase text-brass-bright"
+              className="tap mt-3 border border-brass px-4 py-2 font-body uppercase text-brass-bright"
               style={{ fontSize: "10px", letterSpacing: "2px" }}
             >
               Retry

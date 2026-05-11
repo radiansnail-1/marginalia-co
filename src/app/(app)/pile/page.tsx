@@ -57,7 +57,7 @@ export default async function PilePage() {
         </div>
         <Link
           href="/search"
-          className="grid h-8 w-8 place-items-center rounded-full font-body text-sm text-parchment-dim hover:bg-brass/10"
+          className="tap grid h-8 w-8 place-items-center rounded-full font-body text-sm text-parchment-dim hover:bg-brass/10"
           aria-label="Add a book"
         >
           +

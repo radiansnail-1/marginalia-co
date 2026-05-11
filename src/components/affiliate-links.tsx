@@ -17,7 +17,7 @@ export function AffiliateLinks({ links }: { links: AffiliateLink[] }) {
             href={link.url}
             target="_blank"
             rel="noopener noreferrer sponsored"
-            className="flex items-center justify-between rounded-md border border-brass/35 bg-mahogany-2 px-4 py-3 text-left transition hover:border-brass hover:bg-mahogany-3"
+            className="tap flex items-center justify-between rounded-md border border-brass/35 bg-mahogany-2 px-4 py-3 text-left transition hover:border-brass hover:bg-mahogany-3"
           >
             <span className="font-body text-[11px] uppercase tracking-[0.22em] text-brass-bright">
               {link.label}
@@ -34,7 +34,7 @@ export function AffiliateLinks({ links }: { links: AffiliateLink[] }) {
             href={link.url}
             target="_blank"
             rel="noopener noreferrer sponsored"
-            className="rounded-full border border-brass/25 px-3 py-1.5 font-body text-[9px] uppercase tracking-[0.18em] text-parchment-dim transition hover:border-brass hover:text-brass-bright"
+            className="tap rounded-full border border-brass/25 px-3 py-1.5 font-body text-[9px] uppercase tracking-[0.18em] text-parchment-dim transition hover:border-brass hover:text-brass-bright"
           >
             {link.label}
           </a>

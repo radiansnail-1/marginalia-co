@@ -62,6 +62,7 @@ export async function finishBook(
   userBookId: string,
   pages: number | null,
   rating: number | null,
+  review: string | null = null,
 ) {
   const [supabase, user] = await Promise.all([createClient(), getCurrentUser()]);
   if (!user) return { error: "Not signed in" };
@@ -90,6 +91,10 @@ export async function finishBook(
   };
   if (rating && rating >= 1 && rating <= 5) patch.rating = rating;
   if (pages && pages > 0) patch.current_page = pages;
+  if (review !== null) {
+    const trimmed = review.trim();
+    patch.review = trimmed.length > 0 ? trimmed.slice(0, 4000) : null;
+  }
   await supabase.from("user_books").update(patch).eq("id", userBookId);
 
   if (pages && pages > 0) {

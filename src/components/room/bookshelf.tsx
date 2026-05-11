@@ -21,9 +21,10 @@ export function Bookshelf({ books }: { books: SpineBook[] }) {
   const empty = books.length === 0;
 
   return (
-    <div
-      aria-label="Bookshelf"
-      className="absolute left-[14px] right-[14px] top-[14px] bottom-[14px] z-[3] flex flex-col bg-gradient-to-b from-[#1a0905] to-[#2c140a] p-1 shadow-[0_10px_30px_rgba(0,0,0,0.7),inset_0_0_0_2px_#5a2a18]"
+    <Link
+      href="/shelf"
+      aria-label="Open your collection"
+      className="tap absolute left-[14px] right-[14px] top-[14px] bottom-[14px] z-[3] flex flex-col bg-gradient-to-b from-[#1a0905] to-[#2c140a] p-1 shadow-[0_10px_30px_rgba(0,0,0,0.7),inset_0_0_0_2px_#5a2a18]"
     >
       {/* Side pilasters */}
       <span
@@ -78,8 +79,7 @@ export function Bookshelf({ books }: { books: SpineBook[] }) {
       })}
 
       {empty && (
-        <Link
-          href="/search"
+        <div
           className="font-caveat absolute inset-0 z-[6] flex flex-col items-center justify-end gap-3 pb-16 pr-3 text-center text-2xl"
           style={{ color: "rgba(236,220,176,0.55)" }}
         >
@@ -94,29 +94,28 @@ export function Bookshelf({ books }: { books: SpineBook[] }) {
               padding: "6px 10px",
             }}
           >
-            Add your first book
+            Tap to add your first book
           </span>
-        </Link>
+        </div>
       )}
 
-      {/* Floating "View all" link — sits over the lowest shelf, doesn't wrap spines */}
-      <Link
-        href="/shelf"
-        aria-label="Open your full collection"
-        className="font-body absolute z-[7] uppercase"
+      {/* "View all" label — visual cue that the shelf taps to /shelf */}
+      <span
+        aria-hidden
+        className="font-body pointer-events-none absolute z-[7] uppercase"
         style={{
           right: "10px",
           top: "4px",
           padding: "3px 8px",
-          fontSize: "8px",
+          fontSize: "9px",
           letterSpacing: "2px",
-          color: "rgba(236,220,176,0.65)",
-          background: "rgba(0,0,0,0.45)",
-          border: "1px solid rgba(181,140,74,0.3)",
+          color: "rgba(236,220,176,0.7)",
+          background: "rgba(0,0,0,0.55)",
+          border: "1px solid rgba(181,140,74,0.4)",
         }}
       >
-        View all
-      </Link>
-    </div>
+        View all ›
+      </span>
+    </Link>
   );
 }

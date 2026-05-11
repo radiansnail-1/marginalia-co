@@ -14,7 +14,7 @@ export function CoffeeTable({ readingBooks }: { readingBooks: ReadingBook[] }) {
     <Link
       href="/reading"
       aria-label="Open your reading session"
-      className="absolute z-[9] cursor-pointer"
+      className="tap absolute z-[9] cursor-pointer"
       style={{
         bottom: "8%",
         left: "50%",
@@ -25,10 +25,10 @@ export function CoffeeTable({ readingBooks }: { readingBooks: ReadingBook[] }) {
       {/* Table-top */}
       <div className="relative">
         <span
-          className="font-caveat absolute left-1/2 -translate-x-1/2 whitespace-nowrap text-[13px]"
-          style={{ top: "-22px", color: "rgba(236,220,176,0.7)" }}
+          className="font-caveat absolute left-1/2 -translate-x-1/2 whitespace-nowrap"
+          style={{ top: "-24px", fontSize: "15px", color: "rgba(236,220,176,0.78)" }}
         >
-          {has ? "tap the table" : "your current read sits here below"}
+          {has ? "tap to read ›" : "your current read sits here"}
         </span>
 
         {/* Books resting on the table */}

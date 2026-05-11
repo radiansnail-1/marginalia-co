@@ -23,6 +23,7 @@ export function FinishPrompt({
   const router = useRouter();
   const [pages, setPages] = useState<number | "">(pageCount ?? "");
   const [rating, setRating] = useState<number>(0);
+  const [review, setReview] = useState<string>("");
   const [closing, setClosing] = useState(false);
   const [pending, startTransition] = useTransition();
 
@@ -35,6 +36,7 @@ export function FinishPrompt({
         userBookId,
         typeof pages === "number" ? pages : null,
         rating || null,
+        review.trim() || null,
       );
       router.push("/home");
       router.refresh();
@@ -150,12 +152,38 @@ export function FinishPrompt({
               </div>
             </div>
 
+            <div className="mt-5">
+              <div
+                className="font-body uppercase"
+                style={{ fontSize: "10px", letterSpacing: "2.5px", color: "#6a4a30", marginBottom: "8px" }}
+              >
+                — a few words (optional)
+              </div>
+              <textarea
+                value={review}
+                onChange={(e) => setReview(e.target.value)}
+                rows={3}
+                maxLength={4000}
+                placeholder="what stayed with you?"
+                className="w-full px-3 py-2 font-display outline-none"
+                style={{
+                  fontSize: "15px",
+                  lineHeight: 1.5,
+                  color: "#2a1810",
+                  background: "rgba(255,255,255,0.4)",
+                  border: "1px solid rgba(106,74,48,0.4)",
+                  resize: "vertical",
+                  minHeight: "70px",
+                }}
+              />
+            </div>
+
             <div className="mt-6 flex gap-3">
               <button
                 type="button"
                 onClick={onClose}
                 disabled={pending}
-                className="flex-1 border font-body uppercase"
+                className="tap flex-1 border font-body uppercase"
                 style={{
                   padding: "14px",
                   fontSize: "11px",
@@ -172,7 +200,7 @@ export function FinishPrompt({
                 type="button"
                 onClick={onSubmit}
                 disabled={pending}
-                className="flex-1 font-body uppercase"
+                className="tap flex-1 font-body uppercase"
                 style={{
                   padding: "14px",
                   fontSize: "11px",
