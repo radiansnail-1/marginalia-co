@@ -5,10 +5,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 const tabs = [
-  { href: "/home", label: "Home", glyph: "?" },
-  { href: "/pile", label: "The Pile", glyph: "?" },
-  { href: "/librarian", label: "Librarian", glyph: "?" },
-  { href: "/profile", label: "Profile", glyph: "?" },
+  { href: "/home", label: "Home", shortLabel: "Home" },
+  { href: "/pile", label: "The Pile", shortLabel: "Pile" },
+  { href: "/librarian", label: "Librarian", shortLabel: "Librarian" },
+  { href: "/profile", label: "Profile", shortLabel: "Profile" },
 ];
 
 const PARENT_OF: Record<string, string> = {
@@ -45,28 +45,19 @@ export function TabBar() {
             <li key={t.href}>
               <Link
                 href={t.href}
+                aria-current={active ? "page" : undefined}
                 onPointerEnter={() => router.prefetch(t.href)}
                 onTouchStart={() => router.prefetch(t.href)}
-                className="flex flex-col items-center gap-[3px] uppercase"
+                className="flex min-w-16 flex-col items-center justify-center uppercase"
                 style={{
                   fontFamily: "var(--font-body)",
                   fontSize: "9px",
-                  letterSpacing: "1.5px",
+                  letterSpacing: "1.3px",
                   fontWeight: 500,
                   color: active ? "var(--color-brass-bright)" : "rgba(236,220,176,0.5)",
                 }}
               >
-                <span
-                  className="font-display italic"
-                  style={{
-                    fontSize: "19px",
-                    fontWeight: 500,
-                    textShadow: active ? "0 0 12px rgba(216,176,106,0.5)" : undefined,
-                  }}
-                >
-                  {t.glyph}
-                </span>
-                <span>{t.label}</span>
+                <span>{t.shortLabel}</span>
               </Link>
             </li>
           );

@@ -91,17 +91,17 @@ export default async function HomePage() {
         <div className="flex items-center gap-3 text-parchment-dim">
           <Link
             href="/search"
-            aria-label="Search"
-            className="grid h-8 w-8 place-items-center rounded-full text-base hover:bg-brass/10"
+            aria-label="Add a book"
+            className="grid h-8 w-8 place-items-center rounded-full font-body text-sm hover:bg-brass/10"
           >
-            ⌕
+            +
           </Link>
           <Link
             href="/profile"
             aria-label="Settings"
-            className="grid h-8 w-8 place-items-center rounded-full text-base hover:bg-brass/10"
+            className="grid h-8 w-8 place-items-center rounded-full font-body text-xs uppercase hover:bg-brass/10"
           >
-            ⚙
+            Me
           </Link>
         </div>
       </header>

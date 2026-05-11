@@ -51,7 +51,7 @@ export default async function BookDetail({ params }: { params: Promise<{ id: str
             className="font-body uppercase tracking-[2px] text-brass-bright"
             style={{ fontSize: "11px" }}
           >
-            ‹ back to room
+            {"< back to room"}
           </Link>
           <div className="font-display italic" style={{ fontSize: "14px", color: "rgba(236,220,176,0.75)" }}>
             From the shelf
@@ -90,8 +90,8 @@ export default async function BookDetail({ params }: { params: Promise<{ id: str
         </h1>
         <p className="mt-1 font-display italic" style={{ fontSize: "15px", color: "rgba(236,220,176,0.7)" }}>
           {book.author}
-          {book.published_year ? ` · ${book.published_year}` : ""}
-          {book.page_count ? ` · ${book.page_count} pp` : ""}
+          {book.published_year ? ` - ${book.published_year}` : ""}
+          {book.page_count ? ` - ${book.page_count} pp` : ""}
         </p>
 
         {userBook?.status === "finished" && userBook.rating && (

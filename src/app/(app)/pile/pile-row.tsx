@@ -80,7 +80,7 @@ export function PileRow({
         </div>
         {addedFrom && (
           <div className="font-caveat" style={{ fontSize: "13px", color: "var(--color-brass-bright)", marginTop: "6px", lineHeight: 1 }}>
-            — {addedFrom}
+            from {addedFrom}
           </div>
         )}
         {pageCount && (

@@ -1,58 +1,58 @@
 # Plan
 
-**Goal:** Make Marginalia & Co.'s search, pile, and mobile app shell feel correct enough for a production PWA/TWA pass.
+**Goal:** Ship the focused Marginalia & Co. new-user QA fixes: reliable add-to-pile, clearer first-run UX, stable navigation labels, and safer advanced API access.
 
 **Approach:**
-- Fix search and pile at the data/state layer, not just with UI labels.
-- Keep the reading-room UI intact while reducing route latency and bad loading states.
-- Use PWA manifest settings for fullscreen behavior, with TWA/native immersive mode noted for Android.
+- Fix the save path at the data layer so it no longer depends on a production-only Supabase index migration.
+- Keep the reading-room visual language, but replace fragile symbols with stable text and obvious first-run actions.
+- Move developer-oriented API token creation behind an advanced disclosure, while adding a human-readable `/api` docs page.
 
 **Milestones:**
-- [x] QA live app at `marginalia-co.vercel.app` across auth, search, pile, shelf, profile, and mobile layouts.
-- [x] Identify production blocker: Supabase `ON CONFLICT` failed because the Google Books unique index was partial.
-- [x] Add a migration to make `books.google_books_id` a valid upsert conflict target.
-- [x] Fix search results so already-saved books show their shelf status on repeat searches.
-- [x] Improve per-book save state and remove raw database errors from the search UI.
-- [x] Reduce pile page latency by collapsing two shelf queries into one and using `getClaims()` instead of full `getUser()` on the pile render path.
-- [x] Add a pile loading shell and prefetch tab routes.
-- [x] Update PWA fullscreen display metadata.
-- [ ] Apply the Supabase migration in production.
-- [ ] Re-test live save-to-pile after the production migration is applied.
+- [x] QA live app at `marginalia-co.vercel.app` as a new user across home, search, pile, librarian, profile, API docs, and mobile layouts.
+- [x] Run focused engineering review before fixing: prioritize data-layer save reliability, user-facing confusion, and silent/technical failures.
+- [x] Replace Supabase `upsert(... onConflict: "google_books_id")` in `addToPile` with insert plus duplicate fallback.
+- [x] Replace broken glyph/question-mark nav surfaces with stable text labels and ASCII-safe copy.
+- [x] Add an empty-shelf "Add your first book" CTA and an accessible search clear button.
+- [x] Hide API tokens behind "Advanced: API access" and add `/api` as human-readable API docs.
+- [x] Remove user-facing `ANTHROPIC_API_KEY`/LLM implementation copy from Librarian fallback.
+- [x] Verify locally with lint, typecheck, tests, production build, and browser QA.
+- [ ] Publish the branch to GitHub and open a draft PR.
+- [ ] Deploy the PR branch or merge target, then re-test live `+ Pile` on Vercel.
 
 ## Resume State
 
-**Status:** Local code is implemented and checked; production still needs the Supabase migration before `+ Pile` can save successfully.
+**Status:** The local fix set is implemented, verified, and ready to publish.
 
-**Last action:** Verified the local mobile Home to Pile route after the pile optimization; local navigation measured about 0.8s, down from about 3.7s in dev browser timing.
+**Last action:** Updated handoff files after local browser QA confirmed search saved a book and `/pile` showed `1 book waiting for you`.
 
-**Next action:** Run the GitHub publish flow, then apply `supabase/migrations/0006_books_google_id_full_unique.sql` to production Supabase and re-test live search-to-pile.
+**Next action:** Commit and push the current worktree, open a draft PR, then verify the deployed live app after Vercel builds the branch.
 
-**Repo state:** Branch `codex/initial-little-alexandria-app`; dirty worktree contains search, pile, PWA, and handoff changes. Latest commit is `b2aabab prep Marginalia for Play and affiliates`.
+**Repo state:** Branch `codex/initial-little-alexandria-app`, ahead of origin by 1 commit before this publish flow. Current dirty worktree is the focused QA fix set plus these handoff files.
 
-**Verification:** `npm run lint` passed. `npx tsc --noEmit` passed. `node --test "src/app/(app)/search/shelf-status.test.ts"` passed with 2 tests. Browser QA checked local mobile search and pile after changes.
+**Verification:** Passed `npm run lint`, `npx tsc --noEmit`, `node --test "src/app/(app)/search/shelf-status.test.ts"`, `npm run build`, and Browser QA on `http://127.0.0.1:3007` for home, search, add-to-pile, pile, librarian, profile, and `/api`.
 
 ## Review Status
 
 | Review | Last run | Status | Findings | Stale? |
 |--------|----------|--------|----------|--------|
 | CEO | 2026-05-11 | Historical | Existing `ceo-review.md` exists in workspace root, not rerun this session | unknown |
-| Eng | 2026-05-11 | Historical | Existing `eng-review.md` exists in workspace root, not rerun this session | unknown |
+| Eng | 2026-05-11 | Focused session review | Prioritized add-to-pile data path, broken glyph surfaces, first-run clarity, and technical copy leaks | no for this patch scope |
 | Design | - | - | No design review log found | unknown |
 | DX | - | - | No DX review log found | unknown |
 
-**Review verdict:** NO CURRENT REVIEW LOGS.
+**Review verdict:** CLEARED for focused QA fix PR. No current gstack review log was available from `gstack-review-read`.
 
-**Next review:** Run a focused QA pass after the production DB migration lands.
+**Next review:** Run QA against the deployed Vercel preview/live app after the PR is published.
 
-**Blockers / open questions:** Supabase production migration requires credentials/access. PWA fullscreen cannot hide Android/iOS system bars in a normal browser tab; installed PWA/TWA may honor fullscreen, and Android TWA may still need native immersive mode.
+**Blockers / open questions:** Live Vercel still needs deployment of this branch before fixes appear. Supabase migration `0006_books_google_id_full_unique.sql` is still useful cleanup, but `addToPile` no longer depends on it for the main save path.
 
 **Context pointers:**
-- Key files: `src/app/(app)/search/actions.ts`, `src/app/(app)/search/page.tsx`, `src/app/(app)/search/shelf-status.ts`, `src/app/(app)/pile/page.tsx`, `src/app/(app)/pile/loading.tsx`, `src/components/tab-bar.tsx`, `public/manifest.webmanifest`, `src/app/layout.tsx`, `supabase/migrations/0006_books_google_id_full_unique.sql`.
-- Repo context: `b2aabab - prep Marginalia for Play and affiliates`; branch `codex/initial-little-alexandria-app`.
-- External: live app at `https://marginalia-co.vercel.app`.
+- Key files: `src/app/(app)/search/actions.ts`, `src/app/(app)/search/page.tsx`, `src/components/tab-bar.tsx`, `src/components/room/bookshelf.tsx`, `src/app/(app)/profile/token-panel.tsx`, `src/lib/librarian/recommend.ts`, `src/app/api/page.tsx`.
+- Repo context: latest existing commit before this publish flow is `8ea6290 - fix search pile and app shell`; branch `codex/initial-little-alexandria-app`.
+- External: live app at `https://marginalia-co.vercel.app`; local verified URL was `http://127.0.0.1:3007`.
 
 **How to resume:** `cd "E:\2. Current Projects\bookshelf\marginalia" && git status --short --branch`
 
-**Out of scope:** Did not generate API tokens. Did not apply Supabase production migrations due missing Supabase access token. Did not build or upload the TWA.
+**Out of scope:** Did not implement email onboarding, search ranking/edition deduplication, production deployment, Supabase production migration, or TWA upload.
 
 **Last updated:** 2026-05-11

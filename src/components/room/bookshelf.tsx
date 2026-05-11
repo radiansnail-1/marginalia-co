@@ -78,13 +78,25 @@ export function Bookshelf({ books }: { books: SpineBook[] }) {
       })}
 
       {empty && (
-        <span
-          aria-hidden
-          className="font-caveat pointer-events-none absolute inset-0 z-[6] flex items-end justify-center pb-16 pr-3 text-center text-2xl"
+        <Link
+          href="/search"
+          className="font-caveat absolute inset-0 z-[6] flex flex-col items-center justify-end gap-3 pb-16 pr-3 text-center text-2xl"
           style={{ color: "rgba(236,220,176,0.55)" }}
         >
-          your spines will appear here
-        </span>
+          <span>your spines will appear here</span>
+          <span
+            className="font-body uppercase"
+            style={{
+              border: "1px solid rgba(216,176,106,0.55)",
+              color: "var(--color-brass-bright)",
+              fontSize: "9px",
+              letterSpacing: "2px",
+              padding: "6px 10px",
+            }}
+          >
+            Add your first book
+          </span>
+        </Link>
       )}
 
       {/* Floating "View all" link — sits over the lowest shelf, doesn't wrap spines */}
