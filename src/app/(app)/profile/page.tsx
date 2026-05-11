@@ -1,17 +1,21 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/user";
+import { TokenPanel } from "./token-panel";
 
 export default async function ProfilePage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  const { data: profile } = await supabase.from("profiles").select("display_name, bio, reading_goal").eq("id", user?.id ?? "").maybeSingle();
-
+  const [supabase, user] = await Promise.all([createClient(), getCurrentUser()]);
+  const uid = user?.id ?? "";
   const yearStart = new Date(new Date().getFullYear(), 0, 1).toISOString();
-  const { count: finishedThisYear } = await supabase
-    .from("user_books")
-    .select("*", { count: "exact", head: true })
-    .eq("user_id", user?.id ?? "")
-    .eq("status", "finished")
-    .gte("finished_at", yearStart);
+
+  const [{ data: profile }, { count: finishedThisYear }] = await Promise.all([
+    supabase.from("profiles").select("display_name, bio, reading_goal").eq("id", uid).maybeSingle(),
+    supabase
+      .from("user_books")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", uid)
+      .eq("status", "finished")
+      .gte("finished_at", yearStart),
+  ]);
 
   const goal = profile?.reading_goal ?? 60;
   const done = finishedThisYear ?? 0;
@@ -39,6 +43,8 @@ export default async function ProfilePage() {
           <div className="text-sm text-parchment-dim">{goal - done} to go</div>
         </div>
       </section>
+
+      <TokenPanel />
     </div>
   );
 }

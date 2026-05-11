@@ -6,6 +6,19 @@ import { createClient } from "@/lib/supabase/client";
 import { Letter } from "@/components/letter";
 import { Owl } from "@/components/owl";
 
+function brandedAuthError(raw: string, mode: "guest" | "signin" | "signup"): string {
+  const m = raw.toLowerCase();
+  if (m.includes("rate limit")) return "Too many tries. Give it a minute, then try again.";
+  if (m.includes("email") && m.includes("invalid")) return "That email didn't take. Try another.";
+  if (m.includes("invalid login") || m.includes("invalid credentials")) return "Those don't match. Check the email and passphrase.";
+  if (m.includes("user already") || m.includes("already registered")) return "An account with that email is already open. Try signing in.";
+  if (m.includes("password") && m.includes("short")) return "Passphrase needs at least 6 characters.";
+  if (m.includes("not found") || m.includes("no user")) return "We can't find that email. Open an account instead?";
+  if (m.includes("network") || m.includes("fetch")) return "Network's quiet. Check your connection and try again.";
+  if (mode === "guest") return "Couldn't open the door. Try again in a moment.";
+  return "Something's stuck. Try again in a moment.";
+}
+
 export default function SignInPage() {
   const router = useRouter();
   const [status, setStatus] = useState<"idle" | "working" | "error">("idle");
@@ -17,6 +30,11 @@ export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  function resetFeedback() {
+    setStatus("idle");
+    setMsg("");
+  }
+
   async function enterAsGuest() {
     setStatus("working");
     setMsg("");
@@ -27,7 +45,7 @@ export default function SignInPage() {
       router.push("/home");
       router.refresh();
     } catch (err) {
-      setMsg(err instanceof Error ? err.message : "Couldn't open the door");
+      setMsg(brandedAuthError(err instanceof Error ? err.message : "", "guest"));
       setStatus("error");
     }
   }
@@ -46,7 +64,7 @@ export default function SignInPage() {
       router.push("/home");
       router.refresh();
     } catch (err) {
-      setMsg(err instanceof Error ? err.message : "Something went wrong");
+      setMsg(brandedAuthError(err instanceof Error ? err.message : "", mode));
       setStatus("error");
     }
   }
@@ -78,7 +96,7 @@ export default function SignInPage() {
 
           <button
             type="button"
-            onClick={() => { setShowEmail(true); setStatus("idle"); setMsg(""); }}
+            onClick={() => { setShowEmail(true); resetFeedback(); }}
             className="mt-6 text-xs font-display italic text-parchment-dim underline-offset-4 hover:underline"
           >
             Or sign in with email
@@ -90,14 +108,14 @@ export default function SignInPage() {
           <div className="mt-6 flex rounded-full border border-brass/30 bg-mahogany-2 p-1 text-xs font-display uppercase tracking-widest">
             <button
               type="button"
-              onClick={() => { setMode("signin"); setStatus("idle"); setMsg(""); }}
+              onClick={() => { setMode("signin"); resetFeedback(); }}
               className={`rounded-full px-4 py-1.5 transition ${mode === "signin" ? "bg-brass text-mahogany" : "text-parchment-dim"}`}
             >
               Sign in
             </button>
             <button
               type="button"
-              onClick={() => { setMode("signup"); setStatus("idle"); setMsg(""); }}
+              onClick={() => { setMode("signup"); resetFeedback(); }}
               className={`rounded-full px-4 py-1.5 transition ${mode === "signup" ? "bg-brass text-mahogany" : "text-parchment-dim"}`}
             >
               Open account
@@ -134,7 +152,7 @@ export default function SignInPage() {
 
           <button
             type="button"
-            onClick={() => setShowEmail(false)}
+            onClick={() => { setShowEmail(false); resetFeedback(); }}
             className="mt-4 text-xs font-display italic text-parchment-dim underline-offset-4 hover:underline"
           >
             ← back to guest entry

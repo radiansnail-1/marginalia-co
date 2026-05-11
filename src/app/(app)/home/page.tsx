@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Room } from "@/components/room/room";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/user";
 import { toRoman, timeOfDayCaveat } from "@/lib/roman";
 import type { SpineBook } from "@/components/room/spine";
 import type { ReadingBook } from "@/components/room/coffee-table";
@@ -21,10 +22,7 @@ function pick<T>(b: T | T[] | null | undefined): T | null {
 }
 
 export default async function HomePage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const [supabase, user] = await Promise.all([createClient(), getCurrentUser()]);
   const userId = user?.id ?? "";
 
   const yearStart = new Date(new Date().getFullYear(), 0, 1).toISOString();

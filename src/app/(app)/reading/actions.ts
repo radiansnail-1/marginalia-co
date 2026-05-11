@@ -2,12 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/user";
 
 export async function startSession(userBookId: string) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const [supabase, user] = await Promise.all([createClient(), getCurrentUser()]);
   if (!user) return { error: "Not signed in" };
 
   // Verify ownership.
@@ -65,10 +63,7 @@ export async function finishBook(
   pages: number | null,
   rating: number | null,
 ) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const [supabase, user] = await Promise.all([createClient(), getCurrentUser()]);
   if (!user) return { error: "Not signed in" };
 
   const { data: ub } = await supabase

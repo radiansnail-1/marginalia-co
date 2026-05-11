@@ -2,12 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/user";
 
 export async function addBookToPile(bookId: string) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const [supabase, user] = await Promise.all([createClient(), getCurrentUser()]);
   if (!user) return { error: "Not signed in" };
   const { data: existing } = await supabase
     .from("user_books")
@@ -29,10 +27,7 @@ export async function addBookToPile(bookId: string) {
 }
 
 export async function startReadingBook(bookId: string) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const [supabase, user] = await Promise.all([createClient(), getCurrentUser()]);
   if (!user) return { error: "Not signed in" };
   const now = new Date().toISOString();
   const { data: existing } = await supabase

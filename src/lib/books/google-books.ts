@@ -57,7 +57,7 @@ export async function searchBooks(query: string, limit = 12): Promise<GoogleBook
   if (key) url.searchParams.set("key", key);
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
+  const timeoutId = setTimeout(() => controller.abort(), 9000);
 
   let res: Response;
   try {

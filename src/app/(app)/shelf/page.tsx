@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/user";
 import { toRoman } from "@/lib/roman";
 import { ShelfClient, type ShelfBook } from "./shelf-client";
 
@@ -17,10 +18,7 @@ type BookJoin = {
 };
 
 export default async function ShelfPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const [supabase, user] = await Promise.all([createClient(), getCurrentUser()]);
   const { data } = await supabase
     .from("user_books")
     .select("id, finished_at, rating, book:books(id, title, author, cover_url, dominant_color)")

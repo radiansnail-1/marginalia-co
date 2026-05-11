@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/user";
 import { ReadingSession } from "./reading-session";
 
 type BookRow = {
@@ -22,11 +23,11 @@ export default async function ReadingPage({
 }: {
   searchParams: Promise<{ book?: string }>;
 }) {
-  const params = await searchParams;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const [params, supabase, user] = await Promise.all([
+    searchParams,
+    createClient(),
+    getCurrentUser(),
+  ]);
 
   const { data: items } = await supabase
     .from("user_books")

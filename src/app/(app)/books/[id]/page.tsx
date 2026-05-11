@@ -2,20 +2,19 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { shopeeSearchUrl } from "@/lib/books/shopee";
+import { getCurrentUser } from "@/lib/supabase/user";
+import { affiliateLinksForBook } from "@/lib/books/affiliate";
+import { AffiliateLinks } from "@/components/affiliate-links";
 import { ActionButtons } from "./action-buttons";
 
 export default async function BookDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const [supabase, user] = await Promise.all([createClient(), getCurrentUser()]);
 
   const { data: book } = await supabase
     .from("books")
     .select(
-      "id, title, author, cover_url, subjects, page_count, published_year",
+      "id, title, author, cover_url, subjects, page_count, published_year, isbn_13",
     )
     .eq("id", id)
     .maybeSingle();
@@ -31,7 +30,11 @@ export default async function BookDetail({ params }: { params: Promise<{ id: str
         .maybeSingle()
     : { data: null };
 
-  const buyUrl = shopeeSearchUrl(book.title, book.author);
+  const affiliateLinks = affiliateLinksForBook({
+    title: book.title,
+    author: book.author,
+    isbn13: book.isbn_13,
+  });
 
   return (
     <div
@@ -104,15 +107,7 @@ export default async function BookDetail({ params }: { params: Promise<{ id: str
 
         <ActionButtons bookId={book.id} userBook={userBook ?? null} />
 
-        <a
-          href={buyUrl}
-          target="_blank"
-          rel="noopener noreferrer sponsored"
-          className="mt-8 block text-center font-body uppercase text-parchment-dim"
-          style={{ fontSize: "10px", letterSpacing: "2.5px" }}
-        >
-          Find a copy on Shopee →
-        </a>
+        <AffiliateLinks links={affiliateLinks} />
 
         <div style={{ height: 40 }} />
       </div>

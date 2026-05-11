@@ -2,8 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { searchAction, addToPile } from "./actions";
 import type { GoogleBook } from "@/lib/books/google-books";
 
@@ -12,14 +11,14 @@ type SearchState =
   | { kind: "searching"; query: string }
   | { kind: "empty"; query: string }
   | { kind: "results"; query: string; books: GoogleBook[] }
-  | { kind: "error"; query: string; error: "api" | "rate-limit" | "unknown" };
+  | { kind: "error"; query: string; error: "api" | "rate-limit" | "timeout" | "unknown" };
 
 export default function SearchPage() {
-  const router = useRouter();
   const [q, setQ] = useState("");
   const [state, setState] = useState<SearchState>({ kind: "idle" });
   const [pending, startTransition] = useTransition();
   const [note, setNote] = useState<string | null>(null);
+  const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const requestIdRef = useRef(0);
@@ -69,16 +68,28 @@ export default function SearchPage() {
     startTransition(async () => {
       const res = await addToPile(g);
       if ("ok" in res) {
-        if (res.alreadyExisted) {
-          setNote(`Already on your shelf (${res.status}).`);
-        } else {
-          router.push("/pile");
-        }
+        setAddedIds((prev) => {
+          const next = new Set(prev);
+          next.add(g.googleBooksId);
+          return next;
+        });
+        setNote(
+          res.alreadyExisted
+            ? `Already on your shelf (${res.status}).`
+            : `${g.title} → the pile.`,
+        );
       } else {
         setNote(res.error);
       }
     });
   };
+
+  // Auto-dismiss the note after a beat so it doesn't pile up.
+  useEffect(() => {
+    if (!note) return;
+    const t = setTimeout(() => setNote(null), 3200);
+    return () => clearTimeout(t);
+  }, [note]);
 
   const results = state.kind === "results" ? state.books : [];
 
@@ -146,12 +157,12 @@ export default function SearchPage() {
             </div>
             <button
               type="button"
-              disabled={pending}
+              disabled={pending || addedIds.has(g.googleBooksId)}
               onClick={() => onAdd(g)}
-              className="shrink-0 border border-brass px-3 py-2 font-body uppercase text-brass-bright"
+              className="shrink-0 border border-brass px-3 py-2 font-body uppercase text-brass-bright disabled:opacity-50"
               style={{ fontSize: "10px", letterSpacing: "2px" }}
             >
-              + Pile
+              {addedIds.has(g.googleBooksId) ? "On pile" : "+ Pile"}
             </button>
           </li>
         ))}
@@ -175,8 +186,10 @@ export default function SearchPage() {
           <li className="text-center font-caveat text-brass-bright" style={{ fontSize: "16px" }}>
             <div>
               {state.error === "rate-limit"
-                ? "Too many searches. Try again in a moment."
-                : "Search is unavailable. Try again."}
+                ? "Too many searches. Take a breath, then try again."
+                : state.error === "timeout"
+                  ? "Google Books is slow tonight. Try once more."
+                  : "Search is unavailable. Try again."}
             </div>
             <button
               type="button"

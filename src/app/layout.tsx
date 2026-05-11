@@ -24,6 +24,28 @@ const caveat = Caveat({
 export const metadata: Metadata = {
   title: "Marginalia & Co.",
   description: "A cozy reading room of your own.",
+  manifest: "/manifest.webmanifest",
+  applicationName: "Marginalia & Co.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Marginalia",
+  },
+  icons: {
+    icon: [
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
+  openGraph: {
+    title: "Marginalia & Co.",
+    description: "A cozy reading room of your own.",
+    siteName: "Marginalia & Co.",
+    type: "website",
+  },
 };
 
 export const viewport: Viewport = {
