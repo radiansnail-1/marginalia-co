@@ -42,7 +42,11 @@ export default function SignInPage() {
       const { data, error } =
         mode === "signin"
           ? await supabase.auth.signInWithPassword({ email, password })
-          : await supabase.auth.signUp({ email, password });
+          : await supabase.auth.signUp({
+              email,
+              password,
+              options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+            });
       if (error) throw error;
       if (mode === "signup" && !data.session) {
         setMsg("Check your email to finish opening the account.");
