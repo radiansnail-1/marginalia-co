@@ -1,62 +1,68 @@
 # Plan
 
-**Goal:** Ship the focused Marginalia & Co. new-user QA fixes: reliable add-to-pile, clearer first-run UX, stable navigation labels, safer advanced API access, account-only identity, and book rating aggregates.
+**Goal:** Ship Marginalia & Co. live with account-only auth, reliable first-run QA, public Play-readiness routes, and a signup path that does not depend on email/domain setup.
 
 **Approach:**
-- Fix the save path at the data layer so it no longer depends on a production-only Supabase index migration.
-- Keep the reading-room visual language, but replace fragile symbols with stable text and obvious first-run actions.
-- Move developer-oriented API token creation behind an advanced disclosure, while adding a human-readable `/api` docs page.
-- Require a real email/password account instead of anonymous guest mode so shelves, ratings, and API tokens are tied to a durable user.
-- Store shared book rating aggregates in the database from per-user ratings so future ML/ranking work has a clean signal.
+- Keep the web app as the source of truth for the Android TWA/PWA shell.
+- Keep protected reader features behind durable email/password accounts, but temporarily bypass email confirmation because there is no verified sending domain.
+- Use a Supabase service-role server action to create confirmed accounts, then sign the user in from the client with their password.
+- Keep the previous Resend work in git history only; the current working tree removes it from the active signup path.
+- Retest live protected flows after the no-email-confirmation pivot is built, committed, pushed, and deployed.
 
 **Milestones:**
-- [x] QA live app at `marginalia-co.vercel.app` as a new user across home, search, pile, librarian, profile, API docs, and mobile layouts.
-- [x] Run focused engineering review before fixing: prioritize data-layer save reliability, user-facing confusion, and silent/technical failures.
-- [x] Replace Supabase `upsert(... onConflict: "google_books_id")` in `addToPile` with insert plus duplicate fallback.
-- [x] Replace broken glyph/question-mark nav surfaces with stable text labels and ASCII-safe copy.
-- [x] Add an empty-shelf "Add your first book" CTA and an accessible search clear button.
-- [x] Hide API tokens behind "Advanced: API access" and add `/api` as human-readable API docs.
-- [x] Remove user-facing `ANTHROPIC_API_KEY`/LLM implementation copy from Librarian fallback.
-- [x] Force account creation by removing guest sign-in, redirecting anonymous sessions, and blocking anonymous API token creation.
-- [x] Add `supabase/migrations/0007_book_rating_aggregates.sql` and expose `average_rating` / `rating_count` on book detail and API responses.
-- [x] Verify locally with typecheck, focused lint, regression test, production build, and browser QA.
-- [x] Publish the branch to GitHub and open draft PR #3.
-- [ ] Apply Supabase migrations and deploy the PR branch or merge target, then re-test live account signup, `+ Pile`, ratings, and API docs on Vercel.
+- [x] QA live app public surfaces: landing, sign-in, API docs, `/api/v1`, manifest/icons, protected-route redirects, desktop/laptop/mobile layouts.
+- [x] Fix public `/privacy` route so Play Console can reach the privacy policy.
+- [x] Investigate Supabase auth email failures: built-in sender rate limit and project redirect fallback to localhost.
+- [x] Fix app-side Supabase email redirect handling in committed code.
+- [x] Implement Resend-based signup confirmation in commit `f6b5a39`, then decide not to use it because no verified sender domain exists.
+- [x] Start pivot to no-email-confirmation signup: server action creates confirmed users with service role and client signs in immediately.
+- [ ] Finish verification for the no-email-confirmation pivot by rerunning `npm run build`.
+- [ ] Commit the no-email-confirmation pivot.
+- [ ] Push branch and redeploy.
+- [ ] Re-run live protected QA with a fresh account through search, add-to-pile, reading, finish, shelf, Librarian, profile, and API token flows.
 
 ## Resume State
 
-**Status:** The fix set is implemented, verified, pushed, and open as draft PR #3. The branch now includes account-only auth and database-maintained rating aggregates.
+**Status:** The active working tree is mid-pivot from Resend confirmation email to immediate confirmed-account signup. Lint and typecheck passed after the pivot; production build was started but intentionally aborted by the user before completion.
 
-**Last action:** Committed and pushed `4a049cb require accounts and aggregate ratings` to draft PR #3 at `https://github.com/radiansnail-1/marginalia-co/pull/3`.
+**Last action:** Removed the active Resend signup dependency from the working tree: `src/app/auth/sign-in/actions.ts` now exports `createConfirmedAccount`, `src/app/auth/sign-in/page.tsx` calls it and signs in immediately, `src/app/auth/confirm/route.ts` and `src/lib/email/resend.ts` are deleted, and `README.md` no longer lists Resend setup.
 
-**Next action:** Apply Supabase migrations `0006` and `0007` in the target database, then verify the deployed Vercel preview/live app after GitHub/Vercel builds PR #3.
+**Next action:** Run `npm run build`; if it passes, commit the working-tree pivot, then push/deploy and QA live protected flows.
 
-**Repo state:** Branch `codex/initial-little-alexandria-app`, pushed to origin. Draft PR #3 targets `main`.
+**Repo state:** Branch `codex/initial-little-alexandria-app`, tracking origin, ahead by 3 commits: `f6b5a39 Send signup confirmations with Resend`, `3331533 Fix email confirmation redirect`, `4958184 Make privacy policy public`. Current working tree is dirty with the uncommitted no-email-confirmation pivot.
 
-**Verification:** Passed `npx tsc --noEmit`, focused ESLint on changed app/auth/API files, `node --test "src/app/(app)/search/shelf-status.test.ts"`, `npm run build`, and Browser QA on `http://127.0.0.1:3007` for the first QA patch set. Full `npm run lint` passed before the account/rating follow-up but later timed out in this environment with no explicit lint errors; focused lint passed for the follow-up.
+**Verification:** After the no-email-confirmation pivot, `npm run lint` passed and `npx tsc --noEmit` passed. `npm run build` was attempted after clearing stale `.next` validator files, but the user interrupted it before completion, so build status for the latest working tree is unknown. Earlier before this pivot, `npm run build` passed with the Resend implementation.
 
 ## Review Status
 
 | Review | Last run | Status | Findings | Stale? |
 |--------|----------|--------|----------|--------|
-| CEO | 2026-05-11 | Historical | Existing `ceo-review.md` exists in workspace root, not rerun this session | unknown |
-| Eng | 2026-05-11 | Focused session review | Prioritized add-to-pile data path, broken glyph surfaces, first-run clarity, and technical copy leaks | no for this patch scope |
-| Design | - | - | No design review log found | unknown |
-| DX | - | - | No DX review log found | unknown |
+| CEO | 2026-05-11 | Completed in prior session | Keep scope focused on TWA, real shelf, Librarian, and API. | Partly stale after auth pivot |
+| Eng | 2026-05-11 | Auth-focused review | Email rate limit is external Supabase/SMTP config; redirect bug was app plus Supabase dashboard config; no-domain path should avoid email confirmation for now. | Current for auth pivot |
+| Design | 2026-05-11 | Completed in root notes | Dark-academia mobile UI remains the locked direction. | Mostly current |
+| DX | - | Not run | API docs exist, but token flow still needs confirmed-account/live QA. | Unknown |
 
-**Review verdict:** CLEARED for focused QA fix PR. No current gstack review log was available from `gstack-review-read`.
+**Review verdict:** NEEDS QA after commit/deploy. The auth architecture is acceptable for current no-domain constraints, but live protected flows are not yet verified.
 
-**Next review:** Run QA against the deployed Vercel preview/live app after the PR is published.
+**Next review:** Run live QA after deploying the no-email-confirmation pivot. Run DX review before advertising `/api/v1` publicly.
 
-**Blockers / open questions:** Live Vercel still needs deployment of this branch before fixes appear. Supabase migration `0007_book_rating_aggregates.sql` must be applied before code selecting `average_rating` / `rating_count` hits that database. Supabase migration `0006_books_google_id_full_unique.sql` is still useful cleanup, but `addToPile` no longer depends on it for the main save path.
+**Blockers / open questions:**
+- Production/Vercel must have `SUPABASE_SERVICE_ROLE_KEY` or `SUPABASE_SECRET_KEY`; immediate confirmed-account signup depends on it.
+- Supabase migrations `0006` and `0007` still need confirmation in the live database before rating aggregates and book selections are fully safe.
+- `/.well-known/assetlinks.json` is still 404 live; final Android TWA requires a real asset links file with the signing fingerprint.
+- Resend API key is valid but sandboxed until a sender domain is verified, so Resend is not usable for arbitrary signup recipients right now.
+- Need decide later whether to re-enable email confirmation after a domain is available.
 
 **Context pointers:**
-- Key files: `src/app/(app)/search/actions.ts`, `src/app/(app)/search/page.tsx`, `src/components/tab-bar.tsx`, `src/components/room/bookshelf.tsx`, `src/app/(app)/profile/token-panel.tsx`, `src/app/(app)/profile/token-actions.ts`, `src/app/auth/sign-in/page.tsx`, `src/proxy.ts`, `src/lib/supabase/user.ts`, `src/app/(app)/books/[id]/page.tsx`, `src/app/api/page.tsx`, `src/app/api/v1/books/route.ts`, `src/app/api/v1/route.ts`, `supabase/migrations/0007_book_rating_aggregates.sql`.
-- Repo context: latest code commit is `4a049cb - require accounts and aggregate ratings`; branch `codex/initial-little-alexandria-app`.
-- External: PR `https://github.com/radiansnail-1/marginalia-co/pull/3`; live app `https://marginalia-co.vercel.app`; local verified URL was `http://127.0.0.1:3007`.
+- App root: `E:\2. Current Projects\bookshelf\marginalia`
+- Active auth files: `src/app/auth/sign-in/actions.ts`, `src/app/auth/sign-in/page.tsx`, `src/lib/supabase/service.ts`, `src/proxy.ts`
+- Deleted in working tree: `src/app/auth/confirm/route.ts`, `src/lib/email/resend.ts`
+- Committed auth/public-route fixes: `4958184`, `3331533`, `f6b5a39`
+- Live app: `https://marginalia-co.vercel.app`
+- Draft/merged PR context in root notes: PR #4 was merged; current branch has newer local commits not pushed.
 
-**How to resume:** `cd "E:\2. Current Projects\bookshelf\marginalia" && git status --short --branch`
+**How to resume:** `cd "E:\2. Current Projects\bookshelf\marginalia" && git status --short --branch && npm run build`
 
-**Out of scope:** Did not implement OAuth/importers, search ranking/edition deduplication, the ML model itself, production deployment, Supabase production migration execution, or TWA upload.
+**Out of scope:** No OAuth/importers, no final Android asset links file, no verified-domain email sender, no App Store/iOS packaging, no ML recommendation model beyond existing Librarian behavior.
 
 **Last updated:** 2026-05-11

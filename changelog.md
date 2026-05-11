@@ -2,28 +2,21 @@
 
 ## 2026-05-11
 
-- QA'd the live Marginalia & Co. app across landing, guest sign-in, search, pile, reading, shelf, profile, desktop/laptop/mobile layouts.
-- Found live save-to-pile blocker: Supabase reported no matching `ON CONFLICT` constraint for `google_books_id`.
-- Added `supabase/migrations/0006_books_google_id_full_unique.sql` to replace the partial Google Books ID unique index with a normal unique index.
-- Updated search so results are annotated with the user's existing shelf status and repeat searches no longer show already-saved books as addable.
-- Added `src/app/(app)/search/shelf-status.ts` and a Node regression test for shelf-status mapping.
-- Made search save state per-book and replaced raw database save errors with reader-friendly messages.
-- Reduced pile route work by combining pile and reading queries, switching pile user ID lookup to Supabase `getClaims()`, and adding a route loading shell.
-- Added tab route prefetching to improve perceived bottom-nav responsiveness.
-- Updated PWA metadata to prefer fullscreen display and set `viewportFit: "cover"`.
-- Verified with `npm run lint`, `npx tsc --noEmit`, `node --test "src/app/(app)/search/shelf-status.test.ts"`, and local mobile browser checks.
-- Ran live new-user QA and found conversion blockers: live `+ Pile` failed, nav symbols rendered as question marks, Profile led with API tokens, Librarian leaked server configuration copy, and `/api/v1` was not a human-friendly docs target.
-- Ran a focused engineering review and chose a data-layer save fix over a UI-only workaround.
-- Changed `addToPile` to use insert plus duplicate fallback so save-to-pile does not depend on a production-only `onConflict` index migration.
-- Replaced fragile glyph navigation and bad separator symbols with stable text labels/copy across the app shell and key flows.
-- Added an empty-shelf "Add your first book" CTA, an accessible search clear button, and a human-readable `/api` docs page.
-- Moved API token creation behind "Advanced: API access" and removed user-facing `ANTHROPIC_API_KEY` fallback copy from Librarian.
-- Verified the focused fix set with `npm run lint`, `npx tsc --noEmit`, `node --test "src/app/(app)/search/shelf-status.test.ts"`, `npm run build`, and Browser QA on `http://127.0.0.1:3007`.
-- Pushed `codex/initial-little-alexandria-app` and opened draft PR #3: `https://github.com/radiansnail-1/marginalia-co/pull/3`.
-- Forced account creation by removing guest sign-in, treating anonymous sessions as unauthenticated, and requiring a real account before API token creation.
-- Added `supabase/migrations/0007_book_rating_aggregates.sql` so `books.average_rating` and `books.rating_count` are maintained from per-user `user_books.rating` values.
-- Exposed aggregate book ratings on book detail pages and `/api/v1/books`, and documented the fields in `/api/v1`.
-- Verified the account/rating follow-up with `npx tsc --noEmit`, focused ESLint on changed auth/API/book files, `node --test "src/app/(app)/search/shelf-status.test.ts"`, and `npm run build`. Full lint timed out in this environment after the follow-up, with no explicit lint error output.
-- Pushed `4a049cb require accounts and aggregate ratings` to PR #3.
+- QA'd the live Marginalia & Co. app across landing, auth, API docs, protected redirects, PWA assets, and desktop/laptop/mobile public layouts.
+- Found earlier live save-to-pile blocker caused by Supabase `ON CONFLICT` index drift; fixed search save path to insert plus duplicate fallback and added `0006_books_google_id_full_unique.sql`.
+- Added shelf-status annotation for search results and a focused regression test so already-saved books do not appear addable.
+- Replaced fragile glyph/question-mark UI surfaces with stable labels/copy, added first-book search CTA, hid API token creation behind advanced disclosure, and added human-readable `/api` docs.
+- Forced durable account identity by removing guest sign-in, treating anonymous sessions as unauthenticated, and blocking anonymous API token creation.
+- Added `0007_book_rating_aggregates.sql` and exposed `average_rating` / `rating_count` in book detail/API responses.
+- Pushed earlier account/rating work to PR #3, then later root handoff noted PR #4 for public-route auth edge fixes.
+- Verified public live routes after PR #4: `/api/v1` docs, unauthenticated API `401`s, manifest/icons, and protected-route redirects behaved as expected.
+- Found live launch-readiness issues: `/privacy` was auth-protected and `/.well-known/assetlinks.json` was public but 404.
+- Committed `4958184 Make privacy policy public`.
+- Investigated auth email failures with AgentMail: Supabase public signup hit `email rate limit exceeded`; generated Supabase links fell back to `http://localhost:3000`, indicating Site URL/redirect config drift.
+- Committed `3331533 Fix email confirmation redirect`, adding explicit signup redirect and safer callback failure handling.
+- Implemented Resend signup confirmation in `f6b5a39 Send signup confirmations with Resend`, then tested the supplied Resend key and found it sandboxed until a sender domain is verified.
+- User decided there is no domain for now; active working tree pivots away from Resend/email confirmation.
+- Working tree now creates confirmed users server-side with Supabase admin in `src/app/auth/sign-in/actions.ts`, signs them in from `src/app/auth/sign-in/page.tsx`, deletes `src/app/auth/confirm/route.ts` and `src/lib/email/resend.ts`, and removes Resend setup from `README.md`.
+- After the no-email-confirmation pivot, `npm run lint` and `npx tsc --noEmit` passed. `npm run build` was started but aborted by the user before completion.
 
 **Last updated:** 2026-05-11
