@@ -14,9 +14,8 @@ export default function PrivacyPage() {
             reading sessions, ratings, and account details.
           </p>
           <p>
-            Authentication and database storage are handled by Supabase. If you use anonymous sign-in,
-            your shelf is tied to that browser or device session. If you create an email account, your
-            shelf can travel with that account.
+            Authentication and database storage are handled by Supabase. Your shelf is tied to your
+            email account so it can travel across your devices.
           </p>
           <p>
             Book search uses third-party book data providers such as Google Books and Open Library.

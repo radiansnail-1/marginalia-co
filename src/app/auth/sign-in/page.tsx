@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Letter } from "@/components/letter";
 import { Owl } from "@/components/owl";
 
-function brandedAuthError(raw: string, mode: "guest" | "signin" | "signup"): string {
+function brandedAuthError(raw: string, mode: "signin" | "signup"): string {
   const m = raw.toLowerCase();
   if (m.includes("rate limit")) return "Too many tries. Give it a minute, then try again.";
   if (m.includes("email") && m.includes("invalid")) return "That email didn't take. Try another.";
@@ -15,18 +15,16 @@ function brandedAuthError(raw: string, mode: "guest" | "signin" | "signup"): str
   if (m.includes("password") && m.includes("short")) return "Passphrase needs at least 6 characters.";
   if (m.includes("not found") || m.includes("no user")) return "We can't find that email. Open an account instead?";
   if (m.includes("network") || m.includes("fetch")) return "Network's quiet. Check your connection and try again.";
-  if (mode === "guest") return "Couldn't open the door. Try again in a moment.";
-  return "Something's stuck. Try again in a moment.";
+  return mode === "signup"
+    ? "Could not open the account. Try again in a moment."
+    : "Something's stuck. Try again in a moment.";
 }
 
 export default function SignInPage() {
   const router = useRouter();
-  const [status, setStatus] = useState<"idle" | "working" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "working" | "error" | "success">("idle");
   const [msg, setMsg] = useState("");
-  const [showEmail, setShowEmail] = useState(false);
-
-  // Email/password fields (only shown if user clicks "use email instead")
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup">("signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -35,32 +33,22 @@ export default function SignInPage() {
     setMsg("");
   }
 
-  async function enterAsGuest() {
-    setStatus("working");
-    setMsg("");
-    const supabase = createClient();
-    try {
-      const { error } = await supabase.auth.signInAnonymously();
-      if (error) throw error;
-      router.push("/home");
-      router.refresh();
-    } catch (err) {
-      setMsg(brandedAuthError(err instanceof Error ? err.message : "", "guest"));
-      setStatus("error");
-    }
-  }
-
   async function emailSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("working");
     setMsg("");
     const supabase = createClient();
     try {
-      const { error } =
+      const { data, error } =
         mode === "signin"
           ? await supabase.auth.signInWithPassword({ email, password })
           : await supabase.auth.signUp({ email, password });
       if (error) throw error;
+      if (mode === "signup" && !data.session) {
+        setMsg("Check your email to finish opening the account.");
+        setStatus("success");
+        return;
+      }
       router.push("/home");
       router.refresh();
     } catch (err) {
@@ -78,94 +66,64 @@ export default function SignInPage() {
         <Letter className="h-full w-full drop-shadow-[0_8px_18px_rgba(0,0,0,0.6)]" />
       </div>
 
-      <h1 className="font-display text-3xl text-brass-bright">Step inside</h1>
+      <h1 className="font-display text-3xl text-brass-bright">Keep your shelf</h1>
       <p className="mt-2 max-w-xs text-center font-display italic text-parchment-dim">
-        No name needed at the door. Your shelf travels with this device.
+        Create an account so your books, ratings, and tools follow you from phone to laptop.
       </p>
 
-      {!showEmail ? (
-        <>
-          <button
-            onClick={enterAsGuest}
-            disabled={status === "working"}
-            className="mt-8 flex w-full max-w-xs items-center justify-center gap-2 rounded-full bg-brass-bright px-7 py-4 font-display text-lg text-mahogany shadow-[0_10px_30px_rgba(0,0,0,0.5)] transition hover:scale-[1.02] disabled:opacity-60"
-          >
-            <span aria-hidden>✦</span>
-            {status === "working" ? "Opening the door…" : "Enter the library"}
-          </button>
+      <div className="mt-6 flex rounded-full border border-brass/30 bg-mahogany-2 p-1 text-xs font-display uppercase tracking-widest">
+        <button
+          type="button"
+          onClick={() => { setMode("signup"); resetFeedback(); }}
+          className={`rounded-full px-4 py-1.5 transition ${mode === "signup" ? "bg-brass text-mahogany" : "text-parchment-dim"}`}
+        >
+          Create account
+        </button>
+        <button
+          type="button"
+          onClick={() => { setMode("signin"); resetFeedback(); }}
+          className={`rounded-full px-4 py-1.5 transition ${mode === "signin" ? "bg-brass text-mahogany" : "text-parchment-dim"}`}
+        >
+          Sign in
+        </button>
+      </div>
 
-          <button
-            type="button"
-            onClick={() => { setShowEmail(true); resetFeedback(); }}
-            className="mt-6 text-xs font-display italic text-parchment-dim underline-offset-4 hover:underline"
-          >
-            Or sign in with email
-          </button>
-        </>
-      ) : (
-        <>
-          {/* Tabs: sign in / sign up */}
-          <div className="mt-6 flex rounded-full border border-brass/30 bg-mahogany-2 p-1 text-xs font-display uppercase tracking-widest">
-            <button
-              type="button"
-              onClick={() => { setMode("signin"); resetFeedback(); }}
-              className={`rounded-full px-4 py-1.5 transition ${mode === "signin" ? "bg-brass text-mahogany" : "text-parchment-dim"}`}
-            >
-              Sign in
-            </button>
-            <button
-              type="button"
-              onClick={() => { setMode("signup"); resetFeedback(); }}
-              className={`rounded-full px-4 py-1.5 transition ${mode === "signup" ? "bg-brass text-mahogany" : "text-parchment-dim"}`}
-            >
-              Open account
-            </button>
-          </div>
+      <form onSubmit={emailSubmit} className="mt-5 w-full">
+        <input
+          type="email"
+          required
+          autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="you@example.com"
+          className="w-full rounded-md border border-brass/30 bg-mahogany-2 px-4 py-3 font-body text-parchment placeholder:text-parchment-dim focus:border-brass focus:outline-none"
+        />
+        <input
+          type="password"
+          required
+          minLength={6}
+          autoComplete={mode === "signup" ? "new-password" : "current-password"}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="passphrase"
+          className="mt-3 w-full rounded-md border border-brass/30 bg-mahogany-2 px-4 py-3 font-body text-parchment placeholder:text-parchment-dim focus:border-brass focus:outline-none"
+        />
+        <button
+          disabled={status === "working"}
+          className="mt-4 w-full rounded-md bg-brass px-4 py-3 font-display text-mahogany shadow-lg transition hover:bg-brass-bright disabled:opacity-60"
+        >
+          {status === "working" ? "Just a moment..." : mode === "signin" ? "Step inside" : "Create account"}
+        </button>
+      </form>
 
-          <form onSubmit={emailSubmit} className="mt-5 w-full">
-            <input
-              type="email"
-              required
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="w-full rounded-md border border-brass/30 bg-mahogany-2 px-4 py-3 font-body text-parchment placeholder:text-parchment-dim focus:border-brass focus:outline-none"
-            />
-            <input
-              type="password"
-              required
-              minLength={6}
-              autoComplete={mode === "signup" ? "new-password" : "current-password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="passphrase"
-              className="mt-3 w-full rounded-md border border-brass/30 bg-mahogany-2 px-4 py-3 font-body text-parchment placeholder:text-parchment-dim focus:border-brass focus:outline-none"
-            />
-            <button
-              disabled={status === "working"}
-              className="mt-4 w-full rounded-md bg-brass px-4 py-3 font-display text-mahogany shadow-lg transition hover:bg-brass-bright disabled:opacity-60"
-            >
-              {status === "working" ? "Just a moment…" : mode === "signin" ? "Step inside" : "Open the door"}
-            </button>
-          </form>
-
-          <button
-            type="button"
-            onClick={() => { setShowEmail(false); resetFeedback(); }}
-            className="mt-4 text-xs font-display italic text-parchment-dim underline-offset-4 hover:underline"
-          >
-            ← back to guest entry
-          </button>
-        </>
-      )}
-
-      {status === "error" && (
-        <p className="mt-4 max-w-xs text-center text-sm text-sconce">{msg}</p>
+      {(status === "error" || status === "success") && (
+        <p className={`mt-4 max-w-xs text-center text-sm ${status === "error" ? "text-sconce" : "text-brass-bright"}`}>
+          {msg}
+        </p>
       )}
 
       <p className="mt-10 text-center text-[10px] uppercase tracking-[0.3em] text-parchment-dim">
-        Marginalia &amp; Co. · Est. {new Date().getFullYear()}
+        Marginalia &amp; Co. - Est. {new Date().getFullYear()}
       </p>
     </div>
   );

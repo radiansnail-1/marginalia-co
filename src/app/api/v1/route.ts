@@ -9,7 +9,7 @@ export function GET() {
     auth: "Authorization: Bearer mg_xxx - generate from /profile.",
     endpoints: [
       { method: "GET", path: "/api/v1/me", returns: "Your profile + this year's finished count" },
-      { method: "GET", path: "/api/v1/books", query: "status=pile|reading|finished|abandoned (optional)", returns: "Your shelf" },
+      { method: "GET", path: "/api/v1/books", query: "status=pile|reading|finished|abandoned (optional)", returns: "Your shelf, including shared average_rating and rating_count for each book" },
       { method: "POST", path: "/api/v1/books", body: { title: "string", author: "string", status: "pile|reading|finished|abandoned", rating: "1-5 (optional)", googleBooksId: "optional", isbn13: "optional", pageCount: "optional", publishedYear: "optional", coverUrl: "optional", startedAt: "ISO (optional)", finishedAt: "ISO (optional)" } },
       { method: "POST", path: "/api/v1/recommendations", body: { mood: "restless|wistful|curious|tender|fierce|lost" }, returns: "Three picks with reasons" },
     ],

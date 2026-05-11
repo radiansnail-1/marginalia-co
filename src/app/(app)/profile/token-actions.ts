@@ -1,12 +1,12 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentUser } from "@/lib/supabase/user";
+import { getCurrentUser, isAnonymousUser } from "@/lib/supabase/user";
 import { mintToken, hashToken } from "@/lib/api/auth";
 
 export async function listTokens() {
   const [supabase, user] = await Promise.all([createClient(), getCurrentUser()]);
-  if (!user) return { tokens: [] as Array<{ id: string; label: string; prefix: string; created_at: string; last_used_at: string | null; revoked_at: string | null }> };
+  if (!user || isAnonymousUser(user)) return { tokens: [] as Array<{ id: string; label: string; prefix: string; created_at: string; last_used_at: string | null; revoked_at: string | null }> };
   const { data } = await supabase
     .from("api_tokens")
     .select("id, label, token_prefix, created_at, last_used_at, revoked_at")
@@ -27,7 +27,7 @@ export async function listTokens() {
 export async function createApiToken(label: string): Promise<{ token: string; prefix: string; id: string } | { error: string }> {
   const trimmed = label.trim() || "untitled token";
   const [supabase, user] = await Promise.all([createClient(), getCurrentUser()]);
-  if (!user) return { error: "Sign in first." };
+  if (!user || isAnonymousUser(user)) return { error: "Create an account before connecting tools." };
   const { token, hash, prefix } = mintToken();
   const { data, error } = await supabase
     .from("api_tokens")
@@ -40,7 +40,7 @@ export async function createApiToken(label: string): Promise<{ token: string; pr
 
 export async function revokeApiToken(id: string): Promise<{ ok: true } | { error: string }> {
   const [supabase, user] = await Promise.all([createClient(), getCurrentUser()]);
-  if (!user) return { error: "Sign in first." };
+  if (!user || isAnonymousUser(user)) return { error: "Create an account before connecting tools." };
   const { error } = await supabase
     .from("api_tokens")
     .update({ revoked_at: new Date().toISOString() })

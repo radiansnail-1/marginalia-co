@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
 
   let query = supabase
     .from("user_books")
-    .select("id, status, rating, started_at, finished_at, added_to_pile_at, book:books(id, google_books_id, isbn_13, title, author, cover_url, page_count, published_year, subjects)")
+    .select("id, status, rating, started_at, finished_at, added_to_pile_at, book:books(id, google_books_id, isbn_13, title, author, cover_url, page_count, published_year, subjects, average_rating, rating_count)")
     .eq("user_id", auth.userId)
     .order("added_to_pile_at", { ascending: false })
     .limit(200);
@@ -59,6 +59,8 @@ export async function GET(req: NextRequest) {
         page_count: b?.page_count,
         published_year: b?.published_year,
         subjects: b?.subjects ?? [],
+        average_rating: b?.average_rating,
+        rating_count: b?.rating_count ?? 0,
       };
     }),
   });
