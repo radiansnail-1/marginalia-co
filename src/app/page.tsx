@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/supabase/user";
+import { getCurrentUser, isAnonymousUser } from "@/lib/supabase/user";
 import { Owl } from "@/components/owl";
 
 export default async function Landing() {
   const user = await getCurrentUser();
-  if (user) redirect("/home");
+  if (user && !isAnonymousUser(user)) redirect("/home");
 
   return (
     <div className="relative mx-auto flex min-h-dvh w-full max-w-[440px] flex-col items-center justify-center overflow-hidden px-6 text-center">

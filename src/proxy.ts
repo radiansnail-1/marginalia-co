@@ -12,6 +12,7 @@ function isPublicPath(path: string) {
   if (path === "/api") return true;
   if (path.startsWith("/_next/")) return true;
   if (path === "/manifest.webmanifest") return true;
+  if (path.startsWith("/.well-known/")) return true;
   return false;
 }
 
