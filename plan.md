@@ -16,18 +16,18 @@
 - [x] Hide API tokens behind "Advanced: API access" and add `/api` as human-readable API docs.
 - [x] Remove user-facing `ANTHROPIC_API_KEY`/LLM implementation copy from Librarian fallback.
 - [x] Verify locally with lint, typecheck, tests, production build, and browser QA.
-- [ ] Publish the branch to GitHub and open a draft PR.
+- [x] Publish the branch to GitHub and open draft PR #3.
 - [ ] Deploy the PR branch or merge target, then re-test live `+ Pile` on Vercel.
 
 ## Resume State
 
-**Status:** The local fix set is implemented, verified, and ready to publish.
+**Status:** The fix set is implemented, verified, pushed, and open as draft PR #3.
 
-**Last action:** Updated handoff files after local browser QA confirmed search saved a book and `/pile` showed `1 book waiting for you`.
+**Last action:** Pushed `codex/initial-little-alexandria-app` and opened draft PR #3 at `https://github.com/radiansnail-1/marginalia-co/pull/3`.
 
-**Next action:** Commit and push the current worktree, open a draft PR, then verify the deployed live app after Vercel builds the branch.
+**Next action:** Verify the deployed Vercel preview/live app after GitHub/Vercel builds PR #3.
 
-**Repo state:** Branch `codex/initial-little-alexandria-app`, ahead of origin by 1 commit before this publish flow. Current dirty worktree is the focused QA fix set plus these handoff files.
+**Repo state:** Branch `codex/initial-little-alexandria-app`, pushed to origin. Draft PR #3 targets `main`.
 
 **Verification:** Passed `npm run lint`, `npx tsc --noEmit`, `node --test "src/app/(app)/search/shelf-status.test.ts"`, `npm run build`, and Browser QA on `http://127.0.0.1:3007` for home, search, add-to-pile, pile, librarian, profile, and `/api`.
 
@@ -49,7 +49,7 @@
 **Context pointers:**
 - Key files: `src/app/(app)/search/actions.ts`, `src/app/(app)/search/page.tsx`, `src/components/tab-bar.tsx`, `src/components/room/bookshelf.tsx`, `src/app/(app)/profile/token-panel.tsx`, `src/lib/librarian/recommend.ts`, `src/app/api/page.tsx`.
 - Repo context: latest existing commit before this publish flow is `8ea6290 - fix search pile and app shell`; branch `codex/initial-little-alexandria-app`.
-- External: live app at `https://marginalia-co.vercel.app`; local verified URL was `http://127.0.0.1:3007`.
+- External: PR `https://github.com/radiansnail-1/marginalia-co/pull/3`; live app `https://marginalia-co.vercel.app`; local verified URL was `http://127.0.0.1:3007`.
 
 **How to resume:** `cd "E:\2. Current Projects\bookshelf\marginalia" && git status --short --branch`
 

@@ -19,5 +19,6 @@
 - Added an empty-shelf "Add your first book" CTA, an accessible search clear button, and a human-readable `/api` docs page.
 - Moved API token creation behind "Advanced: API access" and removed user-facing `ANTHROPIC_API_KEY` fallback copy from Librarian.
 - Verified the focused fix set with `npm run lint`, `npx tsc --noEmit`, `node --test "src/app/(app)/search/shelf-status.test.ts"`, `npm run build`, and Browser QA on `http://127.0.0.1:3007`.
+- Pushed `codex/initial-little-alexandria-app` and opened draft PR #3: `https://github.com/radiansnail-1/marginalia-co/pull/3`.
 
 **Last updated:** 2026-05-11
