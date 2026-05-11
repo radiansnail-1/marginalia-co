@@ -4,16 +4,58 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/user";
 import { searchBooks, GoogleBooksApiError, type GoogleBook } from "@/lib/books/google-books";
+import { applyShelfStatuses, type ShelfTaggedBook } from "./shelf-status";
+
+export type { UserBookStatus } from "./shelf-status";
+export type SearchBook = ShelfTaggedBook<GoogleBook>;
 
 export type SearchActionResult =
-  | { ok: true; books: GoogleBook[] }
+  | { ok: true; books: SearchBook[] }
   | { ok: false; error: "api" | "rate-limit" | "timeout" | "unknown"; books: [] };
 
 export async function searchAction(query: string): Promise<SearchActionResult> {
   if (!query.trim()) return { ok: true, books: [] };
   try {
-    const books = await searchBooks(query, 12);
-    return { ok: true, books };
+    const [books, supabase, user] = await Promise.all([
+      searchBooks(query, 12),
+      createClient(),
+      getCurrentUser(),
+    ]);
+    if (!user || books.length === 0) {
+      return { ok: true, books: books.map((book) => ({ ...book, shelfStatus: null })) };
+    }
+
+    const googleIds = [...new Set(books.map((book) => book.googleBooksId))];
+    const { data: catalogRows } = await supabase
+      .from("books")
+      .select("id, google_books_id")
+      .in("google_books_id", googleIds);
+
+    const bookIds = (catalogRows ?? []).map((row) => row.id as string);
+    let shelfRows: Array<{ book_id: string; status: string }> = [];
+    if (bookIds.length > 0) {
+      const { data } = await supabase
+        .from("user_books")
+        .select("book_id, status")
+        .eq("user_id", user.id)
+        .in("book_id", bookIds);
+      shelfRows = (data ?? []).map((row) => ({
+        book_id: row.book_id as string,
+        status: row.status as string,
+      }));
+    }
+
+    return {
+      ok: true,
+      books: applyShelfStatuses(
+        books,
+        (catalogRows ?? []).map((row) => ({
+          id: row.id as string,
+          google_books_id: row.google_books_id as string | null,
+        })),
+        shelfRows,
+      ),
+    };
   } catch (err) {
     if (err instanceof GoogleBooksApiError) {
       if (err.status === 429) return { ok: false, error: "rate-limit", books: [] };
@@ -64,7 +106,7 @@ export async function addToPile(g: GoogleBook): Promise<
       )
       .select("id")
       .single();
-    if (insErr || !inserted) return { error: insErr?.message ?? "Could not save book" };
+    if (insErr || !inserted) return { error: "Could not save that book. Try again." };
     bookId = inserted.id;
   }
 
@@ -82,7 +124,7 @@ export async function addToPile(g: GoogleBook): Promise<
     .single();
 
   if (ubErr) {
-    // unique(user_id, book_id) collision — the book is already on this user's shelf.
+    // unique(user_id, book_id) collision ? the book is already on this user's shelf.
     if (ubErr.code === "23505") {
       const { data: existingUb } = await supabase
         .from("user_books")
@@ -99,7 +141,7 @@ export async function addToPile(g: GoogleBook): Promise<
         };
       }
     }
-    return { error: ubErr.message };
+    return { error: "Could not add that book to your pile. Try again." };
   }
 
   revalidatePath("/pile");

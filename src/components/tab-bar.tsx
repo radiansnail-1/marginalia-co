@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const tabs = [
-  { href: "/home", label: "Home", glyph: "⌂" },
-  { href: "/pile", label: "The Pile", glyph: "⫶" },
-  { href: "/librarian", label: "Librarian", glyph: "✦" },
-  { href: "/profile", label: "Profile", glyph: "◐" },
+  { href: "/home", label: "Home", glyph: "?" },
+  { href: "/pile", label: "The Pile", glyph: "?" },
+  { href: "/librarian", label: "Librarian", glyph: "?" },
+  { href: "/profile", label: "Profile", glyph: "?" },
 ];
 
 const PARENT_OF: Record<string, string> = {
@@ -19,8 +20,14 @@ const PARENT_OF: Record<string, string> = {
 
 export function TabBar() {
   const path = usePathname() ?? "";
+  const router = useRouter();
   const firstSeg = "/" + path.split("/").filter(Boolean)[0];
   const activePath = PARENT_OF[path] ?? PARENT_OF[firstSeg] ?? path;
+
+  useEffect(() => {
+    for (const tab of tabs) router.prefetch(tab.href);
+  }, [router]);
+
   return (
     <nav
       className="fixed inset-x-0 bottom-0 z-[90] mx-auto w-full max-w-[440px] border-t border-brass/25 backdrop-blur"
@@ -38,6 +45,8 @@ export function TabBar() {
             <li key={t.href}>
               <Link
                 href={t.href}
+                onPointerEnter={() => router.prefetch(t.href)}
+                onTouchStart={() => router.prefetch(t.href)}
                 className="flex flex-col items-center gap-[3px] uppercase"
                 style={{
                   fontFamily: "var(--font-body)",

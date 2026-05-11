@@ -46,7 +46,7 @@ Application name: Marginalia & Co.
 Short name: Marginalia
 Package ID: com.radiansnail.marginalia
 Start URL: /home
-Display mode: standalone
+Display mode: fullscreen
 Orientation: portrait
 Theme color: #1a0905
 Background color: #1a0905
@@ -64,6 +64,9 @@ https://YOUR-DOMAIN/.well-known/assetlinks.json
 ```
 
 Without a valid asset links file, Android can show browser chrome instead of a clean app shell.
+For the full-screen reading-room feel, keep the web manifest at `display: fullscreen`;
+if the generated TWA still shows Android status/navigation bars, enable immersive
+mode in the Android wrapper before upload.
 
 ## Upload Flow
 
