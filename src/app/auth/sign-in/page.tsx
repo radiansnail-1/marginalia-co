@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Letter } from "@/components/letter";
 import { Owl } from "@/components/owl";
-import { requestSignupEmail } from "./actions";
+import { createConfirmedAccount } from "./actions";
 
 function brandedAuthError(raw: string, mode: "signin" | "signup"): string {
   const m = raw.toLowerCase();
@@ -41,10 +41,12 @@ export default function SignInPage() {
     const supabase = createClient();
     try {
       if (mode === "signup") {
-        const result = await requestSignupEmail(email, password);
+        const result = await createConfirmedAccount(email, password);
         setMsg(result.message);
-        setStatus(result.ok ? "success" : "error");
-        return;
+        if (!result.ok) {
+          setStatus("error");
+          return;
+        }
       }
 
       const { error } = await supabase.auth.signInWithPassword({ email, password });

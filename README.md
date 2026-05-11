@@ -15,9 +15,8 @@ See `../plan.md` for the full build plan and `../design/` for the locked mockups
 1. `cp .env.local.example .env.local` and fill in keys.
 2. Create a Supabase project, paste URL + anon key into `.env.local`.
 3. Add `SUPABASE_SERVICE_ROLE_KEY` (or `SUPABASE_SECRET_KEY`) for server-side Auth/admin flows.
-4. Add `RESEND_API_KEY` and `RESEND_FROM_EMAIL` for signup confirmation email.
-5. In the Supabase SQL editor, run `supabase/migrations/0001_init.sql`.
-6. `npm install && npm run dev`.
+4. In the Supabase SQL editor, run `supabase/migrations/0001_init.sql`.
+5. `npm install && npm run dev`.
 
 ## Mobile install / Google Play
 - Web install works from the deployed HTTPS URL via Add to Home Screen.
@@ -32,7 +31,6 @@ See `../plan.md` for the full build plan and `../design/` for the locked mockups
 ## Routes
 - `/` - landing → redirects to `/home` when signed in
 - `/auth/sign-in` - email/password account creation and sign-in
-- `/auth/confirm` - Resend-delivered signup confirmation callback
 - `/(app)/home` - the Room (bookshelf + coffee table)
 - `/(app)/pile` - TBR
 - `/(app)/librarian` - weekly pick + mood chips
