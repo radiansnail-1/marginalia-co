@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+/* Marginalia & Co. design tokens — dark academia mahogany library.
+   Source of truth: design/iteration-4-mobile.html, iteration-6-flows-v2.html,
+   iteration-7-celebration.html. */
+
+@theme {
+  --color-mahogany: #1a0905;
+  --color-mahogany-2: #2c140a;
+  --color-mahogany-3: #3a1e10;
+  --color-mahogany-mid: #3e1d10;
+  --color-mahogany-warm: #5a2a18;
+  --color-mahogany-light: #7a3e22;
+  --color-mahogany-glow: #9a5530;
+  --color-oxblood: #5a1a14;
+  --color-brass: #b58c4a;
+  --color-brass-bright: #d8b06a;
+  --color-velvet: #1a3a2a;
+  --color-velvet-light: #2a5a3a;
+  --color-velvet-deep: #0e2218;
+  --color-sconce: #c84838;
+  --color-sconce-glow: #ff7a55;
+  --color-parchment: #f3e6c4;
+  --color-parchment-dim: #c9b88c;
+  --color-cream: #ecdcb0;
+  --color-cream-soft: #d4c094;
+  --color-moonlight: #b8c8de;
+  --color-moon: #e8e0c8;
+  --color-night-sky: #0e1830;
+  --color-night-sky-deep: #050a18;
+  --color-rug-red: #6a1a18;
+  --color-ink: #0d0907;
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-caveat: var(--font-caveat);
+}
+
+html, body { background-color: var(--color-mahogany); color: var(--color-parchment); }
+
+.font-caveat { font-family: var(--font-caveat), "Caveat", cursive; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-8px) rotate(1deg); }
+}
+
+@keyframes mote-drift {
+  0% { transform: translateY(-20px) translateX(0); opacity: 0; }
+  20% { opacity: 0.8; }
+  100% { transform: translateY(600px) translateX(40px); opacity: 0; }
+}
+
+@keyframes halo-pulse {
+  0%, 100% { opacity: 0.85; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+}
+
+@keyframes spine-shimmer {
+  0%, 100% { box-shadow: 0 0 0 1px var(--color-brass-bright), 0 0 18px rgba(216,176,106,0.7), 0 0 36px rgba(255,181,107,0.4); }
+  50%      { box-shadow: 0 0 0 1px var(--color-brass-bright), 0 0 28px rgba(216,176,106,1),   0 0 56px rgba(255,181,107,0.6); }
+}
+
+/* Subtle paper grain for parchment surfaces */
+.parchment {
+  background-color: var(--color-parchment);
+  background-image:
+    radial-gradient(rgba(60,30,0,0.06) 1px, transparent 1px),
+    radial-gradient(rgba(60,30,0,0.04) 1px, transparent 1px);
+  background-size: 3px 3px, 7px 7px;
+  background-position: 0 0, 1px 2px;
+  color: #2c140a;
+}
+
+/* Vertical-rl spine text helper */
+.spine-text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Faint inner-vignette overlay used on every "screen" */
+.room-vignette::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 50%, transparent 50%, rgba(0,0,0,0.4) 100%);
+}
