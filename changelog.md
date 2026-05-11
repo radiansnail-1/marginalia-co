@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-05-11 (evening)
+
+- Synced 48 books from the Obsidian vault (`wiki/entities/books`) into the live API via `sync_books.py`: 12 pile, 2 reading, 34 finished. Verified counts via `GET /api/v1/books?status=…`.
+- Applied migration 0007 (rating aggregates) to prod Supabase — was blocking `GET /api/v1/books` with `column books_1.average_rating does not exist`.
+- Engineering pass on a 9-point user punch list. Shipped in PR #6 (merge commit `b94e52f`):
+  - Reviews: new column `user_books.review` (migration 0008), inline `ReviewEditor` on `/books/[id]`, optional textarea in `FinishPrompt`, exposed in `GET/POST /api/v1/books`.
+  - Search: edition-variant dedup (`Standard Edition`, `Deluxe`, `Vol N`, etc.) before render; query 18, collapse to 12.
+  - Home: bigger wordmark, brass `+` and `B` pill buttons, larger volume count. Whole bookshelf and whole coffee table now act as single tap zones to `/shelf` and `/reading`; individual spines are decorative.
+  - Reading session: replaced chip-row of other in-progress books with a snap-x horizontal carousel of full `ReadingSession` panels; per-book active session resolved server-side; indicator dots track scroll position.
+  - Covers: API `POST /api/v1/books` falls back to Google Books by title+author when `coverUrl` is missing. New `POST /api/v1/books/backfill-covers` fills cover_url + google_books_id + isbn for the authed user's shelf (capped 80/run).
+  - Buttons: global `.tap` CSS utility (120ms transition, active:scale 0.965), tap-highlight transparent on body, `touch-action: manipulation` on interactive elements; applied across 13 files / ~20 elements.
+  - TabBar: redesigned with SVG icons (Room/Pile/Librarian/Me), 72px height with safe-area padding, full-height tap targets.
+  - Fullscreen: `mobile-web-app-capable` meta, `userScalable: false` viewport, first-tap `requestFullscreen()` attempt on Android Chrome. Caveat documented: browser tabs cannot fully hide system chrome; PWA install / TWA is the durable fix.
+  - Perf: `preconnect`/`dns-prefetch` for books.google.com and openlibrary.
+
 ## 2026-05-11
 
 - QA'd the live Marginalia & Co. app across landing, auth, API docs, protected redirects, PWA assets, and desktop/laptop/mobile public layouts.
@@ -19,4 +34,4 @@
 - Working tree now creates confirmed users server-side with Supabase admin in `src/app/auth/sign-in/actions.ts`, signs them in from `src/app/auth/sign-in/page.tsx`, deletes `src/app/auth/confirm/route.ts` and `src/lib/email/resend.ts`, and removes Resend setup from `README.md`.
 - After the no-email-confirmation pivot, `npm run lint` and `npx tsc --noEmit` passed. `npm run build` was started but aborted by the user before completion.
 
-**Last updated:** 2026-05-11
+**Last updated:** 2026-05-11 (evening)
