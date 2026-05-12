@@ -46,6 +46,7 @@ type ShelfBook = {
   title: string;
   author: string;
   coverUrl: string | null;
+  description: string | null;
   subjects: string[];
   pageCount: number | null;
   publishedYear: number | null;
@@ -58,6 +59,7 @@ type ShelfBook = {
 type Candidate = GoogleBook & {
   bookId?: string;
   source: "catalog" | "google";
+  description?: string | null;
   averageRating?: number | null;
   ratingCount?: number;
   embedding?: number[];
@@ -72,6 +74,7 @@ type ShelfBookRow = {
   title?: string | null;
   author?: string | null;
   cover_url?: string | null;
+  description?: string | null;
   subjects?: string[] | null;
   page_count?: number | null;
   published_year?: number | null;
@@ -97,6 +100,7 @@ function mapShelfRows(rows: ShelfRow[] | null, includeEmbeddings: boolean): Shel
     const text = bookEmbeddingText({
       title: b.title,
       author: b.author,
+      description: b.description,
       subjects: b.subjects,
       pageCount: b.page_count,
       publishedYear: b.published_year,
@@ -121,6 +125,7 @@ function mapShelfRows(rows: ShelfRow[] | null, includeEmbeddings: boolean): Shel
       title: b.title,
       author: b.author,
       coverUrl: b.cover_url ?? null,
+      description: b.description ?? null,
       subjects: (b.subjects ?? []).slice(0, 8),
       pageCount: b.page_count ?? null,
       publishedYear: b.published_year ?? null,
@@ -146,13 +151,13 @@ async function loadUserShelf(userId: string): Promise<ShelfBook[]> {
       .returns<ShelfRow[]>();
 
   const { data, error } = await loadRows(
-    "status, rating, review, finished_at, book:books(id, google_books_id, isbn_13, title, author, cover_url, subjects, page_count, published_year, average_rating, rating_count, embedding, embedding_model, embedding_dimensions, embedding_text_hash)",
+    "status, rating, review, finished_at, book:books(id, google_books_id, isbn_13, title, author, cover_url, description, subjects, page_count, published_year, average_rating, rating_count, embedding, embedding_model, embedding_dimensions, embedding_text_hash)",
   );
 
   if (!error) return mapShelfRows(data, true);
 
   const { data: fallbackData } = await loadRows(
-    "status, rating, review, finished_at, book:books(id, google_books_id, isbn_13, title, author, cover_url, subjects, page_count, published_year, average_rating, rating_count)",
+    "status, rating, review, finished_at, book:books(id, google_books_id, isbn_13, title, author, cover_url, description, subjects, page_count, published_year, average_rating, rating_count)",
   );
 
   return mapShelfRows(fallbackData, false);
@@ -258,6 +263,7 @@ type CatalogBookRow = {
   title: string;
   author: string;
   cover_url: string | null;
+  description: string | null;
   subjects: string[] | null;
   page_count: number | null;
   published_year: number | null;
@@ -275,6 +281,7 @@ function mapCatalogCandidate(row: CatalogBookRow, terms: string[]): Candidate | 
   const text = bookEmbeddingText({
     title: row.title,
     author: row.author,
+    description: row.description,
     subjects,
     pageCount: row.page_count,
     publishedYear: row.published_year,
@@ -296,6 +303,7 @@ function mapCatalogCandidate(row: CatalogBookRow, terms: string[]): Candidate | 
     isbn13: row.isbn_13,
     title: row.title,
     author: row.author,
+    description: row.description,
     pageCount: row.page_count,
     publishedYear: row.published_year,
     subjects,
@@ -316,7 +324,7 @@ async function loadCatalogCandidates(queries: string[], shelf: ShelfBook[]): Pro
       const safeTerms = terms.map(safePostgrestTerm).filter(Boolean);
       let request = service
         .from("books")
-        .select("id, google_books_id, isbn_13, title, author, cover_url, subjects, page_count, published_year, average_rating, rating_count, embedding, embedding_model, embedding_dimensions, embedding_text_hash")
+        .select("id, google_books_id, isbn_13, title, author, cover_url, description, subjects, page_count, published_year, average_rating, rating_count, embedding, embedding_model, embedding_dimensions, embedding_text_hash")
         .not("embedding", "is", null)
         .eq("embedding_model", EMBEDDING_MODEL)
         .eq("embedding_dimensions", EMBEDDING_DIMENSIONS)
@@ -411,6 +419,7 @@ async function tryCacheBookEmbedding(book: ShelfBook | Candidate, vector: number
     const text = bookEmbeddingText({
       title: book.title,
       author: book.author,
+      description: "description" in book ? book.description : null,
       subjects: book.subjects,
       pageCount: book.pageCount,
       publishedYear: book.publishedYear,
@@ -458,7 +467,7 @@ async function hydrateCandidateCache(candidates: Candidate[]) {
     if (ids.length === 0) return;
     const { data } = await service
       .from("books")
-      .select("id, google_books_id, cover_url, average_rating, rating_count, embedding, embedding_model, embedding_dimensions, embedding_text_hash")
+      .select("id, google_books_id, cover_url, description, average_rating, rating_count, embedding, embedding_model, embedding_dimensions, embedding_text_hash")
       .in("google_books_id", ids);
 
     const byGoogleId = new Map((data ?? []).map((row) => [row.google_books_id as string, row]));
@@ -468,10 +477,12 @@ async function hydrateCandidateCache(candidates: Candidate[]) {
       c.bookId = row.id as string;
       c.averageRating = row.average_rating === null || row.average_rating === undefined ? null : Number(row.average_rating);
       c.ratingCount = Number(row.rating_count ?? 0);
+      c.description = c.description ?? ((row.description as string | null) ?? null);
       c.thumbnail = c.thumbnail ?? ((row.cover_url as string | null) ?? null);
       const text = bookEmbeddingText({
         title: c.title,
         author: c.author,
+        description: c.description,
         subjects: c.subjects,
         pageCount: c.pageCount,
         publishedYear: c.publishedYear,
@@ -542,6 +553,7 @@ function textForCandidate(candidate: Candidate) {
   return bookEmbeddingText({
     title: candidate.title,
     author: candidate.author,
+    description: candidate.description,
     subjects: candidate.subjects,
     pageCount: candidate.pageCount,
     publishedYear: candidate.publishedYear,

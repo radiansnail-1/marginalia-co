@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "seed:books": "node scripts/seed-curated-books.mjs",
+    "seed:goodreads": "node scripts/seed-goodreads-books.mjs",
     "preembed:books": "node scripts/preembed-books.mjs",
     "start": "next start",
     "lint": "eslint"

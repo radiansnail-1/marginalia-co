@@ -40,13 +40,34 @@ EMBEDDING_MAX_RUNTIME_TEXTS=6
 
 Legacy `OPENAI_API_KEY`, `OPENAI_BASE_URL`, `OPENAI_EMBEDDING_MODEL`, and `OPENAI_EMBEDDING_DIMENSIONS` env vars still work. Runtime embedding is capped by `EMBEDDING_MAX_RUNTIME_TEXTS`; set it to `0` for cached-only recommendations. The recommended charity-safe setup is to pre-embed a seed catalog, let the app rank from cached vectors, and only enable capped cache-on-miss embedding if a small monthly budget is acceptable.
 
-Pre-embed the shared book catalog before launch:
+Seed, then pre-embed the shared book catalog before launch:
 
 ```bash
+npm run seed:books -- --dry-run
+npm run seed:books
 npm run preembed:books -- --limit=10000 --batch=10
 ```
 
-Use `--dry-run` to count stale/missing vectors without calling the provider.
+Use `--dry-run` to count inserts or stale/missing vectors without calling the provider. To guarantee your existing shelf is included in the seed catalog, set `MARGINALIA_API_TOKEN` locally before running `seed:books`; the script reads `/api/v1/books`, prepends those books to `data/curated-books.json`, dedupes by title+author, and inserts only missing catalog rows.
+
+For only finished/read books:
+
+```bash
+npm run seed:books -- --dry-run --status=finished
+npm run seed:books -- --status=finished
+```
+
+Apply `supabase/migrations/0012_book_descriptions.sql` before seeding blurbs.
+
+To seed the Kaggle Goodreads archive downloaded to `C:\Users\aweso\Downloads\archive.zip`:
+
+```bash
+npm run seed:goodreads -- --list-only --limit=20
+npm run seed:goodreads -- --dry-run --limit=10000
+npm run seed:goodreads -- --limit=10000
+```
+
+`seed:goodreads` reads `goodreads_cleaned.csv` from the zip, prepends your API shelf when `MARGINALIA_API_TOKEN` is set, dedupes by title+author, and creates short Goodreads-stat blurbs without calling Google Books or OpenAI.
 
 ## Mobile install / Google Play
 - Web install works from the deployed HTTPS URL via Add to Home Screen.

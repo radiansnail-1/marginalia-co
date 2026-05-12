@@ -50,6 +50,7 @@ function bookEmbeddingText(book) {
     book.published_year ? `Published: ${book.published_year}` : "",
     book.page_count ? `Length: ${book.page_count} pages` : "",
     book.subjects?.length ? `Subjects: ${book.subjects.slice(0, 8).join(", ")}` : "",
+    book.description ? `Description: ${book.description.slice(0, 700)}` : "",
   ].filter(Boolean).join("\n");
 }
 
@@ -84,7 +85,7 @@ async function embedTexts(texts) {
 
 const { data, error } = await supabase
   .from("books")
-  .select("id, title, author, subjects, page_count, published_year, embedding_model, embedding_dimensions, embedding_text_hash")
+  .select("id, title, author, description, subjects, page_count, published_year, embedding_model, embedding_dimensions, embedding_text_hash")
   .order("added_at", { ascending: false })
   .limit(limit);
 

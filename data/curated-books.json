@@ -1,0 +1,2402 @@
+[
+  {
+    "title": "Piranesi",
+    "author": "Susanna Clarke",
+    "publishedYear": 2020,
+    "subjects": [
+      "literary fantasy",
+      "mystery",
+      "memory",
+      "atmospheric fiction"
+    ],
+    "description": "Piranesi is a literary fantasy work from 2020 by Susanna Clarke, touching on mystery, memory, and atmospheric fiction."
+  },
+  {
+    "title": "Jonathan Strange & Mr Norrell",
+    "author": "Susanna Clarke",
+    "publishedYear": 2004,
+    "subjects": [
+      "historical fantasy",
+      "magic",
+      "british fiction",
+      "alternate history"
+    ],
+    "description": "Jonathan Strange & Mr Norrell is a historical fantasy work from 2004 by Susanna Clarke, touching on magic, british fiction, and alternate history."
+  },
+  {
+    "title": "The Left Hand of Darkness",
+    "author": "Ursula K. Le Guin",
+    "publishedYear": 1969,
+    "subjects": [
+      "science fiction",
+      "gender",
+      "anthropology",
+      "politics"
+    ],
+    "description": "The Left Hand of Darkness is a science fiction work from 1969 by Ursula K. Le Guin, touching on gender, anthropology, and politics."
+  },
+  {
+    "title": "The Dispossessed",
+    "author": "Ursula K. Le Guin",
+    "publishedYear": 1974,
+    "subjects": [
+      "science fiction",
+      "anarchism",
+      "utopia",
+      "politics"
+    ],
+    "description": "The Dispossessed is a science fiction work from 1974 by Ursula K. Le Guin, touching on anarchism, utopia, and politics."
+  },
+  {
+    "title": "A Wizard of Earthsea",
+    "author": "Ursula K. Le Guin",
+    "publishedYear": 1968,
+    "subjects": [
+      "fantasy",
+      "coming of age",
+      "myth",
+      "magic"
+    ],
+    "description": "A Wizard of Earthsea is a fantasy work from 1968 by Ursula K. Le Guin, touching on coming of age, myth, and magic."
+  },
+  {
+    "title": "Kindred",
+    "author": "Octavia E. Butler",
+    "publishedYear": 1979,
+    "subjects": [
+      "science fiction",
+      "slavery",
+      "time travel",
+      "historical fiction"
+    ],
+    "description": "Kindred is a science fiction work from 1979 by Octavia E. Butler, touching on slavery, time travel, and historical fiction."
+  },
+  {
+    "title": "Parable of the Sower",
+    "author": "Octavia E. Butler",
+    "publishedYear": 1993,
+    "subjects": [
+      "dystopian fiction",
+      "climate",
+      "religion",
+      "survival"
+    ],
+    "description": "Parable of the Sower is a dystopian fiction work from 1993 by Octavia E. Butler, touching on climate, religion, and survival."
+  },
+  {
+    "title": "The Fifth Season",
+    "author": "N. K. Jemisin",
+    "publishedYear": 2015,
+    "subjects": [
+      "fantasy",
+      "climate",
+      "oppression",
+      "epic fantasy"
+    ],
+    "description": "The Fifth Season is a fantasy work from 2015 by N. K. Jemisin, touching on climate, oppression, and epic fantasy."
+  },
+  {
+    "title": "Station Eleven",
+    "author": "Emily St. John Mandel",
+    "publishedYear": 2014,
+    "subjects": [
+      "literary fiction",
+      "post-apocalyptic",
+      "art",
+      "memory"
+    ],
+    "description": "Station Eleven is a literary fiction work from 2014 by Emily St. John Mandel, touching on post-apocalyptic, art, and memory."
+  },
+  {
+    "title": "Sea of Tranquility",
+    "author": "Emily St. John Mandel",
+    "publishedYear": 2022,
+    "subjects": [
+      "literary science fiction",
+      "time travel",
+      "pandemic",
+      "memory"
+    ],
+    "description": "Sea of Tranquility is a literary science fiction work from 2022 by Emily St. John Mandel, touching on time travel, pandemic, and memory."
+  },
+  {
+    "title": "Never Let Me Go",
+    "author": "Kazuo Ishiguro",
+    "publishedYear": 2005,
+    "subjects": [
+      "literary fiction",
+      "memory",
+      "identity",
+      "dystopian fiction"
+    ],
+    "description": "Never Let Me Go is a literary fiction work from 2005 by Kazuo Ishiguro, touching on memory, identity, and dystopian fiction."
+  },
+  {
+    "title": "The Remains of the Day",
+    "author": "Kazuo Ishiguro",
+    "publishedYear": 1989,
+    "subjects": [
+      "literary fiction",
+      "memory",
+      "regret",
+      "british fiction"
+    ],
+    "description": "The Remains of the Day is a literary fiction work from 1989 by Kazuo Ishiguro, touching on memory, regret, and british fiction."
+  },
+  {
+    "title": "Klara and the Sun",
+    "author": "Kazuo Ishiguro",
+    "publishedYear": 2021,
+    "subjects": [
+      "literary science fiction",
+      "artificial intelligence",
+      "love",
+      "ethics"
+    ],
+    "description": "Klara and the Sun is a literary science fiction work from 2021 by Kazuo Ishiguro, touching on artificial intelligence, love, and ethics."
+  },
+  {
+    "title": "Cloud Atlas",
+    "author": "David Mitchell",
+    "publishedYear": 2004,
+    "subjects": [
+      "literary fiction",
+      "interconnected stories",
+      "history",
+      "science fiction"
+    ],
+    "description": "Cloud Atlas is a literary fiction work from 2004 by David Mitchell, touching on interconnected stories, history, and science fiction."
+  },
+  {
+    "title": "The Bone Clocks",
+    "author": "David Mitchell",
+    "publishedYear": 2014,
+    "subjects": [
+      "literary fantasy",
+      "time",
+      "mortality",
+      "interconnected stories"
+    ],
+    "description": "The Bone Clocks is a literary fantasy work from 2014 by David Mitchell, touching on time, mortality, and interconnected stories."
+  },
+  {
+    "title": "The Overstory",
+    "author": "Richard Powers",
+    "publishedYear": 2018,
+    "subjects": [
+      "literary fiction",
+      "trees",
+      "ecology",
+      "activism"
+    ],
+    "description": "The Overstory is a literary fiction work from 2018 by Richard Powers, touching on trees, ecology, and activism."
+  },
+  {
+    "title": "Bewilderment",
+    "author": "Richard Powers",
+    "publishedYear": 2021,
+    "subjects": [
+      "literary fiction",
+      "parenthood",
+      "climate",
+      "neuroscience"
+    ],
+    "description": "Bewilderment is a literary fiction work from 2021 by Richard Powers, touching on parenthood, climate, and neuroscience."
+  },
+  {
+    "title": "The Road",
+    "author": "Cormac McCarthy",
+    "publishedYear": 2006,
+    "subjects": [
+      "post-apocalyptic",
+      "fatherhood",
+      "survival",
+      "literary fiction"
+    ],
+    "description": "The Road is a post-apocalyptic work from 2006 by Cormac McCarthy, touching on fatherhood, survival, and literary fiction."
+  },
+  {
+    "title": "Stoner",
+    "author": "John Williams",
+    "publishedYear": 1965,
+    "subjects": [
+      "literary fiction",
+      "academia",
+      "quiet fiction",
+      "ordinary life"
+    ],
+    "description": "Stoner is a literary fiction work from 1965 by John Williams, touching on academia, quiet fiction, and ordinary life."
+  },
+  {
+    "title": "Gilead",
+    "author": "Marilynne Robinson",
+    "publishedYear": 2004,
+    "subjects": [
+      "literary fiction",
+      "faith",
+      "family",
+      "memory"
+    ],
+    "description": "Gilead is a literary fiction work from 2004 by Marilynne Robinson, touching on faith, family, and memory."
+  },
+  {
+    "title": "Housekeeping",
+    "author": "Marilynne Robinson",
+    "publishedYear": 1980,
+    "subjects": [
+      "literary fiction",
+      "family",
+      "loneliness",
+      "lyrical prose"
+    ],
+    "description": "Housekeeping is a literary fiction work from 1980 by Marilynne Robinson, touching on family, loneliness, and lyrical prose."
+  },
+  {
+    "title": "Beloved",
+    "author": "Toni Morrison",
+    "publishedYear": 1987,
+    "subjects": [
+      "literary fiction",
+      "slavery",
+      "memory",
+      "trauma"
+    ],
+    "description": "Beloved is a literary fiction work from 1987 by Toni Morrison, touching on slavery, memory, and trauma."
+  },
+  {
+    "title": "Song of Solomon",
+    "author": "Toni Morrison",
+    "publishedYear": 1977,
+    "subjects": [
+      "literary fiction",
+      "family",
+      "identity",
+      "black literature"
+    ],
+    "description": "Song of Solomon is a literary fiction work from 1977 by Toni Morrison, touching on family, identity, and black literature."
+  },
+  {
+    "title": "The Bluest Eye",
+    "author": "Toni Morrison",
+    "publishedYear": 1970,
+    "subjects": [
+      "literary fiction",
+      "race",
+      "beauty",
+      "childhood"
+    ],
+    "description": "The Bluest Eye is a literary fiction work from 1970 by Toni Morrison, touching on race, beauty, and childhood."
+  },
+  {
+    "title": "Homegoing",
+    "author": "Yaa Gyasi",
+    "publishedYear": 2016,
+    "subjects": [
+      "historical fiction",
+      "family saga",
+      "ghana",
+      "slavery"
+    ],
+    "description": "Homegoing is a historical fiction work from 2016 by Yaa Gyasi, touching on family saga, ghana, and slavery."
+  },
+  {
+    "title": "Transcendent Kingdom",
+    "author": "Yaa Gyasi",
+    "publishedYear": 2020,
+    "subjects": [
+      "literary fiction",
+      "faith",
+      "science",
+      "family"
+    ],
+    "description": "Transcendent Kingdom is a literary fiction work from 2020 by Yaa Gyasi, touching on faith, science, and family."
+  },
+  {
+    "title": "A Little Life",
+    "author": "Hanya Yanagihara",
+    "publishedYear": 2015,
+    "subjects": [
+      "literary fiction",
+      "friendship",
+      "trauma",
+      "new york"
+    ],
+    "description": "A Little Life is a literary fiction work from 2015 by Hanya Yanagihara, touching on friendship, trauma, and new york."
+  },
+  {
+    "title": "The Secret History",
+    "author": "Donna Tartt",
+    "publishedYear": 1992,
+    "subjects": [
+      "literary fiction",
+      "dark academia",
+      "mystery",
+      "classics"
+    ],
+    "description": "The Secret History is a literary fiction work from 1992 by Donna Tartt, touching on dark academia, mystery, and classics."
+  },
+  {
+    "title": "The Goldfinch",
+    "author": "Donna Tartt",
+    "publishedYear": 2013,
+    "subjects": [
+      "literary fiction",
+      "art",
+      "grief",
+      "coming of age"
+    ],
+    "description": "The Goldfinch is a literary fiction work from 2013 by Donna Tartt, touching on art, grief, and coming of age."
+  },
+  {
+    "title": "Possession",
+    "author": "A. S. Byatt",
+    "publishedYear": 1990,
+    "subjects": [
+      "literary fiction",
+      "academia",
+      "romance",
+      "victorian literature"
+    ],
+    "description": "Possession is a literary fiction work from 1990 by A. S. Byatt, touching on academia, romance, and victorian literature."
+  },
+  {
+    "title": "Babel",
+    "author": "R. F. Kuang",
+    "publishedYear": 2022,
+    "subjects": [
+      "historical fantasy",
+      "dark academia",
+      "translation",
+      "empire"
+    ],
+    "description": "Babel is a historical fantasy work from 2022 by R. F. Kuang, touching on dark academia, translation, and empire."
+  },
+  {
+    "title": "Yellowface",
+    "author": "R. F. Kuang",
+    "publishedYear": 2023,
+    "subjects": [
+      "satire",
+      "publishing",
+      "race",
+      "contemporary fiction"
+    ],
+    "description": "Yellowface is a satire work from 2023 by R. F. Kuang, touching on publishing, race, and contemporary fiction."
+  },
+  {
+    "title": "The Name of the Rose",
+    "author": "Umberto Eco",
+    "publishedYear": 1980,
+    "subjects": [
+      "historical mystery",
+      "monastery",
+      "semiotics",
+      "books"
+    ],
+    "description": "The Name of the Rose is a historical mystery work from 1980 by Umberto Eco, touching on monastery, semiotics, and books."
+  },
+  {
+    "title": "If on a winter's night a traveler",
+    "author": "Italo Calvino",
+    "publishedYear": 1979,
+    "subjects": [
+      "postmodern fiction",
+      "books",
+      "playful fiction",
+      "metafiction"
+    ],
+    "description": "If on a winter's night a traveler is a postmodern fiction work from 1979 by Italo Calvino, touching on books, playful fiction, and metafiction."
+  },
+  {
+    "title": "Invisible Cities",
+    "author": "Italo Calvino",
+    "publishedYear": 1972,
+    "subjects": [
+      "literary fiction",
+      "cities",
+      "imagination",
+      "philosophical fiction"
+    ],
+    "description": "Invisible Cities is a literary fiction work from 1972 by Italo Calvino, touching on cities, imagination, and philosophical fiction."
+  },
+  {
+    "title": "The Master and Margarita",
+    "author": "Mikhail Bulgakov",
+    "publishedYear": 1967,
+    "subjects": [
+      "satire",
+      "russian literature",
+      "fantasy",
+      "politics"
+    ],
+    "description": "The Master and Margarita is a satire work from 1967 by Mikhail Bulgakov, touching on russian literature, fantasy, and politics."
+  },
+  {
+    "title": "One Hundred Years of Solitude",
+    "author": "Gabriel Garcia Marquez",
+    "publishedYear": 1967,
+    "subjects": [
+      "magical realism",
+      "family saga",
+      "latin american literature",
+      "memory"
+    ],
+    "description": "One Hundred Years of Solitude is a magical realism work from 1967 by Gabriel Garcia Marquez, touching on family saga, latin american literature, and memory."
+  },
+  {
+    "title": "Love in the Time of Cholera",
+    "author": "Gabriel Garcia Marquez",
+    "publishedYear": 1985,
+    "subjects": [
+      "literary fiction",
+      "love",
+      "aging",
+      "latin american literature"
+    ],
+    "description": "Love in the Time of Cholera is a literary fiction work from 1985 by Gabriel Garcia Marquez, touching on love, aging, and latin american literature."
+  },
+  {
+    "title": "The House of the Spirits",
+    "author": "Isabel Allende",
+    "publishedYear": 1982,
+    "subjects": [
+      "magical realism",
+      "family saga",
+      "politics",
+      "latin american literature"
+    ],
+    "description": "The House of the Spirits is a magical realism work from 1982 by Isabel Allende, touching on family saga, politics, and latin american literature."
+  },
+  {
+    "title": "The Vegetarian",
+    "author": "Han Kang",
+    "publishedYear": 2007,
+    "subjects": [
+      "literary fiction",
+      "body",
+      "alienation",
+      "korean literature"
+    ],
+    "description": "The Vegetarian is a literary fiction work from 2007 by Han Kang, touching on body, alienation, and korean literature."
+  },
+  {
+    "title": "Human Acts",
+    "author": "Han Kang",
+    "publishedYear": 2014,
+    "subjects": [
+      "literary fiction",
+      "violence",
+      "history",
+      "korean literature"
+    ],
+    "description": "Human Acts is a literary fiction work from 2014 by Han Kang, touching on violence, history, and korean literature."
+  },
+  {
+    "title": "Convenience Store Woman",
+    "author": "Sayaka Murata",
+    "publishedYear": 2016,
+    "subjects": [
+      "contemporary fiction",
+      "alienation",
+      "work",
+      "japanese literature"
+    ],
+    "description": "Convenience Store Woman is a contemporary fiction work from 2016 by Sayaka Murata, touching on alienation, work, and japanese literature."
+  },
+  {
+    "title": "Breasts and Eggs",
+    "author": "Mieko Kawakami",
+    "publishedYear": 2008,
+    "subjects": [
+      "literary fiction",
+      "womanhood",
+      "family",
+      "japanese literature"
+    ],
+    "description": "Breasts and Eggs is a literary fiction work from 2008 by Mieko Kawakami, touching on womanhood, family, and japanese literature."
+  },
+  {
+    "title": "The Memory Police",
+    "author": "Yoko Ogawa",
+    "publishedYear": 1994,
+    "subjects": [
+      "dystopian fiction",
+      "memory",
+      "loss",
+      "japanese literature"
+    ],
+    "description": "The Memory Police is a dystopian fiction work from 1994 by Yoko Ogawa, touching on memory, loss, and japanese literature."
+  },
+  {
+    "title": "Kafka on the Shore",
+    "author": "Haruki Murakami",
+    "publishedYear": 2002,
+    "subjects": [
+      "magical realism",
+      "japanese literature",
+      "coming of age",
+      "dreams"
+    ],
+    "description": "Kafka on the Shore is a magical realism work from 2002 by Haruki Murakami, touching on japanese literature, coming of age, and dreams."
+  },
+  {
+    "title": "Norwegian Wood",
+    "author": "Haruki Murakami",
+    "publishedYear": 1987,
+    "subjects": [
+      "literary fiction",
+      "love",
+      "grief",
+      "japanese literature"
+    ],
+    "description": "Norwegian Wood is a literary fiction work from 1987 by Haruki Murakami, touching on love, grief, and japanese literature."
+  },
+  {
+    "title": "The Wind-Up Bird Chronicle",
+    "author": "Haruki Murakami",
+    "publishedYear": 1994,
+    "subjects": [
+      "literary fiction",
+      "surrealism",
+      "memory",
+      "japanese literature"
+    ],
+    "description": "The Wind-Up Bird Chronicle is a literary fiction work from 1994 by Haruki Murakami, touching on surrealism, memory, and japanese literature."
+  },
+  {
+    "title": "A Tale for the Time Being",
+    "author": "Ruth Ozeki",
+    "publishedYear": 2013,
+    "subjects": [
+      "literary fiction",
+      "time",
+      "japan",
+      "diary"
+    ],
+    "description": "A Tale for the Time Being is a literary fiction work from 2013 by Ruth Ozeki, touching on time, japan, and diary."
+  },
+  {
+    "title": "The Book of Form and Emptiness",
+    "author": "Ruth Ozeki",
+    "publishedYear": 2021,
+    "subjects": [
+      "literary fiction",
+      "grief",
+      "books",
+      "mental health"
+    ],
+    "description": "The Book of Form and Emptiness is a literary fiction work from 2021 by Ruth Ozeki, touching on grief, books, and mental health."
+  },
+  {
+    "title": "The God of Small Things",
+    "author": "Arundhati Roy",
+    "publishedYear": 1997,
+    "subjects": [
+      "literary fiction",
+      "family",
+      "india",
+      "memory"
+    ],
+    "description": "The God of Small Things is a literary fiction work from 1997 by Arundhati Roy, touching on family, india, and memory."
+  },
+  {
+    "title": "Midnight's Children",
+    "author": "Salman Rushdie",
+    "publishedYear": 1981,
+    "subjects": [
+      "magical realism",
+      "india",
+      "history",
+      "postcolonial literature"
+    ],
+    "description": "Midnight's Children is a magical realism work from 1981 by Salman Rushdie, touching on india, history, and postcolonial literature."
+  },
+  {
+    "title": "The English Patient",
+    "author": "Michael Ondaatje",
+    "publishedYear": 1992,
+    "subjects": [
+      "literary fiction",
+      "war",
+      "memory",
+      "love"
+    ],
+    "description": "The English Patient is a literary fiction work from 1992 by Michael Ondaatje, touching on war, memory, and love."
+  },
+  {
+    "title": "Small Things Like These",
+    "author": "Claire Keegan",
+    "publishedYear": 2021,
+    "subjects": [
+      "literary fiction",
+      "ireland",
+      "morality",
+      "quiet fiction"
+    ],
+    "description": "Small Things Like These is a literary fiction work from 2021 by Claire Keegan, touching on ireland, morality, and quiet fiction."
+  },
+  {
+    "title": "Foster",
+    "author": "Claire Keegan",
+    "publishedYear": 2010,
+    "subjects": [
+      "literary fiction",
+      "childhood",
+      "ireland",
+      "quiet fiction"
+    ],
+    "description": "Foster is a literary fiction work from 2010 by Claire Keegan, touching on childhood, ireland, and quiet fiction."
+  },
+  {
+    "title": "Normal People",
+    "author": "Sally Rooney",
+    "publishedYear": 2018,
+    "subjects": [
+      "contemporary fiction",
+      "love",
+      "class",
+      "ireland"
+    ],
+    "description": "Normal People is a contemporary fiction work from 2018 by Sally Rooney, touching on love, class, and ireland."
+  },
+  {
+    "title": "Outline",
+    "author": "Rachel Cusk",
+    "publishedYear": 2014,
+    "subjects": [
+      "literary fiction",
+      "conversation",
+      "identity",
+      "quiet fiction"
+    ],
+    "description": "Outline is a literary fiction work from 2014 by Rachel Cusk, touching on conversation, identity, and quiet fiction."
+  },
+  {
+    "title": "Dept. of Speculation",
+    "author": "Jenny Offill",
+    "publishedYear": 2014,
+    "subjects": [
+      "literary fiction",
+      "marriage",
+      "fragmentary fiction",
+      "motherhood"
+    ],
+    "description": "Dept. of Speculation is a literary fiction work from 2014 by Jenny Offill, touching on marriage, fragmentary fiction, and motherhood."
+  },
+  {
+    "title": "Weather",
+    "author": "Jenny Offill",
+    "publishedYear": 2020,
+    "subjects": [
+      "literary fiction",
+      "climate anxiety",
+      "fragmentary fiction",
+      "family"
+    ],
+    "description": "Weather is a literary fiction work from 2020 by Jenny Offill, touching on climate anxiety, fragmentary fiction, and family."
+  },
+  {
+    "title": "Open Water",
+    "author": "Caleb Azumah Nelson",
+    "publishedYear": 2021,
+    "subjects": [
+      "literary fiction",
+      "love",
+      "black british literature",
+      "art"
+    ],
+    "description": "Open Water is a literary fiction work from 2021 by Caleb Azumah Nelson, touching on love, black british literature, and art."
+  },
+  {
+    "title": "Tomorrow, and Tomorrow, and Tomorrow",
+    "author": "Gabrielle Zevin",
+    "publishedYear": 2022,
+    "subjects": [
+      "contemporary fiction",
+      "friendship",
+      "video games",
+      "creative work"
+    ],
+    "description": "Tomorrow, and Tomorrow, and Tomorrow is a contemporary fiction work from 2022 by Gabrielle Zevin, touching on friendship, video games, and creative work."
+  },
+  {
+    "title": "The Vanishing Half",
+    "author": "Brit Bennett",
+    "publishedYear": 2020,
+    "subjects": [
+      "historical fiction",
+      "identity",
+      "family",
+      "race"
+    ],
+    "description": "The Vanishing Half is a historical fiction work from 2020 by Brit Bennett, touching on identity, family, and race."
+  },
+  {
+    "title": "Such a Fun Age",
+    "author": "Kiley Reid",
+    "publishedYear": 2019,
+    "subjects": [
+      "contemporary fiction",
+      "race",
+      "class",
+      "satire"
+    ],
+    "description": "Such a Fun Age is a contemporary fiction work from 2019 by Kiley Reid, touching on race, class, and satire."
+  },
+  {
+    "title": "Trust",
+    "author": "Hernan Diaz",
+    "publishedYear": 2022,
+    "subjects": [
+      "literary fiction",
+      "finance",
+      "power",
+      "metafiction"
+    ],
+    "description": "Trust is a literary fiction work from 2022 by Hernan Diaz, touching on finance, power, and metafiction."
+  },
+  {
+    "title": "The Seven Moons of Maali Almeida",
+    "author": "Shehan Karunatilaka",
+    "publishedYear": 2022,
+    "subjects": [
+      "literary fiction",
+      "sri lanka",
+      "afterlife",
+      "political fiction"
+    ],
+    "description": "The Seven Moons of Maali Almeida is a literary fiction work from 2022 by Shehan Karunatilaka, touching on sri lanka, afterlife, and political fiction."
+  },
+  {
+    "title": "Lincoln in the Bardo",
+    "author": "George Saunders",
+    "publishedYear": 2017,
+    "subjects": [
+      "literary fiction",
+      "grief",
+      "afterlife",
+      "experimental fiction"
+    ],
+    "description": "Lincoln in the Bardo is a literary fiction work from 2017 by George Saunders, touching on grief, afterlife, and experimental fiction."
+  },
+  {
+    "title": "Tenth of December",
+    "author": "George Saunders",
+    "publishedYear": 2013,
+    "subjects": [
+      "short stories",
+      "satire",
+      "compassion",
+      "american fiction"
+    ],
+    "description": "Tenth of December is a short stories work from 2013 by George Saunders, touching on satire, compassion, and american fiction."
+  },
+  {
+    "title": "Exhalation",
+    "author": "Ted Chiang",
+    "publishedYear": 2019,
+    "subjects": [
+      "science fiction",
+      "short stories",
+      "philosophy",
+      "technology"
+    ],
+    "description": "Exhalation is a science fiction work from 2019 by Ted Chiang, touching on short stories, philosophy, and technology."
+  },
+  {
+    "title": "Stories of Your Life and Others",
+    "author": "Ted Chiang",
+    "publishedYear": 2002,
+    "subjects": [
+      "science fiction",
+      "short stories",
+      "language",
+      "philosophy"
+    ],
+    "description": "Stories of Your Life and Others is a science fiction work from 2002 by Ted Chiang, touching on short stories, language, and philosophy."
+  },
+  {
+    "title": "The Three-Body Problem",
+    "author": "Cixin Liu",
+    "publishedYear": 2008,
+    "subjects": [
+      "science fiction",
+      "first contact",
+      "physics",
+      "chinese literature"
+    ],
+    "description": "The Three-Body Problem is a science fiction work from 2008 by Cixin Liu, touching on first contact, physics, and chinese literature."
+  },
+  {
+    "title": "Project Hail Mary",
+    "author": "Andy Weir",
+    "publishedYear": 2021,
+    "subjects": [
+      "science fiction",
+      "space",
+      "problem solving",
+      "survival"
+    ],
+    "description": "Project Hail Mary is a science fiction work from 2021 by Andy Weir, touching on space, problem solving, and survival."
+  },
+  {
+    "title": "The Martian",
+    "author": "Andy Weir",
+    "publishedYear": 2011,
+    "subjects": [
+      "science fiction",
+      "mars",
+      "survival",
+      "engineering"
+    ],
+    "description": "The Martian is a science fiction work from 2011 by Andy Weir, touching on mars, survival, and engineering."
+  },
+  {
+    "title": "Ancillary Justice",
+    "author": "Ann Leckie",
+    "publishedYear": 2013,
+    "subjects": [
+      "science fiction",
+      "empire",
+      "identity",
+      "space opera"
+    ],
+    "description": "Ancillary Justice is a science fiction work from 2013 by Ann Leckie, touching on empire, identity, and space opera."
+  },
+  {
+    "title": "A Memory Called Empire",
+    "author": "Arkady Martine",
+    "publishedYear": 2019,
+    "subjects": [
+      "science fiction",
+      "empire",
+      "diplomacy",
+      "memory"
+    ],
+    "description": "A Memory Called Empire is a science fiction work from 2019 by Arkady Martine, touching on empire, diplomacy, and memory."
+  },
+  {
+    "title": "This Is How You Lose the Time War",
+    "author": "Amal El-Mohtar and Max Gladstone",
+    "publishedYear": 2019,
+    "subjects": [
+      "science fiction",
+      "time travel",
+      "romance",
+      "epistolary fiction"
+    ],
+    "description": "This Is How You Lose the Time War is a science fiction work from 2019 by Amal El-Mohtar and Max Gladstone, touching on time travel, romance, and epistolary fiction."
+  },
+  {
+    "title": "The Long Way to a Small, Angry Planet",
+    "author": "Becky Chambers",
+    "publishedYear": 2014,
+    "subjects": [
+      "science fiction",
+      "found family",
+      "space opera",
+      "hopeful fiction"
+    ],
+    "description": "The Long Way to a Small, Angry Planet is a science fiction work from 2014 by Becky Chambers, touching on found family, space opera, and hopeful fiction."
+  },
+  {
+    "title": "Psalm for the Wild-Built",
+    "author": "Becky Chambers",
+    "publishedYear": 2021,
+    "subjects": [
+      "science fiction",
+      "hopeful fiction",
+      "robots",
+      "meaning"
+    ],
+    "description": "Psalm for the Wild-Built is a science fiction work from 2021 by Becky Chambers, touching on hopeful fiction, robots, and meaning."
+  },
+  {
+    "title": "Murderbot: All Systems Red",
+    "author": "Martha Wells",
+    "publishedYear": 2017,
+    "subjects": [
+      "science fiction",
+      "robots",
+      "action",
+      "identity"
+    ],
+    "description": "Murderbot: All Systems Red is a science fiction work from 2017 by Martha Wells, touching on robots, action, and identity."
+  },
+  {
+    "title": "Dune",
+    "author": "Frank Herbert",
+    "publishedYear": 1965,
+    "subjects": [
+      "science fiction",
+      "ecology",
+      "empire",
+      "politics"
+    ],
+    "description": "Dune is a science fiction work from 1965 by Frank Herbert, touching on ecology, empire, and politics."
+  },
+  {
+    "title": "Neuromancer",
+    "author": "William Gibson",
+    "publishedYear": 1984,
+    "subjects": [
+      "science fiction",
+      "cyberpunk",
+      "technology",
+      "noir"
+    ],
+    "description": "Neuromancer is a science fiction work from 1984 by William Gibson, touching on cyberpunk, technology, and noir."
+  },
+  {
+    "title": "Snow Crash",
+    "author": "Neal Stephenson",
+    "publishedYear": 1992,
+    "subjects": [
+      "science fiction",
+      "cyberpunk",
+      "satire",
+      "technology"
+    ],
+    "description": "Snow Crash is a science fiction work from 1992 by Neal Stephenson, touching on cyberpunk, satire, and technology."
+  },
+  {
+    "title": "The Diamond Age",
+    "author": "Neal Stephenson",
+    "publishedYear": 1995,
+    "subjects": [
+      "science fiction",
+      "nanotechnology",
+      "education",
+      "society"
+    ],
+    "description": "The Diamond Age is a science fiction work from 1995 by Neal Stephenson, touching on nanotechnology, education, and society."
+  },
+  {
+    "title": "Hyperion",
+    "author": "Dan Simmons",
+    "publishedYear": 1989,
+    "subjects": [
+      "science fiction",
+      "space opera",
+      "pilgrimage",
+      "literary science fiction"
+    ],
+    "description": "Hyperion is a science fiction work from 1989 by Dan Simmons, touching on space opera, pilgrimage, and literary science fiction."
+  },
+  {
+    "title": "The Hobbit",
+    "author": "J. R. R. Tolkien",
+    "publishedYear": 1937,
+    "subjects": [
+      "fantasy",
+      "adventure",
+      "quest",
+      "classic fantasy"
+    ],
+    "description": "The Hobbit is a fantasy work from 1937 by J. R. R. Tolkien, touching on adventure, quest, and classic fantasy."
+  },
+  {
+    "title": "The Fellowship of the Ring",
+    "author": "J. R. R. Tolkien",
+    "publishedYear": 1954,
+    "subjects": [
+      "fantasy",
+      "quest",
+      "friendship",
+      "classic fantasy"
+    ],
+    "description": "The Fellowship of the Ring is a fantasy work from 1954 by J. R. R. Tolkien, touching on quest, friendship, and classic fantasy."
+  },
+  {
+    "title": "The Name of the Wind",
+    "author": "Patrick Rothfuss",
+    "publishedYear": 2007,
+    "subjects": [
+      "fantasy",
+      "music",
+      "storytelling",
+      "magic school"
+    ],
+    "description": "The Name of the Wind is a fantasy work from 2007 by Patrick Rothfuss, touching on music, storytelling, and magic school."
+  },
+  {
+    "title": "The Lies of Locke Lamora",
+    "author": "Scott Lynch",
+    "publishedYear": 2006,
+    "subjects": [
+      "fantasy",
+      "heist",
+      "friendship",
+      "crime"
+    ],
+    "description": "The Lies of Locke Lamora is a fantasy work from 2006 by Scott Lynch, touching on heist, friendship, and crime."
+  },
+  {
+    "title": "Mistborn: The Final Empire",
+    "author": "Brandon Sanderson",
+    "publishedYear": 2006,
+    "subjects": [
+      "fantasy",
+      "magic system",
+      "heist",
+      "rebellion"
+    ],
+    "description": "Mistborn: The Final Empire is a fantasy work from 2006 by Brandon Sanderson, touching on magic system, heist, and rebellion."
+  },
+  {
+    "title": "The Way of Kings",
+    "author": "Brandon Sanderson",
+    "publishedYear": 2010,
+    "subjects": [
+      "epic fantasy",
+      "war",
+      "magic",
+      "honor"
+    ],
+    "description": "The Way of Kings is an epic fantasy work from 2010 by Brandon Sanderson, touching on war, magic, and honor."
+  },
+  {
+    "title": "The Priory of the Orange Tree",
+    "author": "Samantha Shannon",
+    "publishedYear": 2019,
+    "subjects": [
+      "fantasy",
+      "dragons",
+      "queer fiction",
+      "epic fantasy"
+    ],
+    "description": "The Priory of the Orange Tree is a fantasy work from 2019 by Samantha Shannon, touching on dragons, queer fiction, and epic fantasy."
+  },
+  {
+    "title": "The Night Circus",
+    "author": "Erin Morgenstern",
+    "publishedYear": 2011,
+    "subjects": [
+      "fantasy",
+      "circus",
+      "romance",
+      "atmospheric fiction"
+    ],
+    "description": "The Night Circus is a fantasy work from 2011 by Erin Morgenstern, touching on circus, romance, and atmospheric fiction."
+  },
+  {
+    "title": "The Starless Sea",
+    "author": "Erin Morgenstern",
+    "publishedYear": 2019,
+    "subjects": [
+      "fantasy",
+      "books",
+      "storytelling",
+      "atmospheric fiction"
+    ],
+    "description": "The Starless Sea is a fantasy work from 2019 by Erin Morgenstern, touching on books, storytelling, and atmospheric fiction."
+  },
+  {
+    "title": "Circe",
+    "author": "Madeline Miller",
+    "publishedYear": 2018,
+    "subjects": [
+      "myth retelling",
+      "greek mythology",
+      "feminist fiction",
+      "fantasy"
+    ],
+    "description": "Circe is a myth retelling work from 2018 by Madeline Miller, touching on greek mythology, feminist fiction, and fantasy."
+  },
+  {
+    "title": "The Song of Achilles",
+    "author": "Madeline Miller",
+    "publishedYear": 2011,
+    "subjects": [
+      "myth retelling",
+      "greek mythology",
+      "love",
+      "historical fiction"
+    ],
+    "description": "The Song of Achilles is a myth retelling work from 2011 by Madeline Miller, touching on greek mythology, love, and historical fiction."
+  },
+  {
+    "title": "The Buried Giant",
+    "author": "Kazuo Ishiguro",
+    "publishedYear": 2015,
+    "subjects": [
+      "fantasy",
+      "memory",
+      "aging",
+      "myth"
+    ],
+    "description": "The Buried Giant is a fantasy work from 2015 by Kazuo Ishiguro, touching on memory, aging, and myth."
+  },
+  {
+    "title": "The Bear and the Nightingale",
+    "author": "Katherine Arden",
+    "publishedYear": 2017,
+    "subjects": [
+      "historical fantasy",
+      "folklore",
+      "russia",
+      "winter"
+    ],
+    "description": "The Bear and the Nightingale is a historical fantasy work from 2017 by Katherine Arden, touching on folklore, russia, and winter."
+  },
+  {
+    "title": "Mexican Gothic",
+    "author": "Silvia Moreno-Garcia",
+    "publishedYear": 2020,
+    "subjects": [
+      "gothic fiction",
+      "horror",
+      "mexico",
+      "mystery"
+    ],
+    "description": "Mexican Gothic is a gothic fiction work from 2020 by Silvia Moreno-Garcia, touching on horror, mexico, and mystery."
+  },
+  {
+    "title": "Rebecca",
+    "author": "Daphne du Maurier",
+    "publishedYear": 1938,
+    "subjects": [
+      "gothic fiction",
+      "mystery",
+      "psychological suspense",
+      "classic fiction"
+    ],
+    "description": "Rebecca is a gothic fiction work from 1938 by Daphne du Maurier, touching on mystery, psychological suspense, and classic fiction."
+  },
+  {
+    "title": "We Have Always Lived in the Castle",
+    "author": "Shirley Jackson",
+    "publishedYear": 1962,
+    "subjects": [
+      "gothic fiction",
+      "family",
+      "psychological horror",
+      "isolation"
+    ],
+    "description": "We Have Always Lived in the Castle is a gothic fiction work from 1962 by Shirley Jackson, touching on family, psychological horror, and isolation."
+  },
+  {
+    "title": "The Haunting of Hill House",
+    "author": "Shirley Jackson",
+    "publishedYear": 1959,
+    "subjects": [
+      "horror",
+      "haunted house",
+      "psychological fiction",
+      "classic horror"
+    ],
+    "description": "The Haunting of Hill House is a horror work from 1959 by Shirley Jackson, touching on haunted house, psychological fiction, and classic horror."
+  },
+  {
+    "title": "The Turn of the Screw",
+    "author": "Henry James",
+    "publishedYear": 1898,
+    "subjects": [
+      "gothic fiction",
+      "ghost story",
+      "ambiguity",
+      "classic literature"
+    ],
+    "description": "The Turn of the Screw is a gothic fiction work from 1898 by Henry James, touching on ghost story, ambiguity, and classic literature."
+  },
+  {
+    "title": "Frankenstein",
+    "author": "Mary Shelley",
+    "publishedYear": 1818,
+    "subjects": [
+      "gothic fiction",
+      "science fiction",
+      "ethics",
+      "creation"
+    ],
+    "description": "Frankenstein is a gothic fiction work from 1818 by Mary Shelley, touching on science fiction, ethics, and creation."
+  },
+  {
+    "title": "Dracula",
+    "author": "Bram Stoker",
+    "publishedYear": 1897,
+    "subjects": [
+      "gothic fiction",
+      "vampires",
+      "horror",
+      "classic literature"
+    ],
+    "description": "Dracula is a gothic fiction work from 1897 by Bram Stoker, touching on vampires, horror, and classic literature."
+  },
+  {
+    "title": "Jane Eyre",
+    "author": "Charlotte Bronte",
+    "publishedYear": 1847,
+    "subjects": [
+      "classic literature",
+      "gothic fiction",
+      "romance",
+      "identity"
+    ],
+    "description": "Jane Eyre is a classic literature work from 1847 by Charlotte Bronte, touching on gothic fiction, romance, and identity."
+  },
+  {
+    "title": "Wuthering Heights",
+    "author": "Emily Bronte",
+    "publishedYear": 1847,
+    "subjects": [
+      "classic literature",
+      "gothic fiction",
+      "love",
+      "revenge"
+    ],
+    "description": "Wuthering Heights is a classic literature work from 1847 by Emily Bronte, touching on gothic fiction, love, and revenge."
+  },
+  {
+    "title": "Pride and Prejudice",
+    "author": "Jane Austen",
+    "publishedYear": 1813,
+    "subjects": [
+      "classic literature",
+      "romance",
+      "satire",
+      "family"
+    ],
+    "description": "Pride and Prejudice is a classic literature work from 1813 by Jane Austen, touching on romance, satire, and family."
+  },
+  {
+    "title": "Persuasion",
+    "author": "Jane Austen",
+    "publishedYear": 1817,
+    "subjects": [
+      "classic literature",
+      "romance",
+      "regret",
+      "second chances"
+    ],
+    "description": "Persuasion is a classic literature work from 1817 by Jane Austen, touching on romance, regret, and second chances."
+  },
+  {
+    "title": "Middlemarch",
+    "author": "George Eliot",
+    "publishedYear": 1871,
+    "subjects": [
+      "classic literature",
+      "marriage",
+      "society",
+      "ambition"
+    ],
+    "description": "Middlemarch is a classic literature work from 1871 by George Eliot, touching on marriage, society, and ambition."
+  },
+  {
+    "title": "Great Expectations",
+    "author": "Charles Dickens",
+    "publishedYear": 1861,
+    "subjects": [
+      "classic literature",
+      "coming of age",
+      "class",
+      "guilt"
+    ],
+    "description": "Great Expectations is a classic literature work from 1861 by Charles Dickens, touching on coming of age, class, and guilt."
+  },
+  {
+    "title": "Bleak House",
+    "author": "Charles Dickens",
+    "publishedYear": 1853,
+    "subjects": [
+      "classic literature",
+      "law",
+      "society",
+      "mystery"
+    ],
+    "description": "Bleak House is a classic literature work from 1853 by Charles Dickens, touching on law, society, and mystery."
+  },
+  {
+    "title": "Crime and Punishment",
+    "author": "Fyodor Dostoevsky",
+    "publishedYear": 1866,
+    "subjects": [
+      "classic literature",
+      "crime",
+      "guilt",
+      "philosophy"
+    ],
+    "description": "Crime and Punishment is a classic literature work from 1866 by Fyodor Dostoevsky, touching on crime, guilt, and philosophy."
+  },
+  {
+    "title": "The Brothers Karamazov",
+    "author": "Fyodor Dostoevsky",
+    "publishedYear": 1880,
+    "subjects": [
+      "classic literature",
+      "faith",
+      "family",
+      "philosophy"
+    ],
+    "description": "The Brothers Karamazov is a classic literature work from 1880 by Fyodor Dostoevsky, touching on faith, family, and philosophy."
+  },
+  {
+    "title": "Anna Karenina",
+    "author": "Leo Tolstoy",
+    "publishedYear": 1878,
+    "subjects": [
+      "classic literature",
+      "love",
+      "society",
+      "russian literature"
+    ],
+    "description": "Anna Karenina is a classic literature work from 1878 by Leo Tolstoy, touching on love, society, and russian literature."
+  },
+  {
+    "title": "War and Peace",
+    "author": "Leo Tolstoy",
+    "publishedYear": 1869,
+    "subjects": [
+      "classic literature",
+      "war",
+      "family",
+      "history"
+    ],
+    "description": "War and Peace is a classic literature work from 1869 by Leo Tolstoy, touching on war, family, and history."
+  },
+  {
+    "title": "The Trial",
+    "author": "Franz Kafka",
+    "publishedYear": 1925,
+    "subjects": [
+      "classic literature",
+      "bureaucracy",
+      "alienation",
+      "absurdism"
+    ],
+    "description": "The Trial is a classic literature work from 1925 by Franz Kafka, touching on bureaucracy, alienation, and absurdism."
+  },
+  {
+    "title": "The Stranger",
+    "author": "Albert Camus",
+    "publishedYear": 1942,
+    "subjects": [
+      "classic literature",
+      "absurdism",
+      "existentialism",
+      "alienation"
+    ],
+    "description": "The Stranger is a classic literature work from 1942 by Albert Camus, touching on absurdism, existentialism, and alienation."
+  },
+  {
+    "title": "The Plague",
+    "author": "Albert Camus",
+    "publishedYear": 1947,
+    "subjects": [
+      "classic literature",
+      "pandemic",
+      "ethics",
+      "existentialism"
+    ],
+    "description": "The Plague is a classic literature work from 1947 by Albert Camus, touching on pandemic, ethics, and existentialism."
+  },
+  {
+    "title": "Mrs Dalloway",
+    "author": "Virginia Woolf",
+    "publishedYear": 1925,
+    "subjects": [
+      "modernist fiction",
+      "time",
+      "consciousness",
+      "british literature"
+    ],
+    "description": "Mrs Dalloway is a modernist fiction work from 1925 by Virginia Woolf, touching on time, consciousness, and british literature."
+  },
+  {
+    "title": "To the Lighthouse",
+    "author": "Virginia Woolf",
+    "publishedYear": 1927,
+    "subjects": [
+      "modernist fiction",
+      "family",
+      "time",
+      "consciousness"
+    ],
+    "description": "To the Lighthouse is a modernist fiction work from 1927 by Virginia Woolf, touching on family, time, and consciousness."
+  },
+  {
+    "title": "A Room of One's Own",
+    "author": "Virginia Woolf",
+    "publishedYear": 1929,
+    "subjects": [
+      "essays",
+      "feminism",
+      "writing",
+      "literary criticism"
+    ],
+    "description": "A Room of One's Own is an essays work from 1929 by Virginia Woolf, touching on feminism, writing, and literary criticism."
+  },
+  {
+    "title": "The Great Gatsby",
+    "author": "F. Scott Fitzgerald",
+    "publishedYear": 1925,
+    "subjects": [
+      "classic literature",
+      "wealth",
+      "american dream",
+      "tragedy"
+    ],
+    "description": "The Great Gatsby is a classic literature work from 1925 by F. Scott Fitzgerald, touching on wealth, american dream, and tragedy."
+  },
+  {
+    "title": "The Bell Jar",
+    "author": "Sylvia Plath",
+    "publishedYear": 1963,
+    "subjects": [
+      "literary fiction",
+      "mental health",
+      "womanhood",
+      "american literature"
+    ],
+    "description": "The Bell Jar is a literary fiction work from 1963 by Sylvia Plath, touching on mental health, womanhood, and american literature."
+  },
+  {
+    "title": "The Handmaid's Tale",
+    "author": "Margaret Atwood",
+    "publishedYear": 1985,
+    "subjects": [
+      "dystopian fiction",
+      "feminism",
+      "theocracy",
+      "politics"
+    ],
+    "description": "The Handmaid's Tale is a dystopian fiction work from 1985 by Margaret Atwood, touching on feminism, theocracy, and politics."
+  },
+  {
+    "title": "Oryx and Crake",
+    "author": "Margaret Atwood",
+    "publishedYear": 2003,
+    "subjects": [
+      "dystopian fiction",
+      "biotechnology",
+      "climate",
+      "satire"
+    ],
+    "description": "Oryx and Crake is a dystopian fiction work from 2003 by Margaret Atwood, touching on biotechnology, climate, and satire."
+  },
+  {
+    "title": "Alias Grace",
+    "author": "Margaret Atwood",
+    "publishedYear": 1996,
+    "subjects": [
+      "historical fiction",
+      "crime",
+      "memory",
+      "canadian literature"
+    ],
+    "description": "Alias Grace is a historical fiction work from 1996 by Margaret Atwood, touching on crime, memory, and canadian literature."
+  },
+  {
+    "title": "The Blind Assassin",
+    "author": "Margaret Atwood",
+    "publishedYear": 2000,
+    "subjects": [
+      "literary fiction",
+      "family",
+      "memory",
+      "metafiction"
+    ],
+    "description": "The Blind Assassin is a literary fiction work from 2000 by Margaret Atwood, touching on family, memory, and metafiction."
+  },
+  {
+    "title": "Wolf Hall",
+    "author": "Hilary Mantel",
+    "publishedYear": 2009,
+    "subjects": [
+      "historical fiction",
+      "tudor england",
+      "politics",
+      "power"
+    ],
+    "description": "Wolf Hall is a historical fiction work from 2009 by Hilary Mantel, touching on tudor england, politics, and power."
+  },
+  {
+    "title": "Bring Up the Bodies",
+    "author": "Hilary Mantel",
+    "publishedYear": 2012,
+    "subjects": [
+      "historical fiction",
+      "tudor england",
+      "politics",
+      "power"
+    ],
+    "description": "Bring Up the Bodies is a historical fiction work from 2012 by Hilary Mantel, touching on tudor england, politics, and power."
+  },
+  {
+    "title": "A Gentleman in Moscow",
+    "author": "Amor Towles",
+    "publishedYear": 2016,
+    "subjects": [
+      "historical fiction",
+      "russia",
+      "charm",
+      "confinement"
+    ],
+    "description": "A Gentleman in Moscow is a historical fiction work from 2016 by Amor Towles, touching on russia, charm, and confinement."
+  },
+  {
+    "title": "The Lincoln Highway",
+    "author": "Amor Towles",
+    "publishedYear": 2021,
+    "subjects": [
+      "historical fiction",
+      "road trip",
+      "friendship",
+      "america"
+    ],
+    "description": "The Lincoln Highway is a historical fiction work from 2021 by Amor Towles, touching on road trip, friendship, and america."
+  },
+  {
+    "title": "Pachinko",
+    "author": "Min Jin Lee",
+    "publishedYear": 2017,
+    "subjects": [
+      "historical fiction",
+      "family saga",
+      "korea",
+      "japan"
+    ],
+    "description": "Pachinko is a historical fiction work from 2017 by Min Jin Lee, touching on family saga, korea, and japan."
+  },
+  {
+    "title": "The Sympathizer",
+    "author": "Viet Thanh Nguyen",
+    "publishedYear": 2015,
+    "subjects": [
+      "historical fiction",
+      "war",
+      "espionage",
+      "vietnam"
+    ],
+    "description": "The Sympathizer is a historical fiction work from 2015 by Viet Thanh Nguyen, touching on war, espionage, and vietnam."
+  },
+  {
+    "title": "The Amazing Adventures of Kavalier & Clay",
+    "author": "Michael Chabon",
+    "publishedYear": 2000,
+    "subjects": [
+      "historical fiction",
+      "comics",
+      "friendship",
+      "jewish literature"
+    ],
+    "description": "The Amazing Adventures of Kavalier & Clay is a historical fiction work from 2000 by Michael Chabon, touching on comics, friendship, and jewish literature."
+  },
+  {
+    "title": "The Shadow of the Wind",
+    "author": "Carlos Ruiz Zafon",
+    "publishedYear": 2001,
+    "subjects": [
+      "historical mystery",
+      "books",
+      "barcelona",
+      "gothic fiction"
+    ],
+    "description": "The Shadow of the Wind is a historical mystery work from 2001 by Carlos Ruiz Zafon, touching on books, barcelona, and gothic fiction."
+  },
+  {
+    "title": "The Luminaries",
+    "author": "Eleanor Catton",
+    "publishedYear": 2013,
+    "subjects": [
+      "historical fiction",
+      "mystery",
+      "new zealand",
+      "gold rush"
+    ],
+    "description": "The Luminaries is a historical fiction work from 2013 by Eleanor Catton, touching on mystery, new zealand, and gold rush."
+  },
+  {
+    "title": "The Night Watchman",
+    "author": "Louise Erdrich",
+    "publishedYear": 2020,
+    "subjects": [
+      "historical fiction",
+      "indigenous literature",
+      "family",
+      "politics"
+    ],
+    "description": "The Night Watchman is a historical fiction work from 2020 by Louise Erdrich, touching on indigenous literature, family, and politics."
+  },
+  {
+    "title": "The Round House",
+    "author": "Louise Erdrich",
+    "publishedYear": 2012,
+    "subjects": [
+      "literary fiction",
+      "indigenous literature",
+      "justice",
+      "family"
+    ],
+    "description": "The Round House is a literary fiction work from 2012 by Louise Erdrich, touching on indigenous literature, justice, and family."
+  },
+  {
+    "title": "There There",
+    "author": "Tommy Orange",
+    "publishedYear": 2018,
+    "subjects": [
+      "literary fiction",
+      "indigenous literature",
+      "identity",
+      "oakland"
+    ],
+    "description": "There There is a literary fiction work from 2018 by Tommy Orange, touching on indigenous literature, identity, and oakland."
+  },
+  {
+    "title": "The Heaven & Earth Grocery Store",
+    "author": "James McBride",
+    "publishedYear": 2023,
+    "subjects": [
+      "historical fiction",
+      "community",
+      "jewish literature",
+      "black literature"
+    ],
+    "description": "The Heaven & Earth Grocery Store is a historical fiction work from 2023 by James McBride, touching on community, jewish literature, and black literature."
+  },
+  {
+    "title": "Deacon King Kong",
+    "author": "James McBride",
+    "publishedYear": 2020,
+    "subjects": [
+      "literary fiction",
+      "community",
+      "brooklyn",
+      "humor"
+    ],
+    "description": "Deacon King Kong is a literary fiction work from 2020 by James McBride, touching on community, brooklyn, and humor."
+  },
+  {
+    "title": "The Underground Railroad",
+    "author": "Colson Whitehead",
+    "publishedYear": 2016,
+    "subjects": [
+      "historical fiction",
+      "slavery",
+      "alternate history",
+      "american literature"
+    ],
+    "description": "The Underground Railroad is a historical fiction work from 2016 by Colson Whitehead, touching on slavery, alternate history, and american literature."
+  },
+  {
+    "title": "The Nickel Boys",
+    "author": "Colson Whitehead",
+    "publishedYear": 2019,
+    "subjects": [
+      "historical fiction",
+      "race",
+      "justice",
+      "american literature"
+    ],
+    "description": "The Nickel Boys is a historical fiction work from 2019 by Colson Whitehead, touching on race, justice, and american literature."
+  },
+  {
+    "title": "The Warmth of Other Suns",
+    "author": "Isabel Wilkerson",
+    "publishedYear": 2010,
+    "subjects": [
+      "history",
+      "migration",
+      "race",
+      "american history"
+    ],
+    "description": "The Warmth of Other Suns is a history work from 2010 by Isabel Wilkerson, touching on migration, race, and american history."
+  },
+  {
+    "title": "Caste",
+    "author": "Isabel Wilkerson",
+    "publishedYear": 2020,
+    "subjects": [
+      "nonfiction",
+      "race",
+      "society",
+      "american history"
+    ],
+    "description": "Caste is a nonfiction work from 2020 by Isabel Wilkerson, touching on race, society, and american history."
+  },
+  {
+    "title": "Evicted",
+    "author": "Matthew Desmond",
+    "publishedYear": 2016,
+    "subjects": [
+      "nonfiction",
+      "poverty",
+      "housing",
+      "sociology"
+    ],
+    "description": "Evicted is a nonfiction work from 2016 by Matthew Desmond, touching on poverty, housing, and sociology."
+  },
+  {
+    "title": "The New Jim Crow",
+    "author": "Michelle Alexander",
+    "publishedYear": 2010,
+    "subjects": [
+      "nonfiction",
+      "justice",
+      "race",
+      "law"
+    ],
+    "description": "The New Jim Crow is a nonfiction work from 2010 by Michelle Alexander, touching on justice, race, and law."
+  },
+  {
+    "title": "The Sixth Extinction",
+    "author": "Elizabeth Kolbert",
+    "publishedYear": 2014,
+    "subjects": [
+      "science",
+      "climate",
+      "extinction",
+      "natural history"
+    ],
+    "description": "The Sixth Extinction is a science work from 2014 by Elizabeth Kolbert, touching on climate, extinction, and natural history."
+  },
+  {
+    "title": "Under a White Sky",
+    "author": "Elizabeth Kolbert",
+    "publishedYear": 2021,
+    "subjects": [
+      "science",
+      "climate",
+      "environment",
+      "technology"
+    ],
+    "description": "Under a White Sky is a science work from 2021 by Elizabeth Kolbert, touching on climate, environment, and technology."
+  },
+  {
+    "title": "Braiding Sweetgrass",
+    "author": "Robin Wall Kimmerer",
+    "publishedYear": 2013,
+    "subjects": [
+      "nature writing",
+      "indigenous knowledge",
+      "ecology",
+      "essays"
+    ],
+    "description": "Braiding Sweetgrass is a nature writing work from 2013 by Robin Wall Kimmerer, touching on indigenous knowledge, ecology, and essays."
+  },
+  {
+    "title": "Entangled Life",
+    "author": "Merlin Sheldrake",
+    "publishedYear": 2020,
+    "subjects": [
+      "science",
+      "fungi",
+      "ecology",
+      "nature writing"
+    ],
+    "description": "Entangled Life is a science work from 2020 by Merlin Sheldrake, touching on fungi, ecology, and nature writing."
+  },
+  {
+    "title": "The Hidden Life of Trees",
+    "author": "Peter Wohlleben",
+    "publishedYear": 2015,
+    "subjects": [
+      "nature writing",
+      "trees",
+      "ecology",
+      "science"
+    ],
+    "description": "The Hidden Life of Trees is a nature writing work from 2015 by Peter Wohlleben, touching on trees, ecology, and science."
+  },
+  {
+    "title": "Sapiens",
+    "author": "Yuval Noah Harari",
+    "publishedYear": 2011,
+    "subjects": [
+      "history",
+      "human evolution",
+      "big history",
+      "ideas"
+    ],
+    "description": "Sapiens is a history work from 2011 by Yuval Noah Harari, touching on human evolution, big history, and ideas."
+  },
+  {
+    "title": "The Dawn of Everything",
+    "author": "David Graeber and David Wengrow",
+    "publishedYear": 2021,
+    "subjects": [
+      "history",
+      "anthropology",
+      "civilization",
+      "politics"
+    ],
+    "description": "The Dawn of Everything is a history work from 2021 by David Graeber and David Wengrow, touching on anthropology, civilization, and politics."
+  },
+  {
+    "title": "Debt: The First 5,000 Years",
+    "author": "David Graeber",
+    "publishedYear": 2011,
+    "subjects": [
+      "anthropology",
+      "economics",
+      "history",
+      "money"
+    ],
+    "description": "Debt: The First 5,000 Years is an anthropology work from 2011 by David Graeber, touching on economics, history, and money."
+  },
+  {
+    "title": "Thinking, Fast and Slow",
+    "author": "Daniel Kahneman",
+    "publishedYear": 2011,
+    "subjects": [
+      "psychology",
+      "decision making",
+      "behavioral economics",
+      "science"
+    ],
+    "description": "Thinking, Fast and Slow is a psychology work from 2011 by Daniel Kahneman, touching on decision making, behavioral economics, and science."
+  },
+  {
+    "title": "The Righteous Mind",
+    "author": "Jonathan Haidt",
+    "publishedYear": 2012,
+    "subjects": [
+      "psychology",
+      "morality",
+      "politics",
+      "society"
+    ],
+    "description": "The Righteous Mind is a psychology work from 2012 by Jonathan Haidt, touching on morality, politics, and society."
+  },
+  {
+    "title": "Range",
+    "author": "David Epstein",
+    "publishedYear": 2019,
+    "subjects": [
+      "nonfiction",
+      "learning",
+      "career",
+      "performance"
+    ],
+    "description": "Range is a nonfiction work from 2019 by David Epstein, touching on learning, career, and performance."
+  },
+  {
+    "title": "The Body Keeps the Score",
+    "author": "Bessel van der Kolk",
+    "publishedYear": 2014,
+    "subjects": [
+      "psychology",
+      "trauma",
+      "mental health",
+      "body"
+    ],
+    "description": "The Body Keeps the Score is a psychology work from 2014 by Bessel van der Kolk, touching on trauma, mental health, and body."
+  },
+  {
+    "title": "Man's Search for Meaning",
+    "author": "Viktor E. Frankl",
+    "publishedYear": 1946,
+    "subjects": [
+      "memoir",
+      "meaning",
+      "psychology",
+      "holocaust"
+    ],
+    "description": "Man's Search for Meaning is a memoir work from 1946 by Viktor E. Frankl, touching on meaning, psychology, and holocaust."
+  },
+  {
+    "title": "When Breath Becomes Air",
+    "author": "Paul Kalanithi",
+    "publishedYear": 2016,
+    "subjects": [
+      "memoir",
+      "medicine",
+      "mortality",
+      "meaning"
+    ],
+    "description": "When Breath Becomes Air is a memoir work from 2016 by Paul Kalanithi, touching on medicine, mortality, and meaning."
+  },
+  {
+    "title": "The Year of Magical Thinking",
+    "author": "Joan Didion",
+    "publishedYear": 2005,
+    "subjects": [
+      "memoir",
+      "grief",
+      "marriage",
+      "essays"
+    ],
+    "description": "The Year of Magical Thinking is a memoir work from 2005 by Joan Didion, touching on grief, marriage, and essays."
+  },
+  {
+    "title": "Slouching Towards Bethlehem",
+    "author": "Joan Didion",
+    "publishedYear": 1968,
+    "subjects": [
+      "essays",
+      "california",
+      "culture",
+      "journalism"
+    ],
+    "description": "Slouching Towards Bethlehem is an essays work from 1968 by Joan Didion, touching on california, culture, and journalism."
+  },
+  {
+    "title": "The White Album",
+    "author": "Joan Didion",
+    "publishedYear": 1979,
+    "subjects": [
+      "essays",
+      "culture",
+      "california",
+      "journalism"
+    ],
+    "description": "The White Album is an essays work from 1979 by Joan Didion, touching on culture, california, and journalism."
+  },
+  {
+    "title": "A Supposedly Fun Thing I'll Never Do Again",
+    "author": "David Foster Wallace",
+    "publishedYear": 1997,
+    "subjects": [
+      "essays",
+      "humor",
+      "culture",
+      "american literature"
+    ],
+    "description": "A Supposedly Fun Thing I'll Never Do Again is an essays work from 1997 by David Foster Wallace, touching on humor, culture, and american literature."
+  },
+  {
+    "title": "Consider the Lobster",
+    "author": "David Foster Wallace",
+    "publishedYear": 2005,
+    "subjects": [
+      "essays",
+      "ethics",
+      "culture",
+      "literary journalism"
+    ],
+    "description": "Consider the Lobster is an essays work from 2005 by David Foster Wallace, touching on ethics, culture, and literary journalism."
+  },
+  {
+    "title": "Trick Mirror",
+    "author": "Jia Tolentino",
+    "publishedYear": 2019,
+    "subjects": [
+      "essays",
+      "internet",
+      "culture",
+      "feminism"
+    ],
+    "description": "Trick Mirror is an essays work from 2019 by Jia Tolentino, touching on internet, culture, and feminism."
+  },
+  {
+    "title": "Minor Feelings",
+    "author": "Cathy Park Hong",
+    "publishedYear": 2020,
+    "subjects": [
+      "essays",
+      "race",
+      "asian american literature",
+      "identity"
+    ],
+    "description": "Minor Feelings is an essays work from 2020 by Cathy Park Hong, touching on race, asian american literature, and identity."
+  },
+  {
+    "title": "The Argonauts",
+    "author": "Maggie Nelson",
+    "publishedYear": 2015,
+    "subjects": [
+      "memoir",
+      "queer theory",
+      "family",
+      "essays"
+    ],
+    "description": "The Argonauts is a memoir work from 2015 by Maggie Nelson, touching on queer theory, family, and essays."
+  },
+  {
+    "title": "Bluets",
+    "author": "Maggie Nelson",
+    "publishedYear": 2009,
+    "subjects": [
+      "essay",
+      "grief",
+      "color",
+      "fragmentary writing"
+    ],
+    "description": "Bluets is an essay work from 2009 by Maggie Nelson, touching on grief, color, and fragmentary writing."
+  },
+  {
+    "title": "All About Love",
+    "author": "bell hooks",
+    "publishedYear": 2000,
+    "subjects": [
+      "essays",
+      "love",
+      "feminism",
+      "ethics"
+    ],
+    "description": "All About Love is an essays work from 2000 by bell hooks, touching on love, feminism, and ethics."
+  },
+  {
+    "title": "The Fire Next Time",
+    "author": "James Baldwin",
+    "publishedYear": 1963,
+    "subjects": [
+      "essays",
+      "race",
+      "religion",
+      "american literature"
+    ],
+    "description": "The Fire Next Time is an essays work from 1963 by James Baldwin, touching on race, religion, and american literature."
+  },
+  {
+    "title": "Notes of a Native Son",
+    "author": "James Baldwin",
+    "publishedYear": 1955,
+    "subjects": [
+      "essays",
+      "race",
+      "identity",
+      "american literature"
+    ],
+    "description": "Notes of a Native Son is an essays work from 1955 by James Baldwin, touching on race, identity, and american literature."
+  },
+  {
+    "title": "Giovanni's Room",
+    "author": "James Baldwin",
+    "publishedYear": 1956,
+    "subjects": [
+      "literary fiction",
+      "queer fiction",
+      "love",
+      "alienation"
+    ],
+    "description": "Giovanni's Room is a literary fiction work from 1956 by James Baldwin, touching on queer fiction, love, and alienation."
+  },
+  {
+    "title": "On Earth We're Briefly Gorgeous",
+    "author": "Ocean Vuong",
+    "publishedYear": 2019,
+    "subjects": [
+      "literary fiction",
+      "queer fiction",
+      "family",
+      "vietnamese american literature"
+    ],
+    "description": "On Earth We're Briefly Gorgeous is a literary fiction work from 2019 by Ocean Vuong, touching on queer fiction, family, and vietnamese american literature."
+  },
+  {
+    "title": "Just Kids",
+    "author": "Patti Smith",
+    "publishedYear": 2010,
+    "subjects": [
+      "memoir",
+      "art",
+      "friendship",
+      "new york"
+    ],
+    "description": "Just Kids is a memoir work from 2010 by Patti Smith, touching on art, friendship, and new york."
+  },
+  {
+    "title": "Educated",
+    "author": "Tara Westover",
+    "publishedYear": 2018,
+    "subjects": [
+      "memoir",
+      "education",
+      "family",
+      "resilience"
+    ],
+    "description": "Educated is a memoir work from 2018 by Tara Westover, touching on education, family, and resilience."
+  },
+  {
+    "title": "The Glass Castle",
+    "author": "Jeannette Walls",
+    "publishedYear": 2005,
+    "subjects": [
+      "memoir",
+      "family",
+      "poverty",
+      "resilience"
+    ],
+    "description": "The Glass Castle is a memoir work from 2005 by Jeannette Walls, touching on family, poverty, and resilience."
+  },
+  {
+    "title": "Born a Crime",
+    "author": "Trevor Noah",
+    "publishedYear": 2016,
+    "subjects": [
+      "memoir",
+      "south africa",
+      "humor",
+      "race"
+    ],
+    "description": "Born a Crime is a memoir work from 2016 by Trevor Noah, touching on south africa, humor, and race."
+  },
+  {
+    "title": "Know My Name",
+    "author": "Chanel Miller",
+    "publishedYear": 2019,
+    "subjects": [
+      "memoir",
+      "justice",
+      "trauma",
+      "identity"
+    ],
+    "description": "Know My Name is a memoir work from 2019 by Chanel Miller, touching on justice, trauma, and identity."
+  },
+  {
+    "title": "The Immortal Life of Henrietta Lacks",
+    "author": "Rebecca Skloot",
+    "publishedYear": 2010,
+    "subjects": [
+      "science",
+      "medicine",
+      "ethics",
+      "biography"
+    ],
+    "description": "The Immortal Life of Henrietta Lacks is a science work from 2010 by Rebecca Skloot, touching on medicine, ethics, and biography."
+  },
+  {
+    "title": "Bad Blood",
+    "author": "John Carreyrou",
+    "publishedYear": 2018,
+    "subjects": [
+      "business",
+      "fraud",
+      "technology",
+      "investigative journalism"
+    ],
+    "description": "Bad Blood is a business work from 2018 by John Carreyrou, touching on fraud, technology, and investigative journalism."
+  },
+  {
+    "title": "Empire of Pain",
+    "author": "Patrick Radden Keefe",
+    "publishedYear": 2021,
+    "subjects": [
+      "nonfiction",
+      "opioids",
+      "business",
+      "investigative journalism"
+    ],
+    "description": "Empire of Pain is a nonfiction work from 2021 by Patrick Radden Keefe, touching on opioids, business, and investigative journalism."
+  },
+  {
+    "title": "Say Nothing",
+    "author": "Patrick Radden Keefe",
+    "publishedYear": 2018,
+    "subjects": [
+      "history",
+      "northern ireland",
+      "politics",
+      "investigative journalism"
+    ],
+    "description": "Say Nothing is a history work from 2018 by Patrick Radden Keefe, touching on northern ireland, politics, and investigative journalism."
+  },
+  {
+    "title": "The Spy and the Traitor",
+    "author": "Ben Macintyre",
+    "publishedYear": 2018,
+    "subjects": [
+      "history",
+      "espionage",
+      "cold war",
+      "biography"
+    ],
+    "description": "The Spy and the Traitor is a history work from 2018 by Ben Macintyre, touching on espionage, cold war, and biography."
+  },
+  {
+    "title": "Endurance",
+    "author": "Alfred Lansing",
+    "publishedYear": 1959,
+    "subjects": [
+      "history",
+      "exploration",
+      "survival",
+      "antarctica"
+    ],
+    "description": "Endurance is a history work from 1959 by Alfred Lansing, touching on exploration, survival, and antarctica."
+  },
+  {
+    "title": "The Devil in the White City",
+    "author": "Erik Larson",
+    "publishedYear": 2003,
+    "subjects": [
+      "history",
+      "true crime",
+      "architecture",
+      "chicago"
+    ],
+    "description": "The Devil in the White City is a history work from 2003 by Erik Larson, touching on true crime, architecture, and chicago."
+  },
+  {
+    "title": "The Splendid and the Vile",
+    "author": "Erik Larson",
+    "publishedYear": 2020,
+    "subjects": [
+      "history",
+      "world war ii",
+      "churchill",
+      "biography"
+    ],
+    "description": "The Splendid and the Vile is a history work from 2020 by Erik Larson, touching on world war ii, churchill, and biography."
+  },
+  {
+    "title": "The Guns of August",
+    "author": "Barbara W. Tuchman",
+    "publishedYear": 1962,
+    "subjects": [
+      "history",
+      "world war i",
+      "military history",
+      "politics"
+    ],
+    "description": "The Guns of August is a history work from 1962 by Barbara W. Tuchman, touching on world war i, military history, and politics."
+  },
+  {
+    "title": "The Silk Roads",
+    "author": "Peter Frankopan",
+    "publishedYear": 2015,
+    "subjects": [
+      "history",
+      "global history",
+      "trade",
+      "asia"
+    ],
+    "description": "The Silk Roads is a history work from 2015 by Peter Frankopan, touching on global history, trade, and asia."
+  },
+  {
+    "title": "A Short History of Nearly Everything",
+    "author": "Bill Bryson",
+    "publishedYear": 2003,
+    "subjects": [
+      "science",
+      "history of science",
+      "popular science",
+      "humor"
+    ],
+    "description": "A Short History of Nearly Everything is a science work from 2003 by Bill Bryson, touching on history of science, popular science, and humor."
+  },
+  {
+    "title": "The Gene",
+    "author": "Siddhartha Mukherjee",
+    "publishedYear": 2016,
+    "subjects": [
+      "science",
+      "genetics",
+      "medicine",
+      "history of science"
+    ],
+    "description": "The Gene is a science work from 2016 by Siddhartha Mukherjee, touching on genetics, medicine, and history of science."
+  },
+  {
+    "title": "The Emperor of All Maladies",
+    "author": "Siddhartha Mukherjee",
+    "publishedYear": 2010,
+    "subjects": [
+      "medicine",
+      "cancer",
+      "history of science",
+      "biography"
+    ],
+    "description": "The Emperor of All Maladies is a medicine work from 2010 by Siddhartha Mukherjee, touching on cancer, history of science, and biography."
+  },
+  {
+    "title": "Gödel, Escher, Bach",
+    "author": "Douglas Hofstadter",
+    "publishedYear": 1979,
+    "subjects": [
+      "science",
+      "mathematics",
+      "consciousness",
+      "artificial intelligence"
+    ],
+    "description": "Gödel, Escher, Bach is a science work from 1979 by Douglas Hofstadter, touching on mathematics, consciousness, and artificial intelligence."
+  },
+  {
+    "title": "The Information",
+    "author": "James Gleick",
+    "publishedYear": 2011,
+    "subjects": [
+      "science",
+      "information theory",
+      "technology",
+      "history"
+    ],
+    "description": "The Information is a science work from 2011 by James Gleick, touching on information theory, technology, and history."
+  },
+  {
+    "title": "The Making of the Atomic Bomb",
+    "author": "Richard Rhodes",
+    "publishedYear": 1986,
+    "subjects": [
+      "history",
+      "science",
+      "nuclear physics",
+      "world war ii"
+    ],
+    "description": "The Making of the Atomic Bomb is a history work from 1986 by Richard Rhodes, touching on science, nuclear physics, and world war ii."
+  },
+  {
+    "title": "Longitude",
+    "author": "Dava Sobel",
+    "publishedYear": 1995,
+    "subjects": [
+      "history",
+      "science",
+      "navigation",
+      "invention"
+    ],
+    "description": "Longitude is a history work from 1995 by Dava Sobel, touching on science, navigation, and invention."
+  },
+  {
+    "title": "The Design of Everyday Things",
+    "author": "Don Norman",
+    "publishedYear": 1988,
+    "subjects": [
+      "design",
+      "psychology",
+      "usability",
+      "technology"
+    ],
+    "description": "The Design of Everyday Things is a design work from 1988 by Don Norman, touching on psychology, usability, and technology."
+  },
+  {
+    "title": "The Death and Life of Great American Cities",
+    "author": "Jane Jacobs",
+    "publishedYear": 1961,
+    "subjects": [
+      "urbanism",
+      "cities",
+      "sociology",
+      "architecture"
+    ],
+    "description": "The Death and Life of Great American Cities is an urbanism work from 1961 by Jane Jacobs, touching on cities, sociology, and architecture."
+  },
+  {
+    "title": "Invisible Women",
+    "author": "Caroline Criado Perez",
+    "publishedYear": 2019,
+    "subjects": [
+      "nonfiction",
+      "gender",
+      "data",
+      "society"
+    ],
+    "description": "Invisible Women is a nonfiction work from 2019 by Caroline Criado Perez, touching on gender, data, and society."
+  },
+  {
+    "title": "Algorithms of Oppression",
+    "author": "Safiya Umoja Noble",
+    "publishedYear": 2018,
+    "subjects": [
+      "technology",
+      "race",
+      "algorithms",
+      "society"
+    ],
+    "description": "Algorithms of Oppression is a technology work from 2018 by Safiya Umoja Noble, touching on race, algorithms, and society."
+  },
+  {
+    "title": "Weapons of Math Destruction",
+    "author": "Cathy O'Neil",
+    "publishedYear": 2016,
+    "subjects": [
+      "technology",
+      "algorithms",
+      "ethics",
+      "society"
+    ],
+    "description": "Weapons of Math Destruction is a technology work from 2016 by Cathy O'Neil, touching on algorithms, ethics, and society."
+  }
+]
