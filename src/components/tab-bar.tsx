@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 type TabIcon = "room" | "pile" | "librarian" | "profile";
@@ -62,13 +62,8 @@ function TabGlyph({ kind, active }: { kind: TabIcon; active: boolean }) {
 
 export function TabBar() {
   const path = usePathname() ?? "";
-  const router = useRouter();
   const firstSeg = "/" + path.split("/").filter(Boolean)[0];
   const activePath = PARENT_OF[path] ?? PARENT_OF[firstSeg] ?? path;
-
-  useEffect(() => {
-    for (const tab of tabs) router.prefetch(tab.href);
-  }, [router]);
 
   // Best-effort: request fullscreen on first user interaction so the URL bar
   // collapses on Android Chrome. Browsers ignore the call outside a user
@@ -102,9 +97,8 @@ export function TabBar() {
             <li key={t.href} className="flex-1">
               <Link
                 href={t.href}
+                prefetch={false}
                 aria-current={active ? "page" : undefined}
-                onPointerEnter={() => router.prefetch(t.href)}
-                onTouchStart={() => router.prefetch(t.href)}
                 className="tap flex h-full flex-col items-center justify-center gap-1.5 uppercase"
                 style={{
                   fontFamily: "var(--font-body)",

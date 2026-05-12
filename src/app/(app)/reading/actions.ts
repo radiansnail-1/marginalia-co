@@ -89,7 +89,7 @@ export async function finishBook(
     status: "finished",
     finished_at: new Date().toISOString(),
   };
-  if (rating && rating >= 1 && rating <= 5) patch.rating = rating;
+  if (rating && rating >= 0.5 && rating <= 5 && Number.isInteger(rating * 2)) patch.rating = rating;
   if (pages && pages > 0) patch.current_page = pages;
   if (review !== null) {
     const trimmed = review.trim();

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { authenticate, jsonError } from "@/lib/api/auth";
+import { ApiTimer, withServerTiming } from "@/lib/api/timing";
 import { createServiceClient } from "@/lib/supabase/service";
 import { searchBooks } from "@/lib/books/google-books";
 
@@ -14,7 +15,7 @@ const BookInputSchema = z.object({
   title: z.string().min(1),
   author: z.string().min(1),
   status: StatusEnum.default("pile"),
-  rating: z.number().int().min(1).max(5).optional(),
+  rating: z.number().min(0.5).max(5).refine((n) => Number.isInteger(n * 2), "Rating must be in 0.5 increments.").optional(),
   review: z.string().max(4000).optional(),
   pageCount: z.number().int().positive().optional(),
   publishedYear: z.number().int().optional(),
@@ -24,8 +25,9 @@ const BookInputSchema = z.object({
 });
 
 export async function GET(req: NextRequest) {
-  const auth = await authenticate(req);
-  if (auth instanceof NextResponse) return auth;
+  const timer = new ApiTimer();
+  const auth = await authenticate(req, timer);
+  if (auth instanceof NextResponse) return withServerTiming(auth, timer);
   const url = new URL(req.url);
   const status = url.searchParams.get("status");
   const supabase = createServiceClient();
@@ -39,10 +41,10 @@ export async function GET(req: NextRequest) {
   if (status && StatusEnum.safeParse(status).success) {
     query = query.eq("status", status);
   }
-  const { data, error } = await query;
-  if (error) return jsonError(500, error.message);
+  const { data, error } = await timer.measure("db.books", () => query);
+  if (error) return withServerTiming(jsonError(500, error.message), timer);
 
-  return NextResponse.json({
+  return withServerTiming(NextResponse.json({
     books: (data ?? []).map((row) => {
       const b = Array.isArray(row.book) ? row.book[0] : row.book;
       return {
@@ -66,12 +68,13 @@ export async function GET(req: NextRequest) {
         rating_count: b?.rating_count ?? 0,
       };
     }),
-  });
+  }), timer);
 }
 
 export async function POST(req: NextRequest) {
-  const auth = await authenticate(req);
-  if (auth instanceof NextResponse) return auth;
+  const timer = new ApiTimer();
+  const auth = await authenticate(req, timer);
+  if (auth instanceof NextResponse) return withServerTiming(auth, timer);
 
   let body: unknown;
   try {
@@ -89,11 +92,15 @@ export async function POST(req: NextRequest) {
   // Resolve the shared books row. Prefer googleBooksId, fall back to isbn13, then (title, author).
   let bookId: string | undefined;
   if (input.googleBooksId) {
-    const { data } = await supabase.from("books").select("id").eq("google_books_id", input.googleBooksId).maybeSingle();
+    const { data } = await timer.measure("db.book_google", () =>
+      supabase.from("books").select("id").eq("google_books_id", input.googleBooksId).maybeSingle(),
+    );
     bookId = data?.id;
   }
   if (!bookId && input.isbn13) {
-    const { data } = await supabase.from("books").select("id").eq("isbn_13", input.isbn13).maybeSingle();
+    const { data } = await timer.measure("db.book_isbn", () =>
+      supabase.from("books").select("id").eq("isbn_13", input.isbn13).maybeSingle(),
+    );
     bookId = data?.id;
   }
   if (!bookId) {
@@ -107,7 +114,9 @@ export async function POST(req: NextRequest) {
     let resolvedYear = input.publishedYear ?? null;
     if (!resolvedCover) {
       try {
-        const candidates = await searchBooks(`${input.title} ${input.author}`, 3);
+        const candidates = await timer.measure("external.google_books", () =>
+          searchBooks(`${input.title} ${input.author}`, 3),
+        );
         const match = candidates[0];
         if (match) {
           resolvedCover = match.thumbnail ?? null;
@@ -121,29 +130,35 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const { data: inserted, error: insErr } = await supabase
-      .from("books")
-      .insert({
-        google_books_id: resolvedGoogleId,
-        isbn_13: resolvedIsbn,
-        title: input.title,
-        author: input.author,
-        page_count: resolvedPages,
-        published_year: resolvedYear,
-        cover_url: resolvedCover,
-      })
-      .select("id")
-      .single();
-    if (insErr || !inserted) return jsonError(500, insErr?.message ?? "Could not save book.");
+    const { data: inserted, error: insErr } = await timer.measure("db.book_insert", () =>
+      supabase
+        .from("books")
+        .insert({
+          google_books_id: resolvedGoogleId,
+          isbn_13: resolvedIsbn,
+          title: input.title,
+          author: input.author,
+          page_count: resolvedPages,
+          published_year: resolvedYear,
+          cover_url: resolvedCover,
+        })
+        .select("id")
+        .single(),
+    );
+    if (insErr || !inserted) {
+      return withServerTiming(jsonError(500, insErr?.message ?? "Could not save book."), timer);
+    }
     bookId = inserted.id;
   }
 
-  const { data: existing } = await supabase
-    .from("user_books")
-    .select("id")
-    .eq("user_id", auth.userId)
-    .eq("book_id", bookId)
-    .maybeSingle();
+  const { data: existing } = await timer.measure("db.user_book_lookup", () =>
+    supabase
+      .from("user_books")
+      .select("id")
+      .eq("user_id", auth.userId)
+      .eq("book_id", bookId)
+      .maybeSingle(),
+  );
 
   const payload = {
     user_id: auth.userId,
@@ -158,20 +173,26 @@ export async function POST(req: NextRequest) {
   };
 
   if (existing) {
-    const { error: updErr } = await supabase
-      .from("user_books")
-      .update(payload)
-      .eq("id", existing.id);
-    if (updErr) return jsonError(500, updErr.message);
-    return NextResponse.json({ user_book_id: existing.id, book_id: bookId, updated: true });
+    const { error: updErr } = await timer.measure("db.user_book_update", () =>
+      supabase
+        .from("user_books")
+        .update(payload)
+        .eq("id", existing.id),
+    );
+    if (updErr) return withServerTiming(jsonError(500, updErr.message), timer);
+    return withServerTiming(NextResponse.json({ user_book_id: existing.id, book_id: bookId, updated: true }), timer);
   }
 
-  const { data: created, error: insErr } = await supabase
-    .from("user_books")
-    .insert(payload)
-    .select("id")
-    .single();
-  if (insErr || !created) return jsonError(500, insErr?.message ?? "Could not link book to your shelf.");
+  const { data: created, error: insErr } = await timer.measure("db.user_book_insert", () =>
+    supabase
+      .from("user_books")
+      .insert(payload)
+      .select("id")
+      .single(),
+  );
+  if (insErr || !created) {
+    return withServerTiming(jsonError(500, insErr?.message ?? "Could not link book to your shelf."), timer);
+  }
 
-  return NextResponse.json({ user_book_id: created.id, book_id: bookId, created: true }, { status: 201 });
+  return withServerTiming(NextResponse.json({ user_book_id: created.id, book_id: bookId, created: true }, { status: 201 }), timer);
 }
