@@ -113,12 +113,6 @@ function parseCount(value) {
   return Number.isFinite(n) ? n : null;
 }
 
-function goodreadsDescription(book) {
-  const rating = book.goodreadsRating ? `${book.goodreadsRating.toFixed(2)} average Goodreads rating` : "a strong Goodreads rating";
-  const count = book.goodreadsRatingsCount ? ` from ${book.goodreadsRatingsCount.toLocaleString("en-US")} readers` : "";
-  return `${book.title} is a widely read Goodreads-listed book by ${book.author}, with ${rating}${count}.`;
-}
-
 function dedupeBooks(input) {
   const seen = new Set();
   const out = [];
@@ -179,11 +173,11 @@ const goodreadsBooks = parseCsv(csvText).flatMap((row) => {
 const shelfBooks = await loadApiShelf();
 const books = dedupeBooks([...shelfBooks, ...goodreadsBooks])
   .slice(0, limit)
-  .map((book) => ({ ...book, description: book.description ?? goodreadsDescription(book) }));
+  .map((book) => ({ ...book, description: book.description ?? null }));
 
 if (listOnly) {
   for (const book of books.slice(0, Math.min(50, books.length))) {
-    console.log(`${book.title} - ${book.author} :: ${book.description}`);
+    console.log(`${book.title} - ${book.author}${book.description ? ` :: ${book.description}` : ""}`);
   }
   console.log(`Listed ${books.length} books (${shelfBooks.length} from API shelf, ${goodreadsBooks.length} Goodreads rows).`);
 } else {
@@ -221,11 +215,12 @@ if (listOnly) {
       published_year: book.publishedYear ?? null,
       page_count: book.pageCount ?? null,
       cover_url: book.coverUrl ?? null,
-      description: book.description,
+      description: book.description ?? null,
       subjects: book.subjects ?? ["goodreads top books"],
     }];
   });
   const descriptionUpdates = books.flatMap((book) => {
+    if (!book.description) return [];
     const existingBook = existingByKey.get(`${normalize(book.title)}|${normalize(book.author)}`);
     if (!existingBook || existingBook.description) return [];
     return [{ id: existingBook.id, description: book.description }];

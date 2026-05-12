@@ -67,7 +67,16 @@ npm run seed:goodreads -- --dry-run --limit=10000
 npm run seed:goodreads -- --limit=10000
 ```
 
-`seed:goodreads` reads `goodreads_cleaned.csv` from the zip, prepends your API shelf when `MARGINALIA_API_TOKEN` is set, dedupes by title+author, and creates short Goodreads-stat blurbs without calling Google Books or OpenAI.
+`seed:goodreads` reads `goodreads_cleaned.csv` from the zip, prepends your API shelf when `MARGINALIA_API_TOKEN` is set, and dedupes by title+author without calling Google Books or OpenAI.
+
+To backfill real sourced descriptions before embedding, run the enrichment pass. It searches Google Books first, then Open Library, accepts only confident title+author matches, and runs three books at a time by default:
+
+```bash
+npm run enrich:descriptions -- --dry-run --limit=100
+npm run enrich:descriptions -- --limit=10000 --concurrency=3
+```
+
+When a description is updated, cached embeddings for that row are cleared so the next `preembed:books` run refreshes the vector from the richer text.
 
 ## Mobile install / Google Play
 - Web install works from the deployed HTTPS URL via Add to Home Screen.

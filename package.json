@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "enrich:descriptions": "node scripts/enrich-book-descriptions.mjs",
     "seed:books": "node scripts/seed-curated-books.mjs",
     "seed:goodreads": "node scripts/seed-goodreads-books.mjs",
     "preembed:books": "node scripts/preembed-books.mjs",
