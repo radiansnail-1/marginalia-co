@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Spine, type SpineBook } from "./spine";
+
 // Outer wrapper is a <div> (not a <Link>) because each <Spine> is itself a
 // <Link href="/books/[id]">. A floating "View all" link gives access to /shelf.
 
@@ -9,13 +10,13 @@ import { Spine, type SpineBook } from "./spine";
 export function Bookshelf({ books }: { books: SpineBook[] }) {
   const ROWS = 7;
 
-  // Distribute books from bottom row (row 7) upward so an early reader
-  // sees their volumes resting on the lowest shelf.
+  // Distribute books from the top row downward so a growing collection fills
+  // like a visible bookcase, not a stack rising from the floor.
   const rowBooks: SpineBook[][] = Array.from({ length: ROWS }, () => []);
-  let r = ROWS - 1;
+  let r = 0;
   for (const b of books) {
     rowBooks[r].push(b);
-    if (rowBooks[r].length >= 18) r = Math.max(0, r - 1);
+    if (rowBooks[r].length >= 18) r = Math.min(ROWS - 1, r + 1);
   }
 
   const empty = books.length === 0;
@@ -99,7 +100,7 @@ export function Bookshelf({ books }: { books: SpineBook[] }) {
         </div>
       )}
 
-      {/* "View all" label — visual cue that the shelf taps to /shelf */}
+      {/* "View all" label -- visual cue that the shelf taps to /shelf */}
       <span
         aria-hidden
         className="font-body pointer-events-none absolute z-[7] uppercase"
@@ -114,7 +115,7 @@ export function Bookshelf({ books }: { books: SpineBook[] }) {
           border: "1px solid rgba(181,140,74,0.4)",
         }}
       >
-        View all ›
+        View all &gt;
       </span>
     </Link>
   );

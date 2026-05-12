@@ -8,7 +8,8 @@
     "build": "next build",
     "preembed:books": "node scripts/preembed-books.mjs",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --test"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.95.1",

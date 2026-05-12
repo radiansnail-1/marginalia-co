@@ -6,6 +6,8 @@ const VolumeSchema = z.object({
     title: z.string(),
     authors: z.array(z.string()).optional(),
     publishedDate: z.string().optional(),
+    description: z.string().optional(),
+    language: z.string().optional(),
     pageCount: z.number().optional(),
     categories: z.array(z.string()).optional(),
     industryIdentifiers: z
@@ -27,6 +29,12 @@ export type GoogleBook = {
   title: string;
   author: string;
   isbn13: string | null;
+  openLibraryId?: string | null;
+  catalogBookId?: string | null;
+  resultKey?: string;
+  source?: "catalog" | "google" | "openlibrary";
+  language?: string | null;
+  description?: string | null;
   publishedYear: number | null;
   pageCount: number | null;
   subjects: string[];
@@ -87,6 +95,8 @@ export async function searchBooks(query: string, limit = 12): Promise<GoogleBook
       title: v.volumeInfo.title,
       author: v.volumeInfo.authors?.[0] ?? "Unknown",
       isbn13: pickIsbn(v.volumeInfo.industryIdentifiers),
+      description: v.volumeInfo.description ?? null,
+      language: v.volumeInfo.language ?? null,
       publishedYear: v.volumeInfo.publishedDate
         ? parseInt(v.volumeInfo.publishedDate.slice(0, 4), 10) || null
         : null,

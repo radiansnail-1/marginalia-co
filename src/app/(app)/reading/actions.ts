@@ -111,12 +111,28 @@ export async function finishBook(
 }
 
 export async function abandonBook(userBookId: string) {
-  const supabase = await createClient();
+  const [supabase, user] = await Promise.all([createClient(), getCurrentUser()]);
+  if (!user) return { error: "Not signed in" };
+  const { data: ub } = await supabase
+    .from("user_books")
+    .select("id, user_id")
+    .eq("id", userBookId)
+    .maybeSingle();
+  if (!ub || ub.user_id !== user.id) return { error: "Not found" };
+
+  const { data: openSessions } = await supabase
+    .from("reading_sessions")
+    .select("id")
+    .eq("user_book_id", userBookId)
+    .is("ended_at", null);
+  await Promise.all((openSessions ?? []).map((session) => endSession(session.id as string, false)));
+
   await supabase
     .from("user_books")
     .update({ status: "abandoned" })
     .eq("id", userBookId);
   revalidatePath("/reading");
   revalidatePath("/pile");
+  revalidatePath("/home");
   return { ok: true };
 }

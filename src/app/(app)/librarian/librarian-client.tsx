@@ -84,7 +84,16 @@ export function LibrarianClient() {
                 <div className="h-28 w-20 shrink-0 rounded-sm bg-mahogany-3 relative overflow-hidden">
                   {p.coverUrl ? (
                     <Image src={p.coverUrl} alt={p.title} fill sizes="80px" className="object-cover" />
-                  ) : null}
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-mahogany-3 to-mahogany">
+                      <span
+                        className="spine-text font-display"
+                        style={{ fontSize: "9px", color: "rgba(236,220,176,0.8)", padding: "8px 0" }}
+                      >
+                        {p.title}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="min-w-0">
                   {p.fromShelf && p.bookId ? (

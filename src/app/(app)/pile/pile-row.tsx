@@ -4,7 +4,7 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { startReading, abandonFromPile } from "./actions";
+import { startReading } from "./actions";
 
 export function PileRow({
   userBookId,
@@ -34,13 +34,6 @@ export function PileRow({
     startTransition(async () => {
       await startReading(userBookId);
       router.push(`/reading?book=${bookId}`);
-    });
-  };
-
-  const onAbandon = () => {
-    if (!confirm(`Set aside "${title}"?`)) return;
-    startTransition(async () => {
-      await abandonFromPile(userBookId);
     });
   };
 
@@ -111,17 +104,6 @@ export function PileRow({
           >
             Continue
           </Link>
-        )}
-        {variant === "pile" && (
-          <button
-            type="button"
-            disabled={pending}
-            onClick={onAbandon}
-            className="font-body uppercase text-parchment-dim"
-            style={{ fontSize: "8px", letterSpacing: "1.5px" }}
-          >
-            Set aside
-          </button>
         )}
       </div>
     </li>
