@@ -7,9 +7,11 @@ import type { SpineBook } from "./spine";
 export function Room({
   finished,
   reading,
+  hiddenFinishedCount = 0,
 }: {
   finished: SpineBook[];
   reading: ReadingBook[];
+  hiddenFinishedCount?: number;
 }) {
   return (
     <div className="absolute inset-0 overflow-hidden">
@@ -35,7 +37,7 @@ export function Room({
         />
 
         {/* Shelf — fills the wall under the crown, above baseboard */}
-        <Bookshelf books={finished} />
+        <Bookshelf books={finished} hiddenBookCount={hiddenFinishedCount} />
 
         {/* Window upper-left over rows 1-3 */}
         <Window />
