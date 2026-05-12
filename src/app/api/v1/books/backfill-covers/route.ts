@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticate, jsonError } from "@/lib/api/auth";
+import { ApiTimer, withServerTiming } from "@/lib/api/timing";
 import { createServiceClient } from "@/lib/supabase/service";
 import { searchBooks } from "@/lib/books/google-books";
 
@@ -11,17 +12,20 @@ export const maxDuration = 60;
 // cover_url and try to fill one in by querying Google Books. Returns a
 // per-book report. Cheap: capped at 80 books per call, ~120ms each.
 export async function POST(req: NextRequest) {
-  const auth = await authenticate(req);
-  if (auth instanceof NextResponse) return auth;
+  const timer = new ApiTimer();
+  const auth = await authenticate(req, timer);
+  if (auth instanceof NextResponse) return withServerTiming(auth, timer);
 
   const supabase = createServiceClient();
 
-  const { data: rows, error } = await supabase
-    .from("user_books")
-    .select("book:books(id, title, author, cover_url, google_books_id, isbn_13)")
-    .eq("user_id", auth.userId)
-    .limit(200);
-  if (error) return jsonError(500, error.message);
+  const { data: rows, error } = await timer.measure("db.cover_candidates", () =>
+    supabase
+      .from("user_books")
+      .select("book:books(id, title, author, cover_url, google_books_id, isbn_13)")
+      .eq("user_id", auth.userId)
+      .limit(200),
+  );
+  if (error) return withServerTiming(jsonError(500, error.message), timer);
 
   type B = { id: string; title: string; author: string; cover_url: string | null; google_books_id: string | null; isbn_13: string | null };
   const books: B[] = (rows ?? [])
@@ -36,7 +40,9 @@ export async function POST(req: NextRequest) {
 
   for (const b of unique) {
     try {
-      const candidates = await searchBooks(`${b.title} ${b.author}`, 3);
+      const candidates = await timer.measure("external.google_books", () =>
+        searchBooks(`${b.title} ${b.author}`, 3),
+      );
       const match = candidates[0];
       if (!match || !match.thumbnail) {
         report.push({ id: b.id, title: b.title, updated: false, reason: "no match" });
@@ -45,7 +51,9 @@ export async function POST(req: NextRequest) {
       const patch: Record<string, unknown> = { cover_url: match.thumbnail };
       if (!b.google_books_id) patch.google_books_id = match.googleBooksId;
       if (!b.isbn_13 && match.isbn13) patch.isbn_13 = match.isbn13;
-      const { error: updErr } = await supabase.from("books").update(patch).eq("id", b.id);
+      const { error: updErr } = await timer.measure("db.cover_update", () =>
+        supabase.from("books").update(patch).eq("id", b.id),
+      );
       if (updErr) {
         report.push({ id: b.id, title: b.title, updated: false, reason: updErr.message });
       } else {
@@ -56,9 +64,9 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({
+  return withServerTiming(NextResponse.json({
     scanned: unique.length,
     updated: report.filter((r) => r.updated).length,
     report,
-  });
+  }), timer);
 }

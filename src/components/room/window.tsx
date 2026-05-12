@@ -1,10 +1,23 @@
-// Window — upper-left of the wall, behind the indented shelf area.
-// Composed from iteration-4-mobile.html spec: 138x196 absolute box.
+"use client";
 
+import { useEffect, useState } from "react";
+
+// Window - upper-left of the wall, behind the indented shelf area.
+// Composed from iteration-4-mobile.html spec: 138x196 absolute box.
 export function Window() {
+  const [isMorning, setIsMorning] = useState(false);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      const hour = new Date().getHours();
+      setIsMorning(hour >= 6 && hour < 12);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
   return (
     <>
-      {/* Curtain — pulled to the side */}
+      {/* Curtain - pulled to the side */}
       <div
         aria-hidden
         className="absolute z-[6]"
@@ -34,44 +47,49 @@ export function Window() {
           borderRadius: "3px",
           boxShadow:
             "0 8px 20px rgba(0,0,0,0.7), inset 0 0 24px rgba(0,0,0,0.5)",
-          background:
-            "radial-gradient(circle at 60% 35%, rgba(232,224,200,0.2) 0%, transparent 40%), linear-gradient(180deg,#050a18 0%,#0e1830 50%,#1a2444 100%)",
+          background: isMorning
+            ? "radial-gradient(circle at 70% 24%, rgba(255,232,166,0.65) 0%, transparent 23%), linear-gradient(180deg,#8fbfe0 0%,#cde7d3 62%,#7fa56f 100%)"
+            : "radial-gradient(circle at 60% 35%, rgba(232,224,200,0.2) 0%, transparent 40%), linear-gradient(180deg,#050a18 0%,#0e1830 50%,#1a2444 100%)",
         }}
       >
-        {/* Moon */}
+        {/* Sun / moon */}
         <span
           className="absolute"
           style={{
-            top: "24%",
-            left: "55%",
+            top: isMorning ? "18%" : "24%",
+            left: isMorning ? "62%" : "55%",
             width: "30px",
             height: "30px",
             borderRadius: "50%",
-            background:
-              "radial-gradient(circle at 35% 35%,#e8e0c8 0%,#c8b485 60%,#6a5530 100%)",
-            boxShadow:
-              "0 0 24px rgba(232,224,200,0.5), 0 0 48px rgba(232,224,200,0.25)",
+            background: isMorning
+              ? "radial-gradient(circle at 35% 35%,#fff5c8 0%,#f2c45f 70%,#d88a3a 100%)"
+              : "radial-gradient(circle at 35% 35%,#e8e0c8 0%,#c8b485 60%,#6a5530 100%)",
+            boxShadow: isMorning
+              ? "0 0 28px rgba(255,229,160,0.65), 0 0 60px rgba(255,200,95,0.3)"
+              : "0 0 24px rgba(232,224,200,0.5), 0 0 48px rgba(232,224,200,0.25)",
           }}
         />
-        {/* Skyline */}
+        {/* Skyline / garden */}
         <span
           className="absolute inset-x-0 bottom-0"
           style={{
             height: "30%",
-            background:
-              'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.5) 100%), url("data:image/svg+xml;utf8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'60\' viewBox=\'0 0 200 60\'%3E%3Cpath fill=\'%23030710\' d=\'M0 60V35l12-8v8l10-12v18l12-10v-15l16 16v-8l12 6v-10l20 14v-12l14 10v-6l18-16v24l16-14v10l12-8v16l20-12v-8l12 10v-6l16 12v-4l10-8v24z\'/%3E%3C/svg%3E") repeat-x bottom center',
+            background: isMorning
+              ? 'linear-gradient(180deg, transparent 0%, rgba(30,80,45,0.35) 100%), url("data:image/svg+xml;utf8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'60\' viewBox=\'0 0 200 60\'%3E%3Cpath fill=\'%232a5a3a\' d=\'M0 60V42c16-9 28-9 42 0 12-16 28-16 40 0 18-10 34-9 50 2 14-14 30-15 46-1 8-5 15-7 22-7v24z\'/%3E%3Cpath fill=\'%231a3a2a\' d=\'M0 60V50c24-8 38-6 58 0 18-9 36-8 52 1 25-10 48-8 90 2v7z\'/%3E%3C/svg%3E") repeat-x bottom center'
+              : 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.5) 100%), url("data:image/svg+xml;utf8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'60\' viewBox=\'0 0 200 60\'%3E%3Cpath fill=\'%23030710\' d=\'M0 60V35l12-8v8l10-12v18l12-10v-15l16 16v-8l12 6v-10l20 14v-12l14 10v-6l18-16v24l16-14v10l12-8v16l20-12v-8l12 10v-6l16 12v-4l10-8v24z\'/%3E%3C/svg%3E") repeat-x bottom center',
             backgroundSize: "auto, 200px auto",
           }}
         />
-        {/* Rain */}
-        <span
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage:
-              "linear-gradient(108deg, transparent 49.4%, rgba(200,210,230,0.2) 49.7%, transparent 49.9%), linear-gradient(112deg, transparent 49.4%, rgba(200,210,230,0.13) 49.7%, transparent 49.9%)",
-            backgroundSize: "5px 36px, 7px 46px",
-          }}
-        />
+        {!isMorning && (
+          <span
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              backgroundImage:
+                "linear-gradient(108deg, transparent 49.4%, rgba(200,210,230,0.2) 49.7%, transparent 49.9%), linear-gradient(112deg, transparent 49.4%, rgba(200,210,230,0.13) 49.7%, transparent 49.9%)",
+              backgroundSize: "5px 36px, 7px 46px",
+            }}
+          />
+        )}
         {/* Mullions (cross) */}
         <span
           className="absolute inset-0 z-[4] pointer-events-none"
@@ -80,12 +98,13 @@ export function Window() {
               "linear-gradient(90deg, transparent calc(50% - 2px), #2c140a calc(50% - 2px), #2c140a calc(50% + 2px), transparent calc(50% + 2px)), linear-gradient(180deg, transparent 33%, #2c140a 33%, #2c140a calc(33% + 3px), transparent calc(33% + 3px), transparent 66%, #2c140a 66%, #2c140a calc(66% + 3px), transparent calc(66% + 3px))",
           }}
         />
-        {/* Moonbeam */}
+        {/* Moonbeam / sun haze */}
         <span
           className="absolute inset-0 pointer-events-none"
           style={{
-            background:
-              "radial-gradient(ellipse at 60% 30%, rgba(232,224,200,0.18) 0%, transparent 60%)",
+            background: isMorning
+              ? "radial-gradient(ellipse at 65% 25%, rgba(255,232,166,0.22) 0%, transparent 62%)"
+              : "radial-gradient(ellipse at 60% 30%, rgba(232,224,200,0.18) 0%, transparent 60%)",
           }}
         />
       </div>

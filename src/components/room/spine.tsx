@@ -48,7 +48,7 @@ export function Spine({ book }: { book: SpineBook }) {
   return (
     <span
       aria-label={`${book.title} by ${book.author}`}
-      className="book relative mr-px flex h-[88%] shrink-0 items-center justify-center overflow-hidden rounded-sm"
+      className="book relative mr-px flex h-[72%] shrink-0 items-center justify-center overflow-hidden rounded-sm"
       style={{
         width: `${width}px`,
         background: bg,
@@ -73,9 +73,11 @@ export function Spine({ book }: { book: SpineBook }) {
         style={{
           fontSize: "8px",
           letterSpacing: "0.5px",
-          padding: "6px 0",
-          maxHeight: "100%",
+          padding: "5px 0",
+          maxHeight: "86%",
           lineHeight: 1,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
           color: cream ? "rgba(60,30,10,0.85)" : "rgba(236,220,176,0.85)",
         }}
       >

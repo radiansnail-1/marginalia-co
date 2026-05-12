@@ -78,7 +78,7 @@ export async function saveReview(
 
   const patch: Record<string, unknown> = {};
   if (rating === null) patch.rating = null;
-  else if (rating >= 1 && rating <= 5) patch.rating = rating;
+  else if (rating >= 0.5 && rating <= 5 && Number.isInteger(rating * 2)) patch.rating = rating;
 
   if (review === null) patch.review = null;
   else {

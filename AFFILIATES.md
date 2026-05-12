@@ -39,6 +39,21 @@ Example template:
 NEXT_PUBLIC_BOOKSHOP_AFFILIATE_TEMPLATE="https://bookshop.org/search?keywords={encodedQuery}&affiliate=YOUR_ID"
 ```
 
+## Awin / Audible
+
+Audible UK uses Awin. After creating your Awin publisher account:
+
+1. In Awin, search advertisers/programmes for Audible UK and apply/join.
+2. Once approved, go to Toolbox -> Link Builder.
+3. Select Audible from the Joined advertiser field.
+4. Paste a clean Audible destination URL, for example `https://www.audible.co.uk/search?keywords={encodedQuery}` if the programme permits search deep links, or a specific audiobook/product URL.
+5. Click Generate Link and copy the URL version.
+6. Put that generated pattern in `NEXT_PUBLIC_AUDIBLE_AFFILIATE_TEMPLATE`.
+
+If Awin gives you a wrapped tracking URL with a destination parameter, keep the Awin tracking pieces exactly as provided and replace only the destination/search text with supported placeholders like `{encodedQuery}`, `{encodedTitle}`, or `{isbn13}`.
+
+Kobo is separate: use Rakuten Advertising, not Awin. Apply to Kobo there, then use Rakuten's link/deep-link tooling and paste the resulting pattern into `NEXT_PUBLIC_KOBO_AFFILIATE_TEMPLATE`.
+
 ## Good Operating Model
 
 - Keep three primary buttons on book detail pages: Bookshop, Shopee, Lazada.

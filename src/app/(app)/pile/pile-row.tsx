@@ -78,7 +78,7 @@ export function PileRow({
         >
           {author2 || author}
         </div>
-        {addedFrom && (
+        {addedFrom && addedFrom !== "api" && (
           <div className="font-caveat" style={{ fontSize: "13px", color: "var(--color-brass-bright)", marginTop: "6px", lineHeight: 1 }}>
             from {addedFrom}
           </div>

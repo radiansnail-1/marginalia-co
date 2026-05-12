@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { paletteFor } from "@/components/room/spine";
@@ -26,15 +25,21 @@ const CHIPS: { key: ChipKey; label: string }[] = [
 
 export function ShelfClient({ books, romanYear }: { books: ShelfBook[]; romanYear: string }) {
   const [active, setActive] = useState<ChipKey>("all");
+  const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
-    if (active === "five") return books.filter((b) => (b.rating ?? 0) >= 5);
+    const q = query.trim().toLowerCase();
+    let next = books;
+    if (active === "five") next = next.filter((b) => (b.rating ?? 0) >= 5);
     if (active === "recent") {
       // Books are already sorted by finished_at desc on the server; take the latest 10.
-      return books.filter((b) => !!b.finished_at).slice(0, 10);
+      next = next.filter((b) => !!b.finished_at).slice(0, 10);
     }
-    return books;
-  }, [books, active]);
+    if (!q) return next;
+    return next.filter((b) =>
+      `${b.title} ${b.author}`.toLowerCase().includes(q),
+    );
+  }, [books, active, query]);
 
   return (
     <div className="min-h-dvh bg-gradient-to-b from-mahogany to-mahogany-2 px-6 pt-10">
@@ -62,34 +67,58 @@ export function ShelfClient({ books, romanYear }: { books: ShelfBook[]; romanYea
         className="mt-1 font-body uppercase"
         style={{ fontSize: "10px", letterSpacing: "3px", color: "rgba(236,220,176,0.5)" }}
       >
-        {romanYear} - {books.length > 0 ? "tap a spine" : "your collection lives here"}
+        {romanYear} - {books.length > 0 ? "tap a volume" : "your collection lives here"}
       </p>
 
       {books.length > 0 && (
-        <div className="mt-5 flex gap-1.5 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden">
-          {CHIPS.map((c) => {
-            const isActive = c.key === active;
-            return (
+        <>
+          <div className="mt-5 flex gap-1.5 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden">
+            {CHIPS.map((c) => {
+              const isActive = c.key === active;
+              return (
+                <button
+                  key={c.key}
+                  type="button"
+                  onClick={() => setActive(c.key)}
+                  className="tap rounded-full border font-body uppercase"
+                  style={{
+                    padding: "6px 12px",
+                    fontSize: "9px",
+                    letterSpacing: "2px",
+                    borderColor: isActive ? "var(--color-brass)" : "rgba(181,140,74,0.35)",
+                    background: isActive ? "var(--color-brass)" : "transparent",
+                    color: isActive ? "var(--color-mahogany)" : "rgba(236,220,176,0.7)",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {c.label}
+                </button>
+              );
+            })}
+          </div>
+          <div className="mt-3 flex items-center border-b border-brass/25">
+            <input
+              type="search"
+              aria-label="Search your collection"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="search title or author"
+              className="min-w-0 flex-1 bg-transparent pb-2 font-display text-parchment outline-none placeholder:text-parchment-dim/50"
+              style={{ fontSize: "18px" }}
+            />
+            {query && (
               <button
-                key={c.key}
                 type="button"
-                onClick={() => setActive(c.key)}
-                className="tap rounded-full border font-body uppercase"
-                style={{
-                  padding: "6px 12px",
-                  fontSize: "9px",
-                  letterSpacing: "2px",
-                  borderColor: isActive ? "var(--color-brass)" : "rgba(181,140,74,0.35)",
-                  background: isActive ? "var(--color-brass)" : "transparent",
-                  color: isActive ? "var(--color-mahogany)" : "rgba(236,220,176,0.7)",
-                  whiteSpace: "nowrap",
-                }}
+                aria-label="Clear collection search"
+                onClick={() => setQuery("")}
+                className="tap mb-2 grid h-8 w-8 place-items-center rounded-full font-body text-brass-bright hover:bg-brass/10"
+                style={{ fontSize: "12px" }}
               >
-                {c.label}
+                X
               </button>
-            );
-          })}
-        </div>
+            )}
+          </div>
+        </>
       )}
 
       {books.length === 0 ? (
@@ -112,56 +141,43 @@ export function ShelfClient({ books, romanYear }: { books: ShelfBook[]; romanYea
           No volumes match this filter.
         </div>
       ) : (
-        <div className="mt-6 grid grid-cols-3 gap-x-3 gap-y-4">
+        <div className="mt-6 grid gap-2.5">
           {filtered.map((b) => {
             const bg = paletteFor(b);
-            const isCream = bg.includes("#c8a878") || bg.includes("#b58c4a");
+            const stars = b.rating ? `${b.rating} / 5` : "unrated";
             return (
-              <Link key={b.id} href={`/books/${b.id}`} className="block">
+              <Link
+                key={b.id}
+                href={`/books/${b.id}`}
+                className="tap flex min-h-[78px] items-stretch overflow-hidden border border-brass/20 bg-mahogany-2/55"
+              >
                 <div
-                  className="relative flex items-center justify-center overflow-hidden"
+                  className="w-4 shrink-0"
                   style={{
-                    aspectRatio: "2 / 3",
                     background: bg,
-                    boxShadow: "0 5px 12px rgba(0,0,0,0.6)",
-                    borderRadius: "1px",
+                    boxShadow: "inset -1px 0 0 rgba(0,0,0,0.35), inset 1px 0 0 rgba(255,255,255,0.08)",
                   }}
-                >
-                  {b.cover_url ? (
-                    <Image src={b.cover_url} alt={b.title} fill sizes="120px" className="object-cover" />
-                  ) : (
-                    <>
-                      <span
-                        aria-hidden
-                        className="absolute left-1 right-1"
-                        style={{ top: "8%", height: "1px", background: "rgba(216,176,106,0.5)" }}
-                      />
-                      <span
-                        className="spine-text font-display"
-                        style={{
-                          fontSize: "9px",
-                          padding: "6px 0",
-                          color: isCream ? "rgba(60,30,10,0.85)" : "rgba(236,220,176,0.85)",
-                        }}
-                      >
-                        {b.title}
-                      </span>
-                    </>
-                  )}
-                </div>
-                <div className="mt-1 font-display leading-tight text-cream" style={{ fontSize: "12px" }}>
-                  {b.title}
-                </div>
-                <div
-                  className="font-body"
-                  style={{
-                    fontSize: "9px",
-                    color: "rgba(236,220,176,0.5)",
-                    letterSpacing: "0.5px",
-                    marginTop: "1px",
-                  }}
-                >
-                  {b.author}
+                />
+                <div className="min-w-0 flex-1 px-3 py-3">
+                  <div className="truncate font-display text-cream" style={{ fontSize: "17px", lineHeight: 1.15 }}>
+                    {b.title}
+                  </div>
+                  <div
+                    className="truncate font-body italic"
+                    style={{
+                      fontSize: "10px",
+                      color: "rgba(236,220,176,0.55)",
+                      marginTop: "3px",
+                    }}
+                  >
+                    {b.author}
+                  </div>
+                  <div
+                    className="mt-3 font-body uppercase"
+                    style={{ fontSize: "9px", letterSpacing: "1.6px", color: "rgba(216,176,106,0.75)" }}
+                  >
+                    {stars}
+                  </div>
                 </div>
               </Link>
             );

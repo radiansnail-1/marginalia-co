@@ -2,9 +2,11 @@
   "name": "marginalia",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "preembed:books": "node scripts/preembed-books.mjs",
     "start": "next start",
     "lint": "eslint"
   },

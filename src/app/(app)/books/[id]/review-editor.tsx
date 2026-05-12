@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { type MouseEvent, useState, useTransition } from "react";
 import { saveReview } from "./actions";
 
 export function ReviewEditor({
@@ -26,6 +26,12 @@ export function ReviewEditor({
     });
   };
 
+  const onRate = (n: number, event: MouseEvent<HTMLButtonElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const value = n - (event.clientX - rect.left < rect.width / 2 ? 0.5 : 0);
+    setRating(rating === value ? null : value);
+  };
+
   return (
     <section
       className="mt-8 border-t pt-6"
@@ -36,7 +42,7 @@ export function ReviewEditor({
           className="font-body uppercase"
           style={{ fontSize: "10px", letterSpacing: "2.5px", color: "rgba(236,220,176,0.55)" }}
         >
-          — Your review
+          Your review
         </div>
         {!editing && (
           <button
@@ -56,28 +62,35 @@ export function ReviewEditor({
         )}
       </div>
 
-      {/* Stars */}
-      <div className="mt-3 flex gap-2">
-        {[1, 2, 3, 4, 5].map((n) => (
-          <button
-            key={n}
-            type="button"
-            disabled={!editing || pending}
-            onClick={() => setRating(rating === n ? null : n)}
-            className="tap font-display"
-            style={{
-              fontSize: "28px",
-              lineHeight: 1,
-              color: rating !== null && n <= rating ? "var(--color-brass-bright)" : "rgba(236,220,176,0.25)",
-            }}
-            aria-label={`${n} star${n === 1 ? "" : "s"}`}
-          >
-            ★
-          </button>
-        ))}
+      <div className="mt-3 flex gap-1">
+        {[1, 2, 3, 4, 5].map((n) => {
+          const fill = rating === null ? 0 : Math.max(0, Math.min(1, rating - (n - 1)));
+          return (
+            <button
+              key={n}
+              type="button"
+              disabled={!editing || pending}
+              onClick={(event) => onRate(n, event)}
+              className="tap relative grid h-8 w-8 place-items-center font-display"
+              style={{ fontSize: "28px", lineHeight: 1 }}
+              aria-label={`${n - 0.5} or ${n} stars`}
+            >
+              <span style={{ color: "rgba(236,220,176,0.25)" }}>★</span>
+              <span
+                aria-hidden
+                className="absolute left-0 overflow-hidden"
+                style={{
+                  width: `${fill * 100}%`,
+                  color: "var(--color-brass-bright)",
+                }}
+              >
+                ★
+              </span>
+            </button>
+          );
+        })}
       </div>
 
-      {/* Review body */}
       {editing ? (
         <>
           <textarea

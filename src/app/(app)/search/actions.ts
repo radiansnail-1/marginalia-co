@@ -42,6 +42,52 @@ function dedupByEdition<T extends { title: string; author: string }>(books: T[])
   return out;
 }
 
+async function loadTasteSignals(supabase: Awaited<ReturnType<typeof createClient>>, userId: string) {
+  const { data } = await supabase
+    .from("user_books")
+    .select("rating, book:books(author, subjects)")
+    .eq("user_id", userId)
+    .eq("status", "finished")
+    .gte("rating", 4)
+    .order("rating", { ascending: false, nullsFirst: false })
+    .limit(40);
+
+  const authors = new Set<string>();
+  const subjects = new Map<string, number>();
+
+  for (const row of data ?? []) {
+    const book = Array.isArray(row.book) ? row.book[0] : row.book;
+    const rating = Number(row.rating ?? 4);
+    const weight = Math.max(1, rating - 3);
+    const author = (book?.author as string | undefined)?.trim().toLowerCase();
+    if (author) authors.add(author);
+    for (const subject of ((book?.subjects as string[] | null | undefined) ?? []).slice(0, 6)) {
+      const key = subject.toLowerCase();
+      subjects.set(key, (subjects.get(key) ?? 0) + weight);
+    }
+  }
+
+  return { authors, subjects };
+}
+
+function rankForReader(books: GoogleBook[], taste: Awaited<ReturnType<typeof loadTasteSignals>>): GoogleBook[] {
+  if (taste.authors.size === 0 && taste.subjects.size === 0) return books;
+  return books
+    .map((book, index) => {
+      let score = 0;
+      if (taste.authors.has(book.author.toLowerCase())) score += 8;
+      for (const subject of book.subjects) {
+        const s = subject.toLowerCase();
+        for (const [liked, weight] of taste.subjects) {
+          if (s.includes(liked) || liked.includes(s)) score += weight;
+        }
+      }
+      return { book, score, index };
+    })
+    .sort((a, b) => b.score - a.score || a.index - b.index)
+    .map((r) => r.book);
+}
+
 export async function searchAction(query: string): Promise<SearchActionResult> {
   if (!query.trim()) return { ok: true, books: [] };
   try {
@@ -50,7 +96,9 @@ export async function searchAction(query: string): Promise<SearchActionResult> {
       createClient(),
       getCurrentUser(),
     ]);
-    const books = dedupByEdition(rawBooks).slice(0, 12);
+    const deduped = dedupByEdition(rawBooks);
+    const taste = user ? await loadTasteSignals(supabase, user.id) : null;
+    const books = (taste ? rankForReader(deduped, taste) : deduped).slice(0, 12);
     if (!user || books.length === 0) {
       return { ok: true, books: books.map((book) => ({ ...book, shelfStatus: null })) };
     }

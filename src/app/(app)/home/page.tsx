@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { Room } from "@/components/room/room";
+import { TimeOfDayNote } from "@/components/room/time-of-day-note";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/user";
-import { toRoman, timeOfDayCaveat } from "@/lib/roman";
+import { toRoman } from "@/lib/roman";
 import type { SpineBook } from "@/components/room/spine";
 import type { ReadingBook } from "@/components/room/coffee-table";
 
@@ -95,26 +96,10 @@ export default async function HomePage() {
           <Link
             href="/search"
             aria-label="Add a book"
-            className="tap grid h-10 w-10 place-items-center rounded-full border border-brass/40"
-            style={{ fontFamily: "var(--font-display)", fontSize: "22px", color: "var(--color-brass-bright)", lineHeight: 1 }}
+            className="tap grid h-11 w-11 place-items-center rounded-full bg-brass text-mahogany shadow-[0_0_18px_rgba(216,176,106,0.35)]"
+            style={{ fontFamily: "var(--font-display)", fontSize: "28px", lineHeight: 0.85 }}
           >
-            +
-          </Link>
-          <Link
-            href="/profile"
-            aria-label="Profile"
-            className="tap grid h-10 w-10 place-items-center rounded-full"
-            style={{
-              background: "linear-gradient(135deg, #5a2a18 0%, #2c140a 100%)",
-              border: "1px solid rgba(216,176,106,0.45)",
-              fontFamily: "var(--font-display)",
-              fontStyle: "italic",
-              fontSize: "16px",
-              color: "var(--color-brass-bright)",
-              fontWeight: 500,
-            }}
-          >
-            B
+            <span aria-hidden style={{ transform: "translateY(-1px)" }}>+</span>
           </Link>
         </div>
       </header>
@@ -147,9 +132,7 @@ export default async function HomePage() {
             {toRoman(year)}
           </div>
         </div>
-        <span className="font-caveat" style={{ fontSize: "17px", color: "rgba(236,220,176,0.7)" }}>
-          {timeOfDayCaveat()}
-        </span>
+        <TimeOfDayNote />
       </section>
 
       {/* Room — absolute below header/stats */}

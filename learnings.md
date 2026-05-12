@@ -1,14 +1,12 @@
 # Learnings
 
-- **Search must include shelf state** - Google Books results are not enough for the UI. Search must join returned Google IDs against `books` and `user_books` so repeat searches can show `On pile`, `Reading`, `Finished`, or `Set aside`.
-- **Avoid Supabase upsert when production indexes may lag** - `upsert(... onConflict: "google_books_id")` requires a matching non-partial unique index. The safer live-compatible path is insert plus a `23505` duplicate fallback lookup, with the full unique migration kept as cleanup.
-- **Pile latency came from server route work** - Pile was waiting on verified auth plus two Supabase reads. Using `getClaims()` plus one combined `user_books` query lowered local mobile navigation from about 3.7s to about 0.8s in dev timing.
-- **PWA service workers can poison local QA ports** - `http://127.0.0.1:3000/home` showed a stale unrelated offline page during verification. Use a fresh dev port when local PWA/browser state looks unrelated to the app.
-- **Fullscreen is install-context dependent** - `display: fullscreen` and `viewport-fit=cover` help installed PWA/TWA shells, but normal browser tabs cannot hide OS status/navigation bars. Android TWA may require native immersive mode.
-- **Guest mode breaks the shelf promise** - Cross-device shelves, ratings, and API tokens need a recoverable account identity. Anonymous sessions are treated as unauthenticated and redirected to account creation.
-- **Book ML needs an aggregate rating signal** - Per-user ratings live on `user_books.rating`; shared book quality lives on `books.average_rating` and `books.rating_count`, maintained by a Supabase trigger for future ranking/ML work.
-- **Supabase default auth email is not production mail** - The built-in sender hit rate limits during QA and Supabase docs describe it as low-limit/testing-only. Do not depend on it for live signup.
-- **Resend sandbox needs a verified domain** - The supplied Resend key was valid, but Resend rejected email to AgentMail because sandbox sends only to the account owner's address until a domain is verified.
-- **No-domain signup can use confirmed admin-created users** - Until a mail domain exists, use a service-role server action to `createUser({ email_confirm: true })`, then client sign-in with the same credentials to create the browser session.
+- **Cached embeddings are the launch-safe recommender path** - Pre-embed the shared book catalog and run production with `EMBEDDING_MAX_RUNTIME_TEXTS=0` so users do not trigger surprise OpenAI spend.
+- **Hybrid ranking beats pure embeddings** - The Librarian should combine semantic similarity, user ratings, low-rating/abandoned negative signals, subjects/metadata, and global `average_rating`/`rating_count` rather than trusting one signal.
+- **Private reviews must not leak into shared vectors** - User reviews can influence private taste weighting, but shared `books.embedding` should only come from book metadata such as title, author, year, page count, and subjects.
+- **Embedding migrations must degrade cleanly** - If production lacks `0010_book_embeddings.sql`, shelf loading must still fall back to non-embedding columns so a populated shelf does not appear empty.
+- **Dry-run should not require paid credentials** - `scripts/preembed-books.mjs --dry-run` loads local env, checks Supabase cache state, and counts stale vectors without requiring `EMBEDDING_API_KEY`.
+- **Deployed and local can drift** - Treat local QA as provisional until the current branch is deployed; production needs a fresh QA pass after Vercel picks up the published changes.
+- **Affiliate links are not all general links** - Bookshop/Shopee can start as generic/search links, but Amazon/Kobo/Awin/Audible usually need approved product/deep-link tracking details before commission tracking is real.
+- **Legal charity language must be nonbinding** - The MIT license can sit beside a charity request, but the request cannot become a license condition without ceasing to be plain MIT.
 
-**Last updated:** 2026-05-11
+**Last updated:** 2026-05-12
