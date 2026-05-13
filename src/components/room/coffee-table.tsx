@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { SpineBook } from "./spine";
 
@@ -9,11 +10,12 @@ export type ReadingBook = SpineBook & {
 export function CoffeeTable({ readingBooks }: { readingBooks: ReadingBook[] }) {
   const has = readingBooks.length > 0;
   const stack = readingBooks.slice(0, 3);
+  const active = has ? readingBooks[0] : null;
 
   return (
     <Link
       href="/reading"
-      aria-label="Open your reading session"
+      aria-label={active ? `Continue reading ${active.title}` : "Open your reading session"}
       className="tap absolute z-[9] cursor-pointer"
       style={{
         bottom: "8%",
@@ -24,12 +26,27 @@ export function CoffeeTable({ readingBooks }: { readingBooks: ReadingBook[] }) {
     >
       {/* Table-top */}
       <div className="relative">
-        <span
-          className="font-caveat absolute left-1/2 -translate-x-1/2 whitespace-nowrap"
-          style={{ top: "-24px", fontSize: "15px", color: "rgba(236,220,176,0.78)" }}
-        >
-          {has ? "tap to read ›" : "your current read sits here"}
-        </span>
+        {active ? (
+          <span
+            className="font-caveat absolute left-1/2 -translate-x-1/2 whitespace-nowrap overflow-hidden text-ellipsis"
+            style={{
+              top: "-40px",
+              maxWidth: "260px",
+              fontSize: "16px",
+              color: "rgba(236,220,176,0.92)",
+              textAlign: "center",
+            }}
+          >
+            {active.title} <span style={{ color: "rgba(236,220,176,0.55)" }}>›</span>
+          </span>
+        ) : (
+          <span
+            className="font-caveat absolute left-1/2 -translate-x-1/2 whitespace-nowrap"
+            style={{ top: "-24px", fontSize: "15px", color: "rgba(236,220,176,0.78)" }}
+          >
+            your current read sits here
+          </span>
+        )}
 
         {/* Books resting on the table */}
         <div
@@ -44,12 +61,12 @@ export function CoffeeTable({ readingBooks }: { readingBooks: ReadingBook[] }) {
         >
           {has && (
             <>
-              {/* Flat stack of up to 3 books on the left */}
+              {/* Flat stack of extras on the left (only when 2+ active reads) */}
               <div
                 className="absolute"
                 style={{ left: "20px", bottom: "6px", width: "110px" }}
               >
-                {stack.slice(1, 4).map((_, i) => {
+                {stack.slice(1).map((_, i) => {
                   const gradients = [
                     "linear-gradient(180deg,#4a1c1c 0%,#2a0e0c 100%)",
                     "linear-gradient(180deg,#b58c4a 0%,#6a4520 100%)",
@@ -79,31 +96,57 @@ export function CoffeeTable({ readingBooks }: { readingBooks: ReadingBook[] }) {
                 })}
               </div>
 
-              {/* Open book on the right */}
-              <span
-                className="absolute"
-                style={{
-                  right: "20px",
-                  bottom: "6px",
-                  width: "130px",
-                  height: "11px",
-                  background:
-                    "linear-gradient(180deg,#f3e6c4 0%,#d4c094 100%)",
-                  borderRadius: "1px",
-                  boxShadow: "0 4px 10px rgba(0,0,0,0.55)",
-                  transform: "rotate(-3deg)",
-                }}
-              >
+              {/* Active book cover standing on the right of the table */}
+              {active?.cover_url ? (
                 <span
-                  aria-hidden
-                  className="absolute top-0 h-full"
+                  className="absolute"
                   style={{
-                    left: "50%",
-                    width: "1px",
-                    background: "#1a0905",
+                    right: "26px",
+                    bottom: "4px",
+                    width: "26px",
+                    height: "38px",
+                    borderRadius: "1px",
+                    overflow: "hidden",
+                    boxShadow:
+                      "0 6px 12px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.12)",
+                    transform: "rotate(-3deg)",
                   }}
-                />
-              </span>
+                >
+                  <Image
+                    src={active.cover_url}
+                    alt=""
+                    aria-hidden
+                    fill
+                    sizes="26px"
+                    style={{ objectFit: "cover" }}
+                  />
+                </span>
+              ) : (
+                <span
+                  className="absolute"
+                  style={{
+                    right: "20px",
+                    bottom: "6px",
+                    width: "130px",
+                    height: "11px",
+                    background:
+                      "linear-gradient(180deg,#f3e6c4 0%,#d4c094 100%)",
+                    borderRadius: "1px",
+                    boxShadow: "0 4px 10px rgba(0,0,0,0.55)",
+                    transform: "rotate(-3deg)",
+                  }}
+                >
+                  <span
+                    aria-hidden
+                    className="absolute top-0 h-full"
+                    style={{
+                      left: "50%",
+                      width: "1px",
+                      background: "#1a0905",
+                    }}
+                  />
+                </span>
+              )}
               {/* Bookmark */}
               <span
                 aria-hidden

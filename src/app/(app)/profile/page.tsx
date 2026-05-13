@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/user";
 import Link from "next/link";
 import { GoodreadsImportPanel } from "./goodreads-import-panel";
+import { signOutAction } from "./sign-out-action";
 import { TokenPanel } from "./token-panel";
 
 export default async function ProfilePage() {
@@ -74,6 +75,16 @@ export default async function ProfilePage() {
 
       <GoodreadsImportPanel />
       <TokenPanel />
+
+      <form action={signOutAction} className="mt-6">
+        <button
+          type="submit"
+          className="tap inline-flex border border-brass px-4 py-2 font-body uppercase text-brass"
+          style={{ fontSize: "10px", letterSpacing: "2px" }}
+        >
+          Sign out
+        </button>
+      </form>
     </div>
   );
 }
