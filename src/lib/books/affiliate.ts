@@ -99,18 +99,34 @@ function buildProviderUrl(provider: Provider, book: AffiliateBook): string {
   const template = provider.envTemplate ? process.env[provider.envTemplate] : undefined;
   if (template) return fillTemplate(template, book);
 
-  const url = new URL(provider.baseUrl);
-  for (const [key, value] of Object.entries(provider.params ?? {})) {
-    url.searchParams.set(key, fillTemplate(value, book));
+  if (provider.key === "bookshop") {
+    const affiliateId = process.env.NEXT_PUBLIC_BOOKSHOP_AFFILIATE_ID;
+    if (affiliateId) {
+      if (book.isbn13) {
+        return `https://bookshop.org/a/${affiliateId}/${book.isbn13}`;
+      }
+      const query = encodeURIComponent(`${book.title} ${book.author}`.trim());
+      return `https://bookshop.org/a/${affiliateId}/search?keywords=${query}`;
+    }
   }
 
   if (provider.key === "shopee") {
     const affiliateId = process.env.NEXT_PUBLIC_SHOPEE_AFFILIATE_ID;
+    const searchUrl = new URL("https://shopee.sg/search");
+    searchUrl.searchParams.set("keyword", `${book.title} ${book.author}`.trim());
     if (affiliateId) {
-      url.searchParams.set("af_id", affiliateId);
-      url.searchParams.set("utm_source", "shopee_affiliate");
-      url.searchParams.set("utm_medium", "marginalia");
+      const redir = new URL("https://s.shopee.sg/an_redir");
+      redir.searchParams.set("origin_link", searchUrl.toString());
+      redir.searchParams.set("affiliate_id", affiliateId);
+      redir.searchParams.set("sub_id", "marginalia");
+      return redir.toString();
     }
+    return searchUrl.toString();
+  }
+
+  const url = new URL(provider.baseUrl);
+  for (const [key, value] of Object.entries(provider.params ?? {})) {
+    url.searchParams.set(key, fillTemplate(value, book));
   }
 
   const tag = process.env.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG;

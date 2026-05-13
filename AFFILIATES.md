@@ -16,13 +16,20 @@ Marginalia & Co. uses a hybrid affiliate strategy on each book detail page: high
 Simple defaults work without env vars. Add provider-specific tracking when accounts are approved.
 
 ```bash
-# Shopee simple tracking fallback
+# Bookshop.org affiliate ID (numeric, from "Affiliate Profile & Lists").
+# When set, per-book links become https://bookshop.org/a/{ID}/{ISBN13}.
+# Books without an ISBN13 fall back to https://bookshop.org/a/{ID}/search?keywords=...
+NEXT_PUBLIC_BOOKSHOP_AFFILIATE_ID=
+
+# Shopee SG affiliate ID (numeric, from affiliate.shopee.sg).
+# When set, search links are wrapped through s.shopee.sg/an_redir
+# with affiliate_id and a sub_id of "marginalia" for attribution.
 NEXT_PUBLIC_SHOPEE_AFFILIATE_ID=
 
-# Amazon Associates
+# Amazon Associates tag.
 NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG=
 
-# Full dashboard-provided link templates.
+# Optional: full dashboard-provided link templates that override the above.
 # Supported placeholders:
 # {query}, {encodedQuery}, {title}, {encodedTitle}, {author}, {encodedAuthor}, {isbn13}
 NEXT_PUBLIC_BOOKSHOP_AFFILIATE_TEMPLATE=
