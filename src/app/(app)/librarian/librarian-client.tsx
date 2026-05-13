@@ -132,7 +132,7 @@ export function LibrarianClient() {
   };
 
   return (
-    <div className="px-4 pt-10">
+    <div className="px-4 pt-10 pb-24">
       <h1 className="font-display text-3xl text-brass-bright">The Librarian</h1>
       <p className="mt-1 font-display italic text-parchment-dim">
         “Pull up a chair. What mood are we in tonight?”

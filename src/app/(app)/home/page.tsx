@@ -85,7 +85,7 @@ export default async function HomePage() {
 
   return (
     <div
-      className="room-vignette relative w-full overflow-hidden bg-ink"
+      className="room-vignette relative mx-auto w-full max-w-[440px] overflow-hidden bg-ink"
       style={{ height: "calc(100dvh - 72px - env(safe-area-inset-bottom, 0px))" }}
     >
       {/* App header */}
