@@ -40,8 +40,10 @@ html, body {
   color: var(--color-parchment);
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
+  min-height: 100%;
   overflow-x: hidden;
-  overscroll-behavior-y: none;
+  overflow-y: auto;
+  overscroll-behavior-y: auto;
   width: 100%;
 }
 

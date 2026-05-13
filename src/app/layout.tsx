@@ -59,7 +59,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-SG" className={`${display.variable} ${body.variable} ${caveat.variable} h-full antialiased`}>
+    <html lang="en-SG" className={`${display.variable} ${body.variable} ${caveat.variable} antialiased`}>
       <head>
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -69,7 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="dns-prefetch" href="https://books.google.com" />
         <link rel="dns-prefetch" href="https://covers.openlibrary.org" />
       </head>
-      <body className="min-h-full bg-mahogany text-parchment font-body">{children}</body>
+      <body className="min-h-dvh bg-mahogany text-parchment font-body">{children}</body>
     </html>
   );
 }
