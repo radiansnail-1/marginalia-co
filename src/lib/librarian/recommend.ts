@@ -5,10 +5,8 @@ import { searchBooks, type GoogleBook } from "@/lib/books/google-books";
 import {
   bookEmbeddingText,
   cosine,
-  embedTexts,
   embeddingTextHash,
   EMBEDDING_DIMENSIONS,
-  EMBEDDING_MAX_RUNTIME_TEXTS,
   EMBEDDING_MODEL,
 } from "./embeddings";
 
@@ -226,6 +224,11 @@ const moodQueries: Record<Mood, string[]> = {
   lost: ["books about finding meaning", "gentle hopeful literary fiction"],
 };
 
+const CATALOG_CANDIDATE_TIMEOUT_MS = 1200;
+const GOOGLE_CANDIDATE_TIMEOUT_MS = 3200;
+const CANDIDATE_CACHE_TIMEOUT_MS = 600;
+const TASTE_PROFILE_TIMEOUT_MS = 500;
+
 function shelfKey(title: string, author: string) {
   return `${title.trim().toLowerCase()}|${author.trim().toLowerCase()}`;
 }
@@ -435,18 +438,21 @@ async function loadWorldCandidates(mood: Mood, shelf: ShelfBook[]): Promise<Worl
   const seenGoogle = new Set(shelf.map((b) => b.googleBooksId).filter(Boolean));
   const queries = buildQueries(mood, shelf);
   const googleController = new AbortController();
-  const [catalog, batches] = await Promise.all([
+  const googleBatches = withTimeout(
+    Promise.allSettled(queries.map((q) => searchBooks(q, 6, {
+      signal: googleController.signal,
+      timeoutMs: GOOGLE_CANDIDATE_TIMEOUT_MS,
+    }))),
+    GOOGLE_CANDIDATE_TIMEOUT_MS,
+    [] as PromiseSettledResult<GoogleBook[]>[],
+    () => googleController.abort(),
+  );
+  const catalogCandidates = withTimeout(
     loadCatalogCandidates(queries, shelf),
-    withTimeout(
-      Promise.allSettled(queries.map((q) => searchBooks(q, 6, {
-        signal: googleController.signal,
-        timeoutMs: 3500,
-      }))),
-      3500,
-      [] as PromiseSettledResult<GoogleBook[]>[],
-      () => googleController.abort(),
-    ),
-  ]);
+    CATALOG_CANDIDATE_TIMEOUT_MS,
+    [] as Candidate[],
+  );
+  const [catalog, batches] = await Promise.all([catalogCandidates, googleBatches]);
   const seen = new Set<string>();
   const out: Candidate[] = catalog.slice(0, 18);
   let googleCandidates = 0;
@@ -756,56 +762,6 @@ function buildTasteProfiles(shelf: ShelfBook[], signals: RecommendationSignal[] 
   };
 }
 
-function textForCandidate(candidate: Candidate) {
-  return bookEmbeddingText({
-    title: candidate.title,
-    author: candidate.author,
-    description: candidate.description,
-    embeddingSummary: candidate.embeddingSummary,
-    subjects: candidate.subjects,
-    pageCount: candidate.pageCount,
-    publishedYear: candidate.publishedYear,
-  });
-}
-
-async function hydrateMissingEmbeddings(shelf: ShelfBook[], candidates: Candidate[], mood: Mood): Promise<number> {
-  const remainingBudget = Math.max(0, EMBEDDING_MAX_RUNTIME_TEXTS);
-  if (remainingBudget === 0) return 0;
-
-  const shelfMissing = shelf
-    .filter((b) => !b.embedding && (likedWeight(b) > 0 || dislikedWeight(b) > 0))
-    .slice(0, Math.min(remainingBudget, 4));
-  const candidateBudget = Math.max(0, remainingBudget - shelfMissing.length);
-  const candidateMissing = candidates
-    .filter((c) => !c.embedding)
-    .sort((a, b) => metadataBoost(b, shelf, mood) - metadataBoost(a, shelf, mood))
-    .slice(0, candidateBudget);
-
-  const texts = [
-    ...shelfMissing.map((b) => bookEmbeddingText(b)),
-    ...candidateMissing.map(textForCandidate),
-  ];
-  const vectors = await embedTexts(texts);
-  if (!vectors) return 0;
-
-  let cursor = 0;
-  let embedded = 0;
-  for (const book of shelfMissing) {
-    const vector = vectors[cursor++];
-    if (!vector) break;
-    book.embedding = vector;
-    embedded++;
-    void tryCacheBookEmbedding(book, vector);
-  }
-  for (const candidate of candidateMissing) {
-    const vector = vectors[cursor++];
-    if (!vector) break;
-    candidate.embedding = vector;
-    embedded++;
-  }
-  return embedded;
-}
-
 async function embeddingRecommendations(
   mood: Mood,
   shelf: ShelfBook[],
@@ -823,8 +779,8 @@ async function embeddingRecommendations(
   if (candidates.length === 0) {
     return { picks: null, diagnostics: { ...baseDiagnostics, fallbackReason: "no_world_candidates" } };
   }
-  const cacheHydrated = await hydrateCandidateCache(candidates);
-  const runtimeEmbedded = await hydrateMissingEmbeddings(shelf, candidates, mood);
+  const cacheHydrated = await withTimeout(hydrateCandidateCache(candidates), CANDIDATE_CACHE_TIMEOUT_MS, 0);
+  const runtimeEmbedded = 0;
 
   const skippedBookIds = new Set(
     signals
@@ -852,7 +808,7 @@ async function embeddingRecommendations(
     };
   }
 
-  await Promise.all(ranked.flatMap((c) => c.embedding ? [tryCacheBookEmbedding(c, c.embedding)] : []));
+  void Promise.all(ranked.flatMap((c) => c.embedding ? [tryCacheBookEmbedding(c, c.embedding)] : []));
 
   return {
     picks: ranked.map((c, index) => ({
@@ -955,10 +911,16 @@ function stubRecommendations(mood: Mood, shelf: ShelfBook[]): Recommendation[] {
 }
 
 export async function recommend(input: RecommendInput): Promise<RecommendResult> {
-  const shelf = await loadUserShelf(input.userId);
-  const signals = await loadRecommendationSignals(input.userId);
+  const [shelf, signals] = await Promise.all([
+    loadUserShelf(input.userId),
+    loadRecommendationSignals(input.userId),
+  ]);
   const inputHash = profileInputHash(shelf, signals);
-  let profiles = await loadCachedTasteProfile(input.userId, inputHash);
+  let profiles = await withTimeout(
+    loadCachedTasteProfile(input.userId, inputHash),
+    TASTE_PROFILE_TIMEOUT_MS,
+    null,
+  );
   const profileCacheHit = !!profiles;
   if (!profiles) {
     const built = buildTasteProfiles(shelf, signals);

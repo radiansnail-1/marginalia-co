@@ -10,17 +10,36 @@ export async function askLibrarian(mood: string): Promise<RecommendResult | { er
   const user = await getCurrentUser();
   if (!user) return { error: "Sign in first." };
   const result = await recommend({ mood: mood as Mood, userId: user.id });
-  await logRecommendationEvents(
-    user.id,
-    "shown",
-    result.picks.map((pick, index) => ({
-      bookId: pick.bookId,
-      mood,
-      rank: pick.rank ?? index + 1,
-      source: result.source,
-    })),
+  await withTimeout(
+    logRecommendationEvents(
+      user.id,
+      "shown",
+      result.picks.map((pick, index) => ({
+        bookId: pick.bookId,
+        mood,
+        rank: pick.rank ?? index + 1,
+        source: result.source,
+      })),
+    ),
+    250,
   );
   return result;
+}
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | null> {
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => resolve(null), ms);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      () => {
+        clearTimeout(timer);
+        resolve(null);
+      },
+    );
+  });
 }
 
 export async function saveLibrarianPick(
