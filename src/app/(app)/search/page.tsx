@@ -87,56 +87,82 @@ export default function SearchPage() {
     setScanning(false);
   }, []);
 
-  const startScan = async () => {
+  const startScan = () => {
     if (!navigator.mediaDevices?.getUserMedia) {
       setNote("Camera access is unavailable. Type the ISBN instead.");
       return;
     }
 
-    try {
-      const [{ BrowserMultiFormatOneDReader }, { BarcodeFormat, DecodeHintType }] = await Promise.all([
-        import("@zxing/browser"),
-        import("@zxing/library"),
-      ]);
-      const hints = new Map();
-      hints.set(DecodeHintType.POSSIBLE_FORMATS, [
-        BarcodeFormat.EAN_13,
-        BarcodeFormat.EAN_8,
-        BarcodeFormat.UPC_A,
-      ]);
+    setNote(null);
+    setScanning(true);
+  };
 
-      setScanning(true);
-      await new Promise((resolve) => setTimeout(resolve, 0));
+  useEffect(() => {
+    if (!scanning) return;
+
+    let disposed = false;
+
+    const startScanner = async () => {
       const video = videoRef.current;
       if (!video) {
-        stopScan();
+        setScanning(false);
+        setNote("Camera preview could not start. Type the ISBN instead.");
         return;
       }
 
-      const reader = new BrowserMultiFormatOneDReader(hints, {
-        delayBetweenScanAttempts: 120,
-        delayBetweenScanSuccess: 120,
-      });
-      const controls = await reader.decodeFromConstraints(
-        { video: { facingMode: { ideal: "environment" } }, audio: false },
-        video,
-        (result, _error, activeControls) => {
-          const code = result?.getText()?.trim();
-          if (!code) return;
-          activeControls.stop();
+      try {
+        const [{ BrowserMultiFormatOneDReader }, { BarcodeFormat, DecodeHintType }] = await Promise.all([
+          import("@zxing/browser"),
+          import("@zxing/library"),
+        ]);
+        const hints = new Map();
+        hints.set(DecodeHintType.POSSIBLE_FORMATS, [
+          BarcodeFormat.EAN_13,
+          BarcodeFormat.EAN_8,
+          BarcodeFormat.UPC_A,
+        ]);
+
+        const reader = new BrowserMultiFormatOneDReader(hints, {
+          delayBetweenScanAttempts: 120,
+          delayBetweenScanSuccess: 120,
+        });
+        const controls = await reader.decodeFromConstraints(
+          { video: { facingMode: { ideal: "environment" } }, audio: false },
+          video,
+          (result, _error, activeControls) => {
+            const code = result?.getText()?.trim();
+            if (!code) return;
+            activeControls.stop();
+            scannerControlsRef.current = null;
+            setScanning(false);
+            setQ(code);
+            setNote(`Scanned ISBN ${code}.`);
+            runSearch(code);
+          },
+        );
+
+        if (disposed) {
+          controls.stop();
+          return;
+        }
+        scannerControlsRef.current = controls;
+      } catch {
+        if (!disposed) {
           scannerControlsRef.current = null;
           setScanning(false);
-          setQ(code);
-          setNote(`Scanned ISBN ${code}.`);
-          runSearch(code);
-        },
-      );
-      scannerControlsRef.current = controls;
-    } catch {
-      stopScan();
-      setNote("Camera permission was blocked. Type the ISBN instead.");
-    }
-  };
+          setNote("Camera permission was blocked. Type the ISBN instead.");
+        }
+      }
+    };
+
+    void startScanner();
+
+    return () => {
+      disposed = true;
+      scannerControlsRef.current?.stop();
+      scannerControlsRef.current = null;
+    };
+  }, [runSearch, scanning]);
 
   const onAdd = (g: SearchBook) => {
     if (savingIds.has(g.resultKey) || localStatuses[g.resultKey] || g.shelfStatus) return;
