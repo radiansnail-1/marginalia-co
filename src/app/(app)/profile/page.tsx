@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/user";
 import Link from "next/link";
+import { GoodreadsImportPanel } from "./goodreads-import-panel";
 import { TokenPanel } from "./token-panel";
 
 export default async function ProfilePage() {
@@ -40,20 +41,20 @@ export default async function ProfilePage() {
             </div>
           </div>
         </div>
-        <div>
+        <div className="min-w-0">
           <div className="font-display text-lg text-parchment">{new Date().getFullYear()} reading goal</div>
           <div className="text-sm text-parchment-dim">{goal - done} to go</div>
         </div>
       </section>
 
-      <section className="mt-5 rounded-md bg-mahogany-2 p-5 ring-1 ring-brass/20">
+      <section className="mt-5 min-w-0 overflow-hidden rounded-md bg-mahogany-2 p-5 ring-1 ring-brass/20">
         <div className="font-body uppercase text-brass-bright" style={{ fontSize: "10px", letterSpacing: "2.5px" }}>
           Book fund
         </div>
-        <p className="mt-2 font-display text-xl text-parchment">
+        <p className="mt-2 max-w-full break-words font-display text-lg leading-snug text-parchment" style={{ overflowWrap: "anywhere" }}>
           Help buy books for under-resourced readers.
         </p>
-        <p className="mt-2 text-sm leading-relaxed text-parchment-dim">
+        <p className="mt-2 max-w-full break-words text-sm leading-relaxed text-parchment-dim" style={{ overflowWrap: "anywhere", wordBreak: "break-word" }}>
           A portion of any future Marginalia profits will go toward book access. 100% of direct donations go to the book fund.
         </p>
         {donationUrl ? (
@@ -71,6 +72,7 @@ export default async function ProfilePage() {
         )}
       </section>
 
+      <GoodreadsImportPanel />
       <TokenPanel />
     </div>
   );

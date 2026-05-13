@@ -17,7 +17,16 @@ type SearchResult = GoogleBook & {
 export type SearchBook = ShelfTaggedBook<SearchResult>;
 
 export type SearchActionResult =
-  | { ok: true; books: SearchBook[] }
+  | {
+      ok: true;
+      books: SearchBook[];
+      meta: {
+        elapsedMs: number;
+        partial: boolean;
+        sources: Record<SearchResult["source"], number>;
+        unavailable: Array<"google" | "openlibrary" | "catalog">;
+      };
+    }
   | { ok: false; error: "api" | "rate-limit" | "timeout" | "unknown"; books: [] };
 
 // Strip edition/format suffixes so different printings collapse into one row.
@@ -136,6 +145,15 @@ function fromOpenLibrary(book: OpenLibraryBook): SearchResult {
   };
 }
 
+function emptyMeta(startedAt: number): Extract<SearchActionResult, { ok: true }>["meta"] {
+  return {
+    elapsedMs: Date.now() - startedAt,
+    partial: false,
+    sources: { catalog: 0, google: 0, openlibrary: 0 },
+    unavailable: [],
+  };
+}
+
 function identityKeys(book: SearchResult): string[] {
   return [
     book.catalogBookId ? `catalog:${book.catalogBookId}` : "",
@@ -235,7 +253,8 @@ function rankForReader<T extends Pick<GoogleBook, "author" | "subjects">>(books:
 }
 
 export async function searchAction(query: string): Promise<SearchActionResult> {
-  if (!query.trim()) return { ok: true, books: [] };
+  const startedAt = Date.now();
+  if (!query.trim()) return { ok: true, books: [], meta: emptyMeta(startedAt) };
   try {
     const providerQuery = isbnSearchQuery(query) ?? query;
     const [supabase, user] = await Promise.all([
@@ -253,6 +272,8 @@ export async function searchAction(query: string): Promise<SearchActionResult> {
         () => ({ ok: true as const, books: [] as OpenLibraryBook[] }),
       ),
     ]);
+    const unavailable: Array<"google" | "openlibrary" | "catalog"> = [];
+    if (!googleResult.ok) unavailable.push("google");
     const rawBooks = googleResult.ok ? googleResult.books : [];
     const openLibraryBooks = openLibraryResult.books;
     const deduped = mergeResults(
@@ -263,8 +284,18 @@ export async function searchAction(query: string): Promise<SearchActionResult> {
     if (deduped.length === 0 && !googleResult.ok) throw googleResult.error;
     const taste = user ? await loadTasteSignals(supabase, user.id) : null;
     const books = (taste ? rankForReader(deduped, taste) : deduped).slice(0, 12);
+    const meta: Extract<SearchActionResult, { ok: true }>["meta"] = {
+      elapsedMs: Date.now() - startedAt,
+      partial: unavailable.length > 0,
+      sources: {
+        catalog: books.filter((book) => book.source === "catalog").length,
+        google: books.filter((book) => book.source === "google").length,
+        openlibrary: books.filter((book) => book.source === "openlibrary").length,
+      },
+      unavailable,
+    };
     if (!user || books.length === 0) {
-      return { ok: true, books: books.map((book) => ({ ...book, shelfStatus: null })) };
+      return { ok: true, books: books.map((book) => ({ ...book, shelfStatus: null })), meta };
     }
 
     const catalogBookIds = [...new Set(books.map((book) => book.catalogBookId).filter(Boolean) as string[])];
@@ -277,10 +308,12 @@ export async function searchAction(query: string): Promise<SearchActionResult> {
       openLibraryIds.length ? `open_library_id.in.(${openLibraryIds.join(",")})` : "",
       isbn13s.length ? `isbn_13.in.(${isbn13s.join(",")})` : "",
     ].filter(Boolean);
-    const { data: catalogRows } = await supabase
-      .from("books")
-      .select("id, google_books_id, open_library_id, isbn_13")
-      .or(catalogFilters.join(","));
+    const { data: catalogRows } = catalogFilters.length
+      ? await supabase
+          .from("books")
+          .select("id, google_books_id, open_library_id, isbn_13")
+          .or(catalogFilters.join(","))
+      : { data: [] };
 
     const bookIds = (catalogRows ?? []).map((row) => row.id as string);
     let shelfRows: Array<{ book_id: string; status: string }> = [];
@@ -308,6 +341,7 @@ export async function searchAction(query: string): Promise<SearchActionResult> {
         })),
         shelfRows,
       ),
+      meta,
     };
   } catch (err) {
     if (err instanceof GoogleBooksApiError) {
@@ -371,12 +405,30 @@ export async function addToPile(g: GoogleBook): Promise<
 
     if (insErr) {
       if (insErr.code === "23505") {
-        const { data: racedBook } = await supabase
-          .from("books")
-          .select("id")
-          .eq("google_books_id", g.googleBooksId)
-          .maybeSingle();
-        bookId = racedBook?.id as string | undefined;
+        if (g.googleBooksId) {
+          const { data: racedBook } = await supabase
+            .from("books")
+            .select("id")
+            .eq("google_books_id", g.googleBooksId)
+            .maybeSingle();
+          bookId = racedBook?.id as string | undefined;
+        }
+        if (!bookId && g.openLibraryId) {
+          const { data: racedBook } = await supabase
+            .from("books")
+            .select("id")
+            .eq("open_library_id", g.openLibraryId)
+            .maybeSingle();
+          bookId = racedBook?.id as string | undefined;
+        }
+        if (!bookId && g.isbn13) {
+          const { data: racedBook } = await supabase
+            .from("books")
+            .select("id")
+            .eq("isbn_13", g.isbn13)
+            .maybeSingle();
+          bookId = racedBook?.id as string | undefined;
+        }
       }
       if (!bookId) return { error: "Could not save that book. Try again." };
     } else {

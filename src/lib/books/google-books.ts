@@ -55,7 +55,11 @@ function pickIsbn(ids: Array<{ type: string; identifier: string }> | undefined):
   return ids.find((i) => i.type === "ISBN_13")?.identifier ?? null;
 }
 
-export async function searchBooks(query: string, limit = 12): Promise<GoogleBook[]> {
+export async function searchBooks(
+  query: string,
+  limit = 12,
+  options: { timeoutMs?: number; signal?: AbortSignal } = {},
+): Promise<GoogleBook[]> {
   if (!query.trim()) return [];
   const key = process.env.GOOGLE_BOOKS_API_KEY;
   const url = new URL("https://www.googleapis.com/books/v1/volumes");
@@ -65,7 +69,10 @@ export async function searchBooks(query: string, limit = 12): Promise<GoogleBook
   if (key) url.searchParams.set("key", key);
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 9000);
+  const abortFromParent = () => controller.abort();
+  if (options.signal?.aborted) controller.abort();
+  else options.signal?.addEventListener("abort", abortFromParent, { once: true });
+  const timeoutId = setTimeout(() => controller.abort(), options.timeoutMs ?? 9000);
 
   let res: Response;
   try {
@@ -77,6 +84,7 @@ export async function searchBooks(query: string, limit = 12): Promise<GoogleBook
     throw new GoogleBooksApiError(0, (err as Error).message);
   } finally {
     clearTimeout(timeoutId);
+    options.signal?.removeEventListener("abort", abortFromParent);
   }
 
   if (!res.ok) throw new GoogleBooksApiError(res.status);

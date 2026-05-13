@@ -40,7 +40,9 @@ html, body {
   color: var(--color-parchment);
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
+  overflow-x: hidden;
   overscroll-behavior-y: none;
+  width: 100%;
 }
 
 button, a, [role="button"] { touch-action: manipulation; }

@@ -37,14 +37,23 @@ export async function startSession(userBookId: string) {
 }
 
 export async function endSession(sessionId: string, shouldRevalidate = true) {
-  const supabase = await createClient();
+  const [supabase, user] = await Promise.all([createClient(), getCurrentUser()]);
+  if (!user) return { error: "Not signed in" };
   const now = new Date();
   const { data: session } = await supabase
     .from("reading_sessions")
-    .select("started_at")
+    .select("started_at, user_book_id")
     .eq("id", sessionId)
     .maybeSingle();
   if (!session) return { error: "Session not found" };
+
+  const { data: userBook } = await supabase
+    .from("user_books")
+    .select("id, user_id")
+    .eq("id", session.user_book_id)
+    .maybeSingle();
+  if (!userBook || userBook.user_id !== user.id) return { error: "Session not found" };
+
   const startedAt = new Date(session.started_at);
   const durationSeconds = Math.max(
     0,
@@ -134,5 +143,6 @@ export async function abandonBook(userBookId: string) {
   revalidatePath("/reading");
   revalidatePath("/pile");
   revalidatePath("/home");
+  revalidatePath("/shelf");
   return { ok: true };
 }

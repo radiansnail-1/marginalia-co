@@ -62,6 +62,26 @@ npm run preembed:books -- --limit=10000 --batch=10
 
 The embedding client is OpenAI-compatible. OpenAI works by default; other compatible providers can be used by changing `EMBEDDING_BASE_URL` and `EMBEDDING_MODEL`.
 
+Legacy `OPENAI_API_KEY`, `OPENAI_BASE_URL`, `OPENAI_EMBEDDING_MODEL`, and `OPENAI_EMBEDDING_DIMENSIONS` env vars still work. Runtime embedding is capped by `EMBEDDING_MAX_RUNTIME_TEXTS`; set it to `0` for cached-only recommendations.
+
+To backfill sourced descriptions before embedding, run the enrichment pass. It searches Google Books first, then Open Library, accepts only confident title+author matches, and runs three books at a time by default:
+
+```bash
+npm run enrich:descriptions -- --dry-run --limit=100
+npm run enrich:descriptions -- --limit=10000 --concurrency=3
+```
+
+Launch checklist for the Librarian brain:
+
+```bash
+npm run enrich:descriptions -- --limit=10000 --concurrency=3
+npm run preembed:books -- --dry-run --limit=10000
+npm run preembed:books -- --limit=10000 --batch=10
+npm run verify:brain -- --limit=10000
+```
+
+After the data checks are green, confirm `supabase/migrations/0013_librarian_learning.sql` and `supabase/migrations/0014_book_embedding_summaries.sql` are applied in the target Supabase project, then run browser QA for search partial results, Goodreads import preview/commit, ISBN manual fallback, DNF from pile/reading, Librarian actions, and mobile layout before release.
+
 ## Contributing
 
 Good first areas:

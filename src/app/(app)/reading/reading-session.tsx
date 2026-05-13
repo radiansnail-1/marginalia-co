@@ -142,10 +142,10 @@ export function ReadingSession({
         <div
           className="font-display"
           style={{
-            fontSize: "60px",
+            fontSize: "52px",
             fontWeight: 500,
             color: "var(--color-brass-bright)",
-            letterSpacing: "3px",
+            letterSpacing: "2px",
             fontVariantNumeric: "tabular-nums",
             lineHeight: 1,
           }}

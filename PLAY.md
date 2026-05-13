@@ -15,6 +15,7 @@ Marginalia & Co. should ship to Google Play as a Trusted Web Activity (TWA) arou
   - `public/icons/maskable-512.png`
   - `public/icons/play-store-icon-512.png`
 - Privacy policy route: `/privacy`
+- TWA verification is blocked until the final Android signing SHA-256 fingerprint exists and `public/.well-known/assetlinks.json` has been generated from `public/.well-known/assetlinks.template.json`.
 
 ## Requirements Before First Upload
 
@@ -55,13 +56,38 @@ Icon: public/icons/play-store-icon-512.png
 
 ## Digital Asset Links
 
-After `bubblewrap fingerprint`, copy `public/.well-known/assetlinks.template.json` to `public/.well-known/assetlinks.json` and replace `YOUR:SHA256:FINGERPRINT:HERE`.
+### How to get the SHA-256 fingerprint
+
+For the Play-distributed app, use the **App signing key certificate** SHA-256 from Google Play Console, not the local upload key, once Play App Signing is enabled:
+
+1. Open Play Console for `Marginalia & Co.`.
+2. Go to **Test and release > Setup > App signing**. If your Console uses the newer label, this may be under **Test and release > App integrity**.
+3. In **App signing key certificate**, copy the **SHA-256 certificate fingerprint**.
+4. Keep the package name as `com.radiansnail.marginalia` when generating `assetlinks.json`.
+
+Before the app is uploaded to Play, `bubblewrap fingerprint` can show the fingerprint for the local keystore that Bubblewrap built with. That is useful for local wrapper testing, but the production `assetlinks.json` should use the Play App Signing SHA-256 after Play has generated or accepted the final app signing key.
+
+After `bubblewrap fingerprint`, generate the real Digital Asset Links file from the template:
+
+```bash
+npm run twa:assetlinks -- --fingerprint AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99
+```
+
+The command writes `public/.well-known/assetlinks.json` and refuses empty, malformed, placeholder, or wrong-package inputs. Do not commit an `assetlinks.json` file that still contains `YOUR:SHA256:FINGERPRINT:HERE`.
 
 The file must be reachable at:
 
 ```text
 https://YOUR-DOMAIN/.well-known/assetlinks.json
 ```
+
+After committing, deploying, and waiting for Vercel to go green, verify the production response:
+
+```bash
+npm run twa:verify -- --fingerprint AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99 --url https://YOUR-DOMAIN/.well-known/assetlinks.json
+```
+
+The verifier requires a `200` JSON response for package `com.radiansnail.marginalia` with the exact supplied fingerprint. A template-only repo state is not Google Play ready.
 
 Without a valid asset links file, Android can show browser chrome instead of a clean app shell.
 For the full-screen reading-room feel, keep the web manifest at `display: fullscreen`;

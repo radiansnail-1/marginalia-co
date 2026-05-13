@@ -4,6 +4,7 @@ import { TimeOfDayNote } from "@/components/room/time-of-day-note";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/supabase/user";
 import { toRoman } from "@/lib/roman";
+import { HOME_SHELF_VISIBLE_CAPACITY } from "@/components/room/bookshelf-layout";
 import type { SpineBook } from "@/components/room/spine";
 import type { ReadingBook } from "@/components/room/coffee-table";
 
@@ -28,7 +29,7 @@ export default async function HomePage() {
 
   const yearStart = new Date(new Date().getFullYear(), 0, 1).toISOString();
 
-  const [{ data: finishedRaw }, { data: readingRaw }] = await Promise.all([
+  const [{ data: finishedRaw }, { count: finishedCount }, { data: readingRaw }] = await Promise.all([
     supabase
       .from("user_books")
       .select(
@@ -37,7 +38,14 @@ export default async function HomePage() {
       .eq("user_id", userId)
       .eq("status", "finished")
       .gte("finished_at", yearStart)
-      .order("finished_at", { ascending: false }),
+      .order("finished_at", { ascending: false })
+      .limit(HOME_SHELF_VISIBLE_CAPACITY),
+    supabase
+      .from("user_books")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .eq("status", "finished")
+      .gte("finished_at", yearStart),
     supabase
       .from("user_books")
       .select(
@@ -72,7 +80,8 @@ export default async function HomePage() {
     }));
 
   const year = new Date().getFullYear();
-  const volumeCount = finished.length;
+  const volumeCount = finishedCount ?? finished.length;
+  const hiddenFinishedCount = Math.max(0, volumeCount - finished.length);
 
   return (
     <div
@@ -106,38 +115,49 @@ export default async function HomePage() {
 
       {/* Stats row */}
       <section className="absolute left-0 right-0 z-[70] flex items-end justify-between px-6 pt-1" style={{ top: "62px" }}>
-        <div className="flex items-baseline gap-2.5">
-          <div
-            className="font-display italic"
-            style={{
-              fontSize: "44px",
-              lineHeight: 1,
-              color: "var(--color-brass-bright)",
-              fontWeight: 500,
-            }}
-          >
-            {volumeCount}
+        <div>
+          <div className="flex items-baseline gap-2.5">
+            <div
+              className="font-display italic"
+              style={{
+                fontSize: "44px",
+                lineHeight: 1,
+                color: "var(--color-brass-bright)",
+                fontWeight: 500,
+              }}
+            >
+              {volumeCount}
+            </div>
+            <div
+              className="font-body uppercase"
+              style={{
+                fontSize: "10px",
+                letterSpacing: "2.5px",
+                color: "rgba(236,220,176,0.55)",
+                lineHeight: 1.4,
+                paddingBottom: "6px",
+              }}
+            >
+              Volumes<br />
+              {toRoman(year)}
+            </div>
           </div>
-          <div
-            className="font-body uppercase"
-            style={{
-              fontSize: "10px",
-              letterSpacing: "2.5px",
-              color: "rgba(236,220,176,0.55)",
-              lineHeight: 1.4,
-              paddingBottom: "6px",
-            }}
-          >
-            Volumes<br />
-            {toRoman(year)}
-          </div>
+          {hiddenFinishedCount > 0 && (
+            <Link
+              href="/shelf"
+              className="tap mt-1 block font-body uppercase text-brass-bright"
+              style={{ fontSize: "8px", letterSpacing: "1.5px", lineHeight: 1.35 }}
+            >
+              {finished.length} here +{hiddenFinishedCount} stacked
+            </Link>
+          )}
         </div>
-        <TimeOfDayNote />
+        {hiddenFinishedCount === 0 && <TimeOfDayNote />}
       </section>
 
       {/* Room — absolute below header/stats */}
       <div className="absolute inset-x-0 z-[10]" style={{ top: "128px", bottom: "0" }}>
-        <Room finished={finished} reading={reading} />
+        <Room finished={finished} reading={reading} hiddenFinishedCount={hiddenFinishedCount} />
       </div>
     </div>
   );

@@ -6,6 +6,8 @@ import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { searchAction, addToPile } from "./actions";
 import type { SearchBook, UserBookStatus } from "./actions";
 
+type SearchMeta = Extract<Awaited<ReturnType<typeof searchAction>>, { ok: true }>["meta"];
+
 type BarcodeDetectorConstructor = {
   new (options?: { formats?: string[] }): {
     detect(source: HTMLVideoElement): Promise<Array<{ rawValue: string }>>;
@@ -16,7 +18,7 @@ type SearchState =
   | { kind: "idle" }
   | { kind: "searching"; query: string }
   | { kind: "empty"; query: string }
-  | { kind: "results"; query: string; books: SearchBook[] }
+  | { kind: "results"; query: string; books: SearchBook[]; meta: SearchMeta }
   | { kind: "error"; query: string; error: "api" | "rate-limit" | "timeout" | "unknown" };
 
 const statusLabel: Record<UserBookStatus, string> = {
@@ -62,7 +64,8 @@ export default function SearchPage() {
       if (res.books.length === 0) {
         setState({ kind: "empty", query: trimmed });
       } else {
-        setState({ kind: "results", query: trimmed, books: res.books });
+        setState({ kind: "results", query: trimmed, books: res.books, meta: res.meta });
+        if (res.meta.partial) setNote("Showing partial results while Google Books is unavailable.");
       }
     });
   }, []);
@@ -237,7 +240,7 @@ export default function SearchPage() {
             </button>
           )}
         </div>
-        <div className="mt-3 flex gap-2">
+        <div className="mt-3 flex flex-col items-start gap-2">
           <button
             type="button"
             onClick={scanning ? stopScan : startScan}
@@ -246,7 +249,10 @@ export default function SearchPage() {
           >
             {scanning ? "Stop scan" : "Scan ISBN"}
           </button>
-          <span className="self-center font-caveat text-parchment-dim" style={{ fontSize: "14px" }}>
+          <span
+            className="min-w-0 max-w-full font-caveat leading-tight text-parchment-dim"
+            style={{ fontSize: "14px", overflowWrap: "anywhere" }}
+          >
             camera if supported, manual ISBN always works
           </span>
         </div>
@@ -267,6 +273,12 @@ export default function SearchPage() {
       )}
 
       <ul className="mt-6 space-y-3">
+        {state.kind === "results" && (
+          <li className="font-body uppercase text-parchment-dim" style={{ fontSize: "9px", letterSpacing: "1.5px" }}>
+            {state.books.length} found in {state.meta.elapsedMs}ms
+            {state.meta.partial ? " - partial results" : ""}
+          </li>
+        )}
         {results.map((g) => {
           const shelfStatus = localStatuses[g.resultKey] ?? g.shelfStatus;
           const saving = savingIds.has(g.resultKey);

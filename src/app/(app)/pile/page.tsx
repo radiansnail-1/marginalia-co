@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/user";
 import { PileRow } from "./pile-row";
 
 type BookRow = {
@@ -16,9 +17,8 @@ function pick<T>(b: T | T[] | null | undefined): T | null {
 }
 
 export default async function PilePage() {
-  const supabase = await createClient();
-  const { data: claimsResult } = await supabase.auth.getClaims();
-  const uid = claimsResult?.claims.sub ?? "";
+  const [supabase, user] = await Promise.all([createClient(), getCurrentUser()]);
+  const uid = user?.id ?? "";
 
   const { data: rows } = await supabase
     .from("user_books")

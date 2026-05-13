@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BOOKSHELF_ROWS, distributeBooksIntoShelfRows } from "./bookshelf-layout";
 import { Spine, type SpineBook } from "./spine";
 
 // Outer wrapper is a <div> (not a <Link>) because each <Spine> is itself a
@@ -7,24 +8,14 @@ import { Spine, type SpineBook } from "./spine";
 // 7-row shelf-unit fills the wall area (top:14 / bottom:14, abs).
 // Rows 1-3 reserve 144px of left padding so the window can sit upper-left.
 
-export function Bookshelf({ books }: { books: SpineBook[] }) {
-  const ROWS = 7;
-
-  // Distribute books from the top row downward so a growing collection fills
-  // like a visible bookcase, not a stack rising from the floor.
-  const rowBooks: SpineBook[][] = Array.from({ length: ROWS }, () => []);
-  let r = 0;
-  for (const b of books) {
-    rowBooks[r].push(b);
-    if (rowBooks[r].length >= 18) r = Math.min(ROWS - 1, r + 1);
-  }
-
+export function Bookshelf({ books, hiddenBookCount = 0 }: { books: SpineBook[]; hiddenBookCount?: number }) {
+  const rowBooks = distributeBooksIntoShelfRows(books);
   const empty = books.length === 0;
 
   return (
     <Link
       href="/shelf"
-      aria-label="Open your collection"
+      aria-label={hiddenBookCount > 0 ? `Open your collection, ${hiddenBookCount} more in the stacks` : "Open your collection"}
       className="tap absolute left-[14px] right-[14px] top-[14px] bottom-[14px] z-[3] flex flex-col bg-gradient-to-b from-[#1a0905] to-[#2c140a] p-1 shadow-[0_10px_30px_rgba(0,0,0,0.7),inset_0_0_0_2px_#5a2a18]"
     >
       {/* Side pilasters */}
@@ -49,11 +40,11 @@ export function Bookshelf({ books }: { books: SpineBook[] }) {
 
       {rowBooks.map((row, i) => {
         const indented = i < 3;
-        const isLast = i === ROWS - 1;
+        const isLast = i === BOOKSHELF_ROWS - 1;
         return (
           <div
             key={i}
-            className="relative flex flex-1 items-end"
+            className="relative flex flex-1 items-end overflow-hidden"
             style={{
               paddingLeft: indented ? "144px" : "4px",
               paddingRight: "4px",
@@ -81,18 +72,24 @@ export function Bookshelf({ books }: { books: SpineBook[] }) {
 
       {empty && (
         <div
-          className="font-caveat absolute inset-0 z-[6] flex flex-col items-center justify-end gap-3 pb-16 pr-3 text-center text-2xl"
+          className="font-caveat absolute inset-0 z-[6] flex flex-col items-center justify-end gap-3 px-4 pb-16 text-center text-2xl"
           style={{ color: "rgba(236,220,176,0.55)" }}
         >
-          <span>your spines will appear here</span>
+          <span className="max-w-full leading-tight" style={{ maxWidth: "220px", overflowWrap: "anywhere" }}>
+            your spines will appear here
+          </span>
           <span
             className="font-body uppercase"
             style={{
               border: "1px solid rgba(216,176,106,0.55)",
               color: "var(--color-brass-bright)",
-              fontSize: "9px",
-              letterSpacing: "2px",
-              padding: "6px 10px",
+              fontSize: "8px",
+              letterSpacing: "1.2px",
+              lineHeight: 1.45,
+              maxWidth: "210px",
+              overflowWrap: "anywhere",
+              padding: "6px 8px",
+              whiteSpace: "normal",
             }}
           >
             Tap to add your first book
