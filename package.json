@@ -10,8 +10,15 @@
     "seed:books": "node scripts/seed-curated-books.mjs",
     "seed:goodreads": "node scripts/seed-goodreads-books.mjs",
     "preembed:books": "node scripts/preembed-books.mjs",
+    "summarize:embeddings": "node scripts/generate-embedding-summaries.mjs",
+    "summarize:export": "node scripts/export-embedding-summary-work.mjs",
+    "summarize:apply": "node scripts/apply-embedding-summaries.mjs",
+    "verify:brain": "node scripts/verify-brain-readiness.mjs",
+    "twa:assetlinks": "node scripts/twa-assetlinks.mjs generate",
+    "twa:verify": "node scripts/twa-assetlinks.mjs verify",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --test"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.95.1",

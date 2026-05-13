@@ -6,6 +6,8 @@ const VolumeSchema = z.object({
     title: z.string(),
     authors: z.array(z.string()).optional(),
     publishedDate: z.string().optional(),
+    description: z.string().optional(),
+    language: z.string().optional(),
     pageCount: z.number().optional(),
     categories: z.array(z.string()).optional(),
     industryIdentifiers: z
@@ -27,6 +29,12 @@ export type GoogleBook = {
   title: string;
   author: string;
   isbn13: string | null;
+  openLibraryId?: string | null;
+  catalogBookId?: string | null;
+  resultKey?: string;
+  source?: "catalog" | "google" | "openlibrary";
+  language?: string | null;
+  description?: string | null;
   publishedYear: number | null;
   pageCount: number | null;
   subjects: string[];
@@ -47,7 +55,11 @@ function pickIsbn(ids: Array<{ type: string; identifier: string }> | undefined):
   return ids.find((i) => i.type === "ISBN_13")?.identifier ?? null;
 }
 
-export async function searchBooks(query: string, limit = 12): Promise<GoogleBook[]> {
+export async function searchBooks(
+  query: string,
+  limit = 12,
+  options: { timeoutMs?: number; signal?: AbortSignal } = {},
+): Promise<GoogleBook[]> {
   if (!query.trim()) return [];
   const key = process.env.GOOGLE_BOOKS_API_KEY;
   const url = new URL("https://www.googleapis.com/books/v1/volumes");
@@ -57,7 +69,10 @@ export async function searchBooks(query: string, limit = 12): Promise<GoogleBook
   if (key) url.searchParams.set("key", key);
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 9000);
+  const abortFromParent = () => controller.abort();
+  if (options.signal?.aborted) controller.abort();
+  else options.signal?.addEventListener("abort", abortFromParent, { once: true });
+  const timeoutId = setTimeout(() => controller.abort(), options.timeoutMs ?? 9000);
 
   let res: Response;
   try {
@@ -69,6 +84,7 @@ export async function searchBooks(query: string, limit = 12): Promise<GoogleBook
     throw new GoogleBooksApiError(0, (err as Error).message);
   } finally {
     clearTimeout(timeoutId);
+    options.signal?.removeEventListener("abort", abortFromParent);
   }
 
   if (!res.ok) throw new GoogleBooksApiError(res.status);
@@ -87,6 +103,8 @@ export async function searchBooks(query: string, limit = 12): Promise<GoogleBook
       title: v.volumeInfo.title,
       author: v.volumeInfo.authors?.[0] ?? "Unknown",
       isbn13: pickIsbn(v.volumeInfo.industryIdentifiers),
+      description: v.volumeInfo.description ?? null,
+      language: v.volumeInfo.language ?? null,
       publishedYear: v.volumeInfo.publishedDate
         ? parseInt(v.volumeInfo.publishedDate.slice(0, 4), 10) || null
         : null,

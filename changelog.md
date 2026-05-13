@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-05-13
+
+- Completed the Codex-authored embedding summary loop for the 10k scanned catalog set. Workers exported missing rows with `npm run summarize:export`, authored JSONL summaries under `tmp/embedding-summary-updates/`, and applied them with `npm run summarize:apply -- --model=gpt-5.5-codex-agent`.
+- Did not run `npm run summarize:embeddings`; the user explicitly wanted Codex agents to author summaries before the embedding API run.
+- Added `supabase/migrations/0014_book_embedding_summaries.sql` for `books.embedding_summary`, confidence, model, and update timestamp fields.
+- Updated embedding and recommendation code so `embedding_summary` contributes to `bookEmbeddingText` and is threaded through shelf rows, catalog candidates, cache hydration, recommendation signals, and hash checks.
+- Updated `scripts/preembed-books.mjs` and `scripts/verify-brain-readiness.mjs` to paginate with `.range(...)`, scan in deterministic `added_at`/`id` order, include `embedding_summary` in embedding text/hash checks, and report missing embedding summaries.
+- Fixed preembedding freshness logic so a row only counts as current when the actual embedding vector exists, not just when the hash matches.
+- Added retry/backoff handling for 429/5xx embedding failures; the first real preembed run hit a 429 after 8,384 of 10,000 rows, then completed after the retry/freshness fixes.
+- Verified final brain readiness with `npm run verify:brain -- --limit=10000`: scanned 10,000; embeddings current 10,000; stale 0; present 10,000; missing embedding summaries 0; missing descriptions 4,300; missing covers 9,846; user shelf rows 565; learning tables ok.
+- Verified the local branch with `npm test`, `npx tsc --noEmit`, `npm run lint`, and `npm run build`; all passed. Tests still print non-fatal Node ESM typeless-package warnings.
+- Browser-smoked local desktop routes on `http://localhost:3000`: `/home`, `/librarian` mood pick and reveal more, `/search` for `left hand of darkness`, ISBN camera-unavailable fallback, `/profile`, `/reading`, `/pile`, and `/shelf`; no browser console errors were observed.
+- Left mutation QA undone on purpose: Goodreads commit, DNF clicks, and Librarian save/not-for-me/open were not clicked against real data. True mobile viewport QA also remains pending because the available browser surface did not expose viewport resizing.
+- Left `tmp/embedding-summary-updates/` in place as the audit trail for authored summaries. No commit, push, deploy, browser-mobile pass, or TWA final verification was performed.
+
 ## 2026-05-12
 
 - Treated `0013_librarian_learning.sql` as already applied per user update and updated the release plan accordingly.
@@ -71,4 +86,4 @@
 - QA'd live public surfaces and protected redirects, made `/privacy` public, and documented remaining Android TWA asset-links work.
 - Pivoted signup away from email confirmation because Supabase default mail and Resend sandboxing were not production-ready without a verified domain.
 
-**Last updated:** 2026-05-12
+**Last updated:** 2026-05-13

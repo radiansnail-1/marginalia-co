@@ -37,14 +37,23 @@ export async function startSession(userBookId: string) {
 }
 
 export async function endSession(sessionId: string, shouldRevalidate = true) {
-  const supabase = await createClient();
+  const [supabase, user] = await Promise.all([createClient(), getCurrentUser()]);
+  if (!user) return { error: "Not signed in" };
   const now = new Date();
   const { data: session } = await supabase
     .from("reading_sessions")
-    .select("started_at")
+    .select("started_at, user_book_id")
     .eq("id", sessionId)
     .maybeSingle();
   if (!session) return { error: "Session not found" };
+
+  const { data: userBook } = await supabase
+    .from("user_books")
+    .select("id, user_id")
+    .eq("id", session.user_book_id)
+    .maybeSingle();
+  if (!userBook || userBook.user_id !== user.id) return { error: "Session not found" };
+
   const startedAt = new Date(session.started_at);
   const durationSeconds = Math.max(
     0,
@@ -111,12 +120,29 @@ export async function finishBook(
 }
 
 export async function abandonBook(userBookId: string) {
-  const supabase = await createClient();
+  const [supabase, user] = await Promise.all([createClient(), getCurrentUser()]);
+  if (!user) return { error: "Not signed in" };
+  const { data: ub } = await supabase
+    .from("user_books")
+    .select("id, user_id")
+    .eq("id", userBookId)
+    .maybeSingle();
+  if (!ub || ub.user_id !== user.id) return { error: "Not found" };
+
+  const { data: openSessions } = await supabase
+    .from("reading_sessions")
+    .select("id")
+    .eq("user_book_id", userBookId)
+    .is("ended_at", null);
+  await Promise.all((openSessions ?? []).map((session) => endSession(session.id as string, false)));
+
   await supabase
     .from("user_books")
     .update({ status: "abandoned" })
     .eq("id", userBookId);
   revalidatePath("/reading");
   revalidatePath("/pile");
+  revalidatePath("/home");
+  revalidatePath("/shelf");
   return { ok: true };
 }

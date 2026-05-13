@@ -24,6 +24,7 @@ export type EmbeddableBook = {
   title: string;
   author: string;
   description?: string | null;
+  embeddingSummary?: string | null;
   subjects?: string[] | null;
   publishedYear?: number | null;
   pageCount?: number | null;
@@ -36,6 +37,7 @@ export function bookEmbeddingText(book: EmbeddableBook): string {
     book.publishedYear ? `Published: ${book.publishedYear}` : "",
     book.pageCount ? `Length: ${book.pageCount} pages` : "",
     book.subjects?.length ? `Subjects: ${book.subjects.slice(0, 8).join(", ")}` : "",
+    book.embeddingSummary ? `Semantic summary: ${book.embeddingSummary.slice(0, 1200)}` : "",
     book.description ? `Description: ${book.description.slice(0, 700)}` : "",
   ].filter(Boolean).join("\n");
 }

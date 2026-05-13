@@ -21,9 +21,9 @@ export default async function ShelfPage() {
   const [supabase, user] = await Promise.all([createClient(), getCurrentUser()]);
   const { data } = await supabase
     .from("user_books")
-    .select("id, finished_at, rating, book:books(id, title, author, cover_url, dominant_color)")
+    .select("id, status, finished_at, started_at, rating, book:books(id, title, author, cover_url, dominant_color)")
     .eq("user_id", user?.id ?? "")
-    .eq("status", "finished")
+    .in("status", ["finished", "abandoned"])
     .order("finished_at", { ascending: false });
 
   const books: ShelfBook[] = (data ?? [])
@@ -37,8 +37,10 @@ export default async function ShelfPage() {
         cover_url: b.cover_url,
         spine_color: b.spine_color ?? null,
         dominant_color: b.dominant_color,
+        status: r.status as "finished" | "abandoned",
         rating: (r.rating as number | null) ?? null,
         finished_at: (r.finished_at as string | null) ?? null,
+        started_at: (r.started_at as string | null) ?? null,
       } satisfies ShelfBook;
     })
     .filter((b): b is ShelfBook => b !== null);

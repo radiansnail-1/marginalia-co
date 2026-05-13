@@ -11,16 +11,19 @@ export type ShelfBook = {
   cover_url: string | null;
   spine_color: string | null;
   dominant_color: string | null;
+  status: "finished" | "abandoned";
   rating: number | null;
   finished_at: string | null;
+  started_at: string | null;
 };
 
-type ChipKey = "all" | "five" | "recent";
+type ChipKey = "all" | "five" | "recent" | "dnf";
 
 const CHIPS: { key: ChipKey; label: string }[] = [
   { key: "all", label: "All" },
-  { key: "five", label: "★ 5" },
+  { key: "five", label: "5-star" },
   { key: "recent", label: "Recent" },
+  { key: "dnf", label: "DNF" },
 ];
 
 export function ShelfClient({ books, romanYear }: { books: ShelfBook[]; romanYear: string }) {
@@ -30,15 +33,13 @@ export function ShelfClient({ books, romanYear }: { books: ShelfBook[]; romanYea
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     let next = books;
-    if (active === "five") next = next.filter((b) => (b.rating ?? 0) >= 5);
+    if (active === "five") next = next.filter((b) => b.status === "finished" && (b.rating ?? 0) >= 5);
     if (active === "recent") {
-      // Books are already sorted by finished_at desc on the server; take the latest 10.
       next = next.filter((b) => !!b.finished_at).slice(0, 10);
     }
+    if (active === "dnf") next = next.filter((b) => b.status === "abandoned");
     if (!q) return next;
-    return next.filter((b) =>
-      `${b.title} ${b.author}`.toLowerCase().includes(q),
-    );
+    return next.filter((b) => `${b.title} ${b.author}`.toLowerCase().includes(q));
   }, [books, active, query]);
 
   return (
@@ -126,7 +127,7 @@ export function ShelfClient({ books, romanYear }: { books: ShelfBook[]; romanYea
           className="mt-12 border border-dashed border-brass/30 p-8 text-center font-display italic"
           style={{ color: "var(--color-parchment-dim)" }}
         >
-          No volumes yet. Finish a book to fill your shelf.
+          No volumes yet. Finish or DNF a book to fill your shelf.
           <div className="mt-3">
             <Link href="/pile" className="text-brass-bright underline">
               Go to the pile
@@ -144,7 +145,7 @@ export function ShelfClient({ books, romanYear }: { books: ShelfBook[]; romanYea
         <div className="mt-6 grid gap-2.5">
           {filtered.map((b) => {
             const bg = paletteFor(b);
-            const stars = b.rating ? `${b.rating} / 5` : "unrated";
+            const meta = b.status === "abandoned" ? "DNF / set aside" : b.rating ? `${b.rating} / 5` : "unrated";
             return (
               <Link
                 key={b.id}
@@ -176,7 +177,7 @@ export function ShelfClient({ books, romanYear }: { books: ShelfBook[]; romanYea
                     className="mt-3 font-body uppercase"
                     style={{ fontSize: "9px", letterSpacing: "1.6px", color: "rgba(216,176,106,0.75)" }}
                   >
-                    {stars}
+                    {meta}
                   </div>
                 </div>
               </Link>

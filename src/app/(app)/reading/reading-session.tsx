@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import { startSession, endSession } from "./actions";
+import { abandonBook, startSession, endSession } from "./actions";
 import { FinishPrompt } from "@/components/finish-prompt";
 
 function fmt(seconds: number) {
@@ -32,6 +33,7 @@ export function ReadingSession({
   activeSessionId: string | null;
   activeStartedAt: string | null;
 }) {
+  const router = useRouter();
   const [sessionId, setSessionId] = useState<string | null>(activeSessionId);
   const [startedAt, setStartedAt] = useState<string | null>(activeStartedAt);
   const [now, setNow] = useState<number>(() => Date.now());
@@ -64,6 +66,14 @@ export function ReadingSession({
       await endSession(sessionId);
       setSessionId(null);
       setStartedAt(null);
+    });
+  };
+
+  const onAbandon = () => {
+    if (!confirm(`Set aside "${title}" as DNF?`)) return;
+    startTransition(async () => {
+      const res = await abandonBook(userBookId);
+      if (!("error" in res)) router.push("/reading");
     });
   };
 
@@ -132,10 +142,10 @@ export function ReadingSession({
         <div
           className="font-display"
           style={{
-            fontSize: "60px",
+            fontSize: "52px",
             fontWeight: 500,
             color: "var(--color-brass-bright)",
-            letterSpacing: "3px",
+            letterSpacing: "2px",
             fontVariantNumeric: "tabular-nums",
             lineHeight: 1,
           }}
@@ -154,7 +164,7 @@ export function ReadingSession({
       </div>
 
       {/* Action buttons */}
-      <div className="absolute inset-x-6 z-10 flex gap-2.5" style={{ bottom: "104px" }}>
+      <div className="absolute inset-x-6 z-10 flex gap-2.5" style={{ bottom: "122px" }}>
         {sessionId ? (
           <button
             type="button"
@@ -199,10 +209,20 @@ export function ReadingSession({
       <Link
         href={`/books/${bookId}`}
         className="absolute inset-x-0 z-10 text-center font-caveat text-parchment-dim"
-        style={{ bottom: "82px", fontSize: "13px" }}
+        style={{ bottom: "86px", fontSize: "13px" }}
       >
         details ›
       </Link>
+
+      <button
+        type="button"
+        disabled={pending}
+        onClick={onAbandon}
+        className="tap absolute inset-x-0 z-10 mx-auto w-fit font-body uppercase text-parchment-dim"
+        style={{ bottom: "62px", fontSize: "9px", letterSpacing: "2px" }}
+      >
+        Set aside / DNF
+      </button>
 
       <FinishPrompt
         open={showFinish}

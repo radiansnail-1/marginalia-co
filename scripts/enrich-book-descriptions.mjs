@@ -20,16 +20,25 @@ const args = new Map(
 );
 
 const limit = Number(args.get("limit") ?? 100);
+const pageSize = Math.max(1, Math.min(1000, Number(args.get("page-size") ?? 1000)));
 const concurrency = Math.max(1, Math.min(6, Number(args.get("concurrency") ?? 3)));
+const progressEvery = Math.max(0, Number(args.get("progress-every") ?? 200));
+const shards = Math.max(1, Number(args.get("shards") ?? 1));
+const shard = Math.max(0, Number(args.get("shard") ?? 0));
 const dryRun = args.has("dry-run");
 const force = args.has("force");
 const googleKey = process.env.GOOGLE_BOOKS_API_KEY;
 const userAgent = process.env.BOOK_METADATA_USER_AGENT ?? "Marginalia/1.0 (book metadata enrichment)";
+const startedAt = Date.now();
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SECRET_KEY;
 if (!supabaseUrl || !supabaseKey) {
   console.error("Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY or SUPABASE_SECRET_KEY.");
+  process.exit(1);
+}
+if (!Number.isInteger(shards) || !Number.isInteger(shard) || shard >= shards) {
+  console.error("Set --shards to a positive integer and --shard to an integer from 0 to shards - 1.");
   process.exit(1);
 }
 
@@ -62,6 +71,18 @@ function cleanDescription(value) {
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, 1400);
+}
+
+function shardForId(id) {
+  let hash = 0;
+  for (const char of String(id)) {
+    hash = ((hash * 31) + char.charCodeAt(0)) >>> 0;
+  }
+  return hash % shards;
+}
+
+function belongsToShard(book) {
+  return shards === 1 || shardForId(book.id) === shard;
 }
 
 function authorMatches(expected, candidate) {
@@ -200,24 +221,27 @@ async function enrich(book) {
   return (await googleByVolumeId(book)) ?? (await googleSearch(book)) ?? (await openLibrarySearch(book));
 }
 
-let query = supabase
-  .from("books")
-  .select("id, title, author, description, google_books_id, isbn_13, cover_url, page_count, published_year, subjects")
-  .order("added_at", { ascending: false })
-  .limit(limit);
-
-if (!force) query = query.is("description", null);
-
-const { data: books, error } = await query;
-if (error) {
-  console.error(error.message);
-  process.exit(1);
-}
-
 let checked = 0;
+let processed = 0;
 let found = 0;
 let updated = 0;
 let missed = 0;
+
+function formatDuration(ms) {
+  const totalSeconds = Math.max(0, Math.round(ms / 1000));
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}m ${String(seconds).padStart(2, "0")}s`;
+}
+
+function progressLine() {
+  const percent = limit > 0 ? Math.min(100, Math.round((processed / limit) * 100)) : 0;
+  const filled = Math.round(percent / 5);
+  const bar = `${"#".repeat(filled)}${"-".repeat(20 - filled)}`;
+  const elapsed = formatDuration(Date.now() - startedAt);
+  const shardLabel = shards > 1 ? ` shard=${shard}/${shards}` : "";
+  return `[progress${shardLabel}] [${bar}] ${processed}/${limit} ${percent}% checked=${checked} found=${found} updated=${updated} missed=${missed} elapsed=${elapsed}`;
+}
 
 async function worker(items) {
   for (const book of items) {
@@ -252,12 +276,46 @@ async function worker(items) {
     } catch (err) {
       missed++;
       console.log(`[error] ${book.title} - ${book.author}: ${err.message}`);
+    } finally {
+      processed++;
+      if (progressEvery > 0 && processed % progressEvery === 0) {
+        console.log(progressLine());
+      }
     }
   }
 }
 
-const queues = Array.from({ length: concurrency }, () => []);
-(books ?? []).forEach((book, index) => queues[index % concurrency].push(book));
-await Promise.all(queues.map(worker));
+let cursor = null;
 
-console.log(`Done. checked=${checked} found=${found} updated=${updated} missed=${missed} dryRun=${dryRun} concurrency=${concurrency}`);
+while (checked < limit) {
+  const batchLimit = Math.min(pageSize, limit - checked);
+  let query = supabase
+    .from("books")
+    .select("id, title, author, description, google_books_id, isbn_13, cover_url, page_count, published_year, subjects, added_at")
+    .order("added_at", { ascending: false })
+    .order("id", { ascending: false })
+    .limit(batchLimit);
+
+  if (!force) query = query.is("description", null);
+  if (cursor) {
+    query = query.or(`added_at.lt.${cursor.added_at},and(added_at.eq.${cursor.added_at},id.lt.${cursor.id})`);
+  }
+
+  const { data: books, error } = await query;
+  if (error) {
+    console.error(error.message);
+    process.exit(1);
+  }
+  if (!books?.length) break;
+
+  cursor = books.at(-1);
+  const shardBooks = books.filter(belongsToShard);
+  const shardLabel = shards > 1 ? ` shard ${shard}/${shards} kept ${shardBooks.length}` : "";
+  console.log(`Page: checking ${books.length} books after ${checked} already checked.${shardLabel}`);
+
+  const queues = Array.from({ length: concurrency }, () => []);
+  shardBooks.forEach((book, index) => queues[index % concurrency].push(book));
+  await Promise.all(queues.map(worker));
+}
+
+console.log(`Done. checked=${checked} found=${found} updated=${updated} missed=${missed} dryRun=${dryRun} concurrency=${concurrency} shard=${shard}/${shards}`);

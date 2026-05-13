@@ -4,7 +4,7 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { startReading, abandonFromPile } from "./actions";
+import { abandonFromPile, startReading } from "./actions";
 
 export function PileRow({
   userBookId,
@@ -38,9 +38,10 @@ export function PileRow({
   };
 
   const onAbandon = () => {
-    if (!confirm(`Set aside "${title}"?`)) return;
+    if (!confirm(`Set aside "${title}" as DNF?`)) return;
     startTransition(async () => {
-      await abandonFromPile(userBookId);
+      const res = await abandonFromPile(userBookId);
+      if ("ok" in res) router.refresh();
     });
   };
 
@@ -94,15 +95,26 @@ export function PileRow({
       </div>
       <div className="flex shrink-0 flex-col gap-1.5">
         {variant === "pile" ? (
-          <button
-            type="button"
-            disabled={pending}
-            onClick={onStart}
-            className="tap border border-brass px-3 py-1.5 font-body uppercase text-brass-bright"
-            style={{ fontSize: "9px", letterSpacing: "1.5px" }}
-          >
-            Start
-          </button>
+          <>
+            <button
+              type="button"
+              disabled={pending}
+              onClick={onStart}
+              className="tap border border-brass px-3 py-1.5 font-body uppercase text-brass-bright"
+              style={{ fontSize: "9px", letterSpacing: "1.5px" }}
+            >
+              Start
+            </button>
+            <button
+              type="button"
+              disabled={pending}
+              onClick={onAbandon}
+              className="tap border border-brass/35 px-3 py-1.5 font-body uppercase text-parchment-dim"
+              style={{ fontSize: "9px", letterSpacing: "1.5px" }}
+            >
+              DNF
+            </button>
+          </>
         ) : (
           <Link
             href={`/reading?book=${bookId}`}
@@ -111,17 +123,6 @@ export function PileRow({
           >
             Continue
           </Link>
-        )}
-        {variant === "pile" && (
-          <button
-            type="button"
-            disabled={pending}
-            onClick={onAbandon}
-            className="font-body uppercase text-parchment-dim"
-            style={{ fontSize: "8px", letterSpacing: "1.5px" }}
-          >
-            Set aside
-          </button>
         )}
       </div>
     </li>

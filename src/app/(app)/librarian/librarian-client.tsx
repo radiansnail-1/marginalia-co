@@ -1,23 +1,32 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { askLibrarian } from "./actions";
-import type { RecommendResult } from "@/lib/librarian/recommend";
+import { askLibrarian, logLibrarianOpen, markLibrarianNotForMe, saveLibrarianPick } from "./actions";
+import type { Recommendation, RecommendResult } from "@/lib/librarian/recommend";
 
 const MOODS = ["restless", "wistful", "curious", "tender", "fierce", "lost"] as const;
 
 export function LibrarianClient() {
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [activeMood, setActiveMood] = useState<string | null>(null);
   const [result, setResult] = useState<RecommendResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showMore, setShowMore] = useState(false);
+  const [hidden, setHidden] = useState<Set<string>>(new Set());
+  const [saving, setSaving] = useState<Set<string>>(new Set());
+  const [saved, setSaved] = useState<Set<string>>(new Set());
+  const [note, setNote] = useState<string | null>(null);
 
   const ask = (mood: string) => {
     setActiveMood(mood);
     setError(null);
     setResult(null);
+    setShowMore(false);
+    setHidden(new Set());
+    setNote(null);
     startTransition(async () => {
       const res = await askLibrarian(mood);
       if ("error" in res) {
@@ -26,6 +35,46 @@ export function LibrarianClient() {
         setResult(res);
       }
     });
+  };
+
+  const pickKey = (pick: Recommendation) => pick.bookId ?? pick.googleBooksId ?? `${pick.title}|${pick.author}`;
+  const visiblePicks = (result?.picks ?? [])
+    .filter((pick) => !hidden.has(pickKey(pick)))
+    .slice(0, showMore ? 6 : 3);
+
+  const onSave = (pick: Recommendation) => {
+    const key = pickKey(pick);
+    if (saving.has(key) || saved.has(key)) return;
+    setSaving((prev) => new Set(prev).add(key));
+    void (async () => {
+      const res = await saveLibrarianPick(pick, activeMood);
+      if ("ok" in res) {
+        setSaved((prev) => new Set(prev).add(key));
+        setNote(res.alreadyExisted ? `Already on your shelf (${res.status}).` : `${pick.title} is on your pile.`);
+      } else {
+        setNote(res.error);
+      }
+      setSaving((prev) => {
+        const next = new Set(prev);
+        next.delete(key);
+        return next;
+      });
+    })();
+  };
+
+  const onNotForMe = (pick: Recommendation) => {
+    const key = pickKey(pick);
+    setHidden((prev) => new Set(prev).add(key));
+    setNote("Noted. The Librarian will steer away from that shelf.");
+    void markLibrarianNotForMe(pick, activeMood);
+  };
+
+  const onOpen = (pick: Recommendation) => {
+    void (async () => {
+      const res = await logLibrarianOpen(pick, activeMood);
+      if ("ok" in res && res.bookId) router.push(`/books/${res.bookId}`);
+      else setNote("Could not open that book yet.");
+    })();
   };
 
   return (
@@ -79,29 +128,84 @@ export function LibrarianClient() {
 
         {result && (
           <div className="space-y-4">
-            {result.picks.map((p, i) => (
-              <div key={`${p.title}-${i}`} className="flex gap-4">
+            {visiblePicks.map((p, i) => {
+              const key = pickKey(p);
+              const isSaving = saving.has(key);
+              const isSaved = saved.has(key);
+              return (
+              <div key={`${p.title}-${i}`} className="flex gap-4 border-b border-brass/10 pb-4 last:border-b-0 last:pb-0">
                 <div className="h-28 w-20 shrink-0 rounded-sm bg-mahogany-3 relative overflow-hidden">
                   {p.coverUrl ? (
                     <Image src={p.coverUrl} alt={p.title} fill sizes="80px" className="object-cover" />
-                  ) : null}
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-mahogany-3 to-mahogany">
+                      <span
+                        className="spine-text font-display"
+                        style={{ fontSize: "9px", color: "rgba(236,220,176,0.8)", padding: "8px 0" }}
+                      >
+                        {p.title}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="min-w-0">
-                  {p.fromShelf && p.bookId ? (
-                    <Link href={`/books/${p.bookId}`} className="block font-display text-lg text-parchment hover:underline">
-                      {p.title}
-                    </Link>
-                  ) : (
-                    <div className="font-display text-lg text-parchment">{p.title}</div>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => onOpen(p)}
+                    className="block text-left font-display text-lg text-parchment hover:underline"
+                  >
+                    {p.title}
+                  </button>
                   <div className="text-sm text-parchment-dim">{p.author}</div>
                   <p className="mt-2 text-sm leading-relaxed text-parchment">{p.reason}</p>
-                  <div className="mt-1 text-[10px] uppercase tracking-widest text-parchment-dim">
-                    {p.fromShelf ? "from your shelf" : "gateway pick"}
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      disabled={isSaving || isSaved}
+                      onClick={() => onSave(p)}
+                      className="tap border border-brass px-3 py-1.5 font-body uppercase text-brass-bright disabled:opacity-55"
+                      style={{ fontSize: "10px", letterSpacing: "1.8px" }}
+                    >
+                      {isSaved ? "Saved" : isSaving ? "Saving" : "Save"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onNotForMe(p)}
+                      className="tap border border-brass/35 px-3 py-1.5 font-body uppercase text-parchment-dim"
+                      style={{ fontSize: "10px", letterSpacing: "1.8px" }}
+                    >
+                      Not for me
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onOpen(p)}
+                      className="tap px-2 py-1.5 font-body uppercase text-parchment-dim"
+                      style={{ fontSize: "10px", letterSpacing: "1.8px" }}
+                    >
+                      Open
+                    </button>
                   </div>
                 </div>
               </div>
-            ))}
+            );})}
+            {result.picks.length > 3 && !showMore && (
+              <button
+                type="button"
+                onClick={() => setShowMore(true)}
+                className="tap w-full border border-brass/40 py-3 font-body uppercase text-brass-bright"
+                style={{ fontSize: "10px", letterSpacing: "2px" }}
+              >
+                Show me a few more
+              </button>
+            )}
+            {visiblePicks.length === 0 && (
+              <p className="font-display italic text-parchment-dim">
+                The Librarian has learned what to avoid. Try another mood.
+              </p>
+            )}
+            {note && (
+              <p className="font-caveat text-brass-bright" style={{ fontSize: "15px" }}>{note}</p>
+            )}
             {result.note && (
               <p className="font-display italic text-parchment-dim text-xs">{result.note}</p>
             )}

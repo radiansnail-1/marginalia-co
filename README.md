@@ -78,6 +78,17 @@ npm run enrich:descriptions -- --limit=10000 --concurrency=3
 
 When a description is updated, cached embeddings for that row are cleared so the next `preembed:books` run refreshes the vector from the richer text.
 
+Launch checklist for the Librarian brain:
+
+```bash
+npm run enrich:descriptions -- --limit=10000 --concurrency=3
+npm run preembed:books -- --dry-run --limit=10000
+npm run preembed:books -- --limit=10000 --batch=10
+npm run verify:brain -- --limit=10000
+```
+
+After the data checks are green, confirm `supabase/migrations/0013_librarian_learning.sql` is applied in the target Supabase project, then run browser QA for search partial results, Goodreads import preview/commit, ISBN manual fallback, DNF from pile/reading, Librarian actions, and mobile layout before release.
+
 ## Mobile install / Google Play
 - Web install works from the deployed HTTPS URL via Add to Home Screen.
 - Google Play distribution should use a TWA shell around the deployed PWA; see `PLAY.md`.
