@@ -26,7 +26,7 @@ export function Window() {
           left: "6px",
           width: "16px",
           height: "196px",
-          background:
+          backgroundImage:
             "linear-gradient(90deg,#2a0a08 0%,#6a1a18 50%,#2a0a08 100%)",
           backgroundSize: "8px 100%",
           borderRadius: "0 60% 0 0",
@@ -74,9 +74,11 @@ export function Window() {
           className="absolute inset-x-0 bottom-0"
           style={{
             height: "30%",
-            background: isMorning
-              ? 'linear-gradient(180deg, transparent 0%, rgba(30,80,45,0.35) 100%), url("data:image/svg+xml;utf8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'60\' viewBox=\'0 0 200 60\'%3E%3Cpath fill=\'%232a5a3a\' d=\'M0 60V42c16-9 28-9 42 0 12-16 28-16 40 0 18-10 34-9 50 2 14-14 30-15 46-1 8-5 15-7 22-7v24z\'/%3E%3Cpath fill=\'%231a3a2a\' d=\'M0 60V50c24-8 38-6 58 0 18-9 36-8 52 1 25-10 48-8 90 2v7z\'/%3E%3C/svg%3E") repeat-x bottom center'
-              : 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.5) 100%), url("data:image/svg+xml;utf8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'60\' viewBox=\'0 0 200 60\'%3E%3Cpath fill=\'%23030710\' d=\'M0 60V35l12-8v8l10-12v18l12-10v-15l16 16v-8l12 6v-10l20 14v-12l14 10v-6l18-16v24l16-14v10l12-8v16l20-12v-8l12 10v-6l16 12v-4l10-8v24z\'/%3E%3C/svg%3E") repeat-x bottom center',
+            backgroundImage: isMorning
+              ? 'linear-gradient(180deg, transparent 0%, rgba(30,80,45,0.35) 100%), url("data:image/svg+xml;utf8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'60\' viewBox=\'0 0 200 60\'%3E%3Cpath fill=\'%232a5a3a\' d=\'M0 60V42c16-9 28-9 42 0 12-16 28-16 40 0 18-10 34-9 50 2 14-14 30-15 46-1 8-5 15-7 22-7v24z\'/%3E%3Cpath fill=\'%231a3a2a\' d=\'M0 60V50c24-8 38-6 58 0 18-9 36-8 52 1 25-10 48-8 90 2v7z\'/%3E%3C/svg%3E")'
+              : 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.5) 100%), url("data:image/svg+xml;utf8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'60\' viewBox=\'0 0 200 60\'%3E%3Cpath fill=\'%23030710\' d=\'M0 60V35l12-8v8l10-12v18l12-10v-15l16 16v-8l12 6v-10l20 14v-12l14 10v-6l18-16v24l16-14v10l12-8v16l20-12v-8l12 10v-6l16 12v-4l10-8v24z\'/%3E%3C/svg%3E")',
+            backgroundPosition: "0 0, bottom center",
+            backgroundRepeat: "no-repeat, repeat-x",
             backgroundSize: "auto, 200px auto",
           }}
         />
@@ -117,7 +119,7 @@ export function Window() {
           right: "calc(100% - 152px - 6px)",
           width: "12px",
           height: "180px",
-          background:
+          backgroundImage:
             "linear-gradient(90deg, rgba(0,0,0,0.4) 0%, transparent 100%)",
         }}
       />

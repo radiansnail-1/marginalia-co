@@ -10,14 +10,16 @@ export async function askLibrarian(mood: string): Promise<RecommendResult | { er
   const user = await getCurrentUser();
   if (!user) return { error: "Sign in first." };
   const result = await recommend({ mood: mood as Mood, userId: user.id });
-  await Promise.all(result.picks.map((pick, index) =>
-    logRecommendationEvent(user.id, "shown", {
+  await logRecommendationEvents(
+    user.id,
+    "shown",
+    result.picks.map((pick, index) => ({
       bookId: pick.bookId,
       mood,
       rank: pick.rank ?? index + 1,
       source: result.source,
-    }),
-  ));
+    })),
+  );
   return result;
 }
 
@@ -164,6 +166,31 @@ async function logRecommendationEvent(
       rank: input.rank,
       source: input.source,
     });
+  } catch {
+    // Learning events should never block the recommendation flow.
+  }
+}
+
+async function logRecommendationEvents(
+  userId: string,
+  eventType: "shown" | "save" | "not_for_me" | "open",
+  inputs: Array<{ bookId?: string | null; mood?: string | null; rank?: number | null; source?: string | null }>,
+) {
+  const rows = inputs.flatMap((input) => {
+    if (!input.bookId) return [];
+    return [{
+      user_id: userId,
+      book_id: input.bookId,
+      event_type: eventType,
+      mood: input.mood,
+      rank: input.rank,
+      source: input.source,
+    }];
+  });
+  if (rows.length === 0) return;
+  try {
+    const supabase = await createClient();
+    await supabase.from("recommendation_events").insert(rows);
   } catch {
     // Learning events should never block the recommendation flow.
   }
