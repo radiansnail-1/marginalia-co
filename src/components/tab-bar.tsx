@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
 
 type TabIcon = "room" | "pile" | "librarian" | "profile";
 
@@ -64,22 +63,6 @@ export function TabBar() {
   const path = usePathname() ?? "";
   const firstSeg = "/" + path.split("/").filter(Boolean)[0];
   const activePath = PARENT_OF[path] ?? PARENT_OF[firstSeg] ?? path;
-
-  // Best-effort: request fullscreen on first user interaction so the URL bar
-  // collapses on Android Chrome. Browsers ignore the call outside a user
-  // gesture; PWA install ("Add to Home Screen") is the only durable fix.
-  useEffect(() => {
-    const onFirstTap = () => {
-      const el = document.documentElement as HTMLElement & { webkitRequestFullscreen?: () => Promise<void> };
-      const req = el.requestFullscreen?.bind(el) ?? el.webkitRequestFullscreen?.bind(el);
-      if (req && !document.fullscreenElement) {
-        req().catch(() => {});
-      }
-      window.removeEventListener("pointerdown", onFirstTap);
-    };
-    window.addEventListener("pointerdown", onFirstTap, { once: true });
-    return () => window.removeEventListener("pointerdown", onFirstTap);
-  }, []);
 
   return (
     <nav
