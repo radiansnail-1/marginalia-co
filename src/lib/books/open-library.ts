@@ -19,6 +19,7 @@ export type OpenLibraryBook = {
   title: string;
   author: string;
   isbn13: string | null;
+  description: string | null;
   publishedYear: number | null;
   pageCount: number | null;
   subjects: string[];
@@ -32,6 +33,7 @@ type OpenLibrarySearchDoc = {
   author_name?: string[];
   first_publish_year?: number;
   isbn?: string[];
+  first_sentence?: string | string[];
   subject?: string[];
   cover_i?: number;
   language?: string[];
@@ -51,6 +53,12 @@ function openLibraryIdFromKey(key: string | undefined): string | null {
   return key?.replace(/^\/works\//, "") ?? null;
 }
 
+function firstSentence(value: OpenLibrarySearchDoc["first_sentence"]): string | null {
+  const sentence = Array.isArray(value) ? value[0] : value;
+  const clean = sentence?.trim();
+  return clean ? clean : null;
+}
+
 export async function searchOpenLibraryBooks(query: string, limit = 12): Promise<OpenLibraryBook[]> {
   if (!query.trim()) return [];
   const url = new URL("https://openlibrary.org/search.json");
@@ -58,7 +66,7 @@ export async function searchOpenLibraryBooks(query: string, limit = 12): Promise
   if (isbn) url.searchParams.set("isbn", isbn);
   else url.searchParams.set("q", query);
   url.searchParams.set("limit", String(limit));
-  url.searchParams.set("fields", "key,title,author_name,first_publish_year,isbn,subject,cover_i,language");
+  url.searchParams.set("fields", "key,title,author_name,first_publish_year,isbn,first_sentence,subject,cover_i,language");
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 9000);
@@ -78,6 +86,7 @@ export async function searchOpenLibraryBooks(query: string, limit = 12): Promise
         title: doc.title,
         author: doc.author_name?.[0] ?? "Unknown",
         isbn13: pickIsbn(doc.isbn),
+        description: firstSentence(doc.first_sentence),
         publishedYear: doc.first_publish_year ?? null,
         pageCount: null,
         subjects: doc.subject?.slice(0, 6) ?? [],

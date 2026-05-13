@@ -137,6 +137,7 @@ function fromOpenLibrary(book: OpenLibraryBook): SearchResult {
     title: book.title,
     author: book.author,
     isbn13: book.isbn13,
+    description: book.description,
     language: book.language,
     publishedYear: book.publishedYear,
     pageCount: book.pageCount,
@@ -164,13 +165,35 @@ function identityKeys(book: SearchResult): string[] {
   ].filter(Boolean);
 }
 
+function mergeMissingMetadata(target: SearchResult, source: SearchResult) {
+  target.googleBooksId ||= source.googleBooksId;
+  target.openLibraryId ||= source.openLibraryId;
+  target.isbn13 ||= source.isbn13;
+  target.description ||= source.description;
+  target.language ||= source.language;
+  target.publishedYear ||= source.publishedYear;
+  target.pageCount ||= source.pageCount;
+  target.thumbnail ||= source.thumbnail;
+  if (target.subjects.length === 0 && source.subjects.length > 0) target.subjects = source.subjects;
+}
+
 function mergeResults(...groups: SearchResult[][]): SearchResult[] {
   const seen = new Set<string>();
+  const byKey = new Map<string, SearchResult>();
   const out: SearchResult[] = [];
   for (const book of groups.flat()) {
     const keys = identityKeys(book);
-    if (keys.some((key) => seen.has(key))) continue;
+    const existing = keys.map((key) => byKey.get(key)).find(Boolean);
+    if (existing) {
+      mergeMissingMetadata(existing, book);
+      keys.forEach((key) => {
+        seen.add(key);
+        byKey.set(key, existing);
+      });
+      continue;
+    }
     keys.forEach((key) => seen.add(key));
+    keys.forEach((key) => byKey.set(key, book));
     out.push(book);
   }
   return out;
@@ -395,6 +418,7 @@ export async function addToPile(g: GoogleBook): Promise<
         title: g.title,
         author: g.author,
         isbn_13: g.isbn13,
+        description: g.description ?? null,
         page_count: g.pageCount,
         published_year: g.publishedYear,
         subjects: g.subjects,
