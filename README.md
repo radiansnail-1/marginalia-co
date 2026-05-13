@@ -1,82 +1,75 @@
 # Marginalia & Co.
 
-Cozy dark-academia reading tracker. Singapore-first, Android-first.
+Marginalia & Co. is a cozy, mobile-first reading tracker with a tiny AI-assisted Librarian that recommends a few books at a time instead of turning discovery into an infinite feed.
 
-See `../plan.md` for the full build plan and `../design/` for the locked mockups.
+The project is open source under MIT. The hosted Marginalia deployment uses maintainer-owned Supabase/Vercel/OpenAI credentials; contributors should run their own local Supabase project unless they have been explicitly invited onto the production project.
 
 ## Stack
-- Next.js 16 (App Router, Turbopack), installable as a PWA and Play-ready through a Trusted Web Activity wrapper
-- Supabase (Auth + Postgres + Storage)
-- Google Books (search) + Open Library (covers)
-- Shopee Singapore affiliate (`/lib/books/shopee.ts`)
+
+- Next.js 16 App Router
+- Supabase Auth + Postgres
+- Google Books search + Open Library covers
+- Cached OpenAI-compatible embeddings for recommendations
 - Tailwind v4, framer-motion, zod
+- PWA-first, with a future Google Play/TWA path
 
-## Setup
-1. `cp .env.local.example .env.local` and fill in keys.
-2. Create a Supabase project, paste URL + anon key into `.env.local`.
-3. Add `SUPABASE_SERVICE_ROLE_KEY` (or `SUPABASE_SECRET_KEY`) for server-side Auth/admin flows.
-4. In the Supabase SQL editor, run `supabase/migrations/0001_init.sql`.
-5. `npm install && npm run dev`.
+## Local Setup
 
-## World Recommendations
-
-The Librarian is a hybrid recommender:
-
-- cached book embeddings provide semantic "vibe" matching
-- the user's own ratings weight the taste profile
-- low ratings/abandoned books act as negative taste signals
-- shared `average_rating`/`rating_count` add a small quality boost
-- normal metadata still ranks candidates when a vector is missing
-
-Embeddings are provider-agnostic as long as the endpoint is OpenAI-compatible. OpenAI is the default, but Qwen/DashScope or another compatible provider can be used by changing the base URL and model:
+1. Install dependencies:
 
 ```bash
-EMBEDDING_API_KEY=
-EMBEDDING_BASE_URL=https://api.openai.com/v1
-EMBEDDING_MODEL=text-embedding-3-small
-EMBEDDING_DIMENSIONS=256
-EMBEDDING_MAX_RUNTIME_TEXTS=6
+npm install
 ```
 
-Legacy `OPENAI_API_KEY`, `OPENAI_BASE_URL`, `OPENAI_EMBEDDING_MODEL`, and `OPENAI_EMBEDDING_DIMENSIONS` env vars still work. Runtime embedding is capped by `EMBEDDING_MAX_RUNTIME_TEXTS`; set it to `0` for cached-only recommendations. The recommended charity-safe setup is to pre-embed a seed catalog, let the app rank from cached vectors, and only enable capped cache-on-miss embedding if a small monthly budget is acceptable.
-
-Seed, then pre-embed the shared book catalog before launch:
+2. Create an env file:
 
 ```bash
-npm run seed:books -- --dry-run
-npm run seed:books
+cp .env.example .env.local
+```
+
+3. Create a Supabase project and fill:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+SUPABASE_SECRET_KEY=
+```
+
+4. Apply migrations in order from `supabase/migrations`.
+
+5. Start the app:
+
+```bash
+npm run dev
+```
+
+## Recommendations
+
+The Librarian uses a hybrid recommender:
+
+- cached book embeddings for semantic similarity
+- the reader's own ratings as positive taste weight
+- low ratings and abandoned books as negative taste signals
+- shared aggregate ratings as a small quality boost
+- metadata fallback when vectors are missing
+
+Runtime embedding calls are capped by `EMBEDDING_MAX_RUNTIME_TEXTS`. For production, set it to `0` and pre-embed the catalog:
+
+```bash
+npm run preembed:books -- --dry-run --limit=10000
 npm run preembed:books -- --limit=10000 --batch=10
 ```
 
-Use `--dry-run` to count inserts or stale/missing vectors without calling the provider. To guarantee your existing shelf is included in the seed catalog, set `MARGINALIA_API_TOKEN` locally before running `seed:books`; the script reads `/api/v1/books`, prepends those books to `data/curated-books.json`, dedupes by title+author, and inserts only missing catalog rows.
+The embedding client is OpenAI-compatible. OpenAI works by default; other compatible providers can be used by changing `EMBEDDING_BASE_URL` and `EMBEDDING_MODEL`.
 
-For only finished/read books:
+Legacy `OPENAI_API_KEY`, `OPENAI_BASE_URL`, `OPENAI_EMBEDDING_MODEL`, and `OPENAI_EMBEDDING_DIMENSIONS` env vars still work. Runtime embedding is capped by `EMBEDDING_MAX_RUNTIME_TEXTS`; set it to `0` for cached-only recommendations.
 
-```bash
-npm run seed:books -- --dry-run --status=finished
-npm run seed:books -- --status=finished
-```
-
-Apply `supabase/migrations/0012_book_descriptions.sql` before seeding blurbs.
-
-To seed the Kaggle Goodreads archive downloaded to `C:\Users\aweso\Downloads\archive.zip`:
-
-```bash
-npm run seed:goodreads -- --list-only --limit=20
-npm run seed:goodreads -- --dry-run --limit=10000
-npm run seed:goodreads -- --limit=10000
-```
-
-`seed:goodreads` reads `goodreads_cleaned.csv` from the zip, prepends your API shelf when `MARGINALIA_API_TOKEN` is set, and dedupes by title+author without calling Google Books or OpenAI.
-
-To backfill real sourced descriptions before embedding, run the enrichment pass. It searches Google Books first, then Open Library, accepts only confident title+author matches, and runs three books at a time by default:
+To backfill sourced descriptions before embedding, run the enrichment pass. It searches Google Books first, then Open Library, accepts only confident title+author matches, and runs three books at a time by default:
 
 ```bash
 npm run enrich:descriptions -- --dry-run --limit=100
 npm run enrich:descriptions -- --limit=10000 --concurrency=3
 ```
-
-When a description is updated, cached embeddings for that row are cleared so the next `preembed:books` run refreshes the vector from the richer text.
 
 Launch checklist for the Librarian brain:
 
@@ -87,27 +80,34 @@ npm run preembed:books -- --limit=10000 --batch=10
 npm run verify:brain -- --limit=10000
 ```
 
-After the data checks are green, confirm `supabase/migrations/0013_librarian_learning.sql` is applied in the target Supabase project, then run browser QA for search partial results, Goodreads import preview/commit, ISBN manual fallback, DNF from pile/reading, Librarian actions, and mobile layout before release.
+After the data checks are green, confirm `supabase/migrations/0013_librarian_learning.sql` and `supabase/migrations/0014_book_embedding_summaries.sql` are applied in the target Supabase project, then run browser QA for search partial results, Goodreads import preview/commit, ISBN manual fallback, DNF from pile/reading, Librarian actions, and mobile layout before release.
 
-## Mobile install / Google Play
-- Web install works from the deployed HTTPS URL via Add to Home Screen.
-- Google Play distribution should use a TWA shell around the deployed PWA; see `PLAY.md`.
-- Play Console requires a production URL, app icon, screenshots, data safety answers, privacy policy URL, and a signed Android App Bundle.
+## Contributing
 
-## Affiliate links
-- Book detail pages use a hybrid affiliate block: Bookshop, Shopee, Lazada, Amazon, Kobo, and Audible.
-- Defaults are plain search links; add approved tracking IDs/templates through env vars.
-- See `AFFILIATES.md` for the provider strategy and template format.
+Good first areas:
 
-## License and community request
-- Code is released under the MIT License unless a file says otherwise.
-- If you use this project or build on top of it, I hope you will donate a portion of what you gain to effective charities or local community causes. This is a request, not a license condition.
+- search quality for non-English and obscure books
+- Goodreads/StoryGraph import UX using user-owned exports
+- mobile QA and accessibility
+- recommendation explanations that are helpful but spoiler-safe
+- PWA/TWA packaging polish
+
+Please do not commit secrets, personal exports, generated embeddings, private catalog dumps, or service-role credentials. Use `.env.local` for local secrets.
+
+## License and Community Request
+
+Code is released under the MIT License unless a file says otherwise.
+
+If you use this project or build on top of it, I hope you will donate a portion of what you gain to effective charities or local community causes. This is a request, not a license condition.
 
 ## Routes
-- `/` - landing → redirects to `/home` when signed in
+
+- `/` - landing, redirects signed-in users to `/home`
 - `/auth/sign-in` - email/password account creation and sign-in
-- `/(app)/home` - the Room (bookshelf + coffee table)
-- `/(app)/pile` - TBR
-- `/(app)/librarian` - weekly pick + mood chips
-- `/(app)/profile` - goal ring + stats
-- `/(app)/books/[id]` - book detail w/ Shopee SG affiliate CTA
+- `/home` - room view
+- `/pile` - TBR
+- `/reading` - current reading
+- `/shelf` - collection
+- `/search` - add books
+- `/librarian` - recommendations
+- `/profile` - profile, stats, and API token management
