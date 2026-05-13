@@ -8,6 +8,12 @@ import type { Recommendation, RecommendResult } from "@/lib/librarian/recommend"
 
 const MOODS = ["restless", "wistful", "curious", "tender", "fierce", "lost"] as const;
 const STORAGE_KEY = "marginalia:librarian:last-result";
+const LOADING_STEPS = [
+  "Checking your shelf",
+  "Reading the wider stacks",
+  "Merging the shelves",
+  "Choosing the right books",
+];
 
 type StoredLibrarianResult = {
   activeMood: string | null;
@@ -25,6 +31,58 @@ function readStoredLibrarianResult(): StoredLibrarianResult | null {
     window.sessionStorage.removeItem(STORAGE_KEY);
     return null;
   }
+}
+
+function LibrarianLoading({ mood }: { mood: string | null }) {
+  const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setStep((current) => Math.min(current + 1, LOADING_STEPS.length - 1));
+    }, 950);
+    return () => window.clearInterval(id);
+  }, [mood]);
+
+  return (
+    <div role="status" aria-live="polite" className="space-y-4 py-2">
+      <div className="flex h-20 items-end gap-1.5" aria-hidden="true">
+        {[0, 1, 2, 3, 4, 5, 6].map((spine, index) => {
+          const isActive = index <= step + 2;
+          const heights = ["h-10", "h-16", "h-12", "h-20", "h-14", "h-[72px]", "h-11"];
+          return (
+            <div
+              key={spine}
+              className={`${heights[index]} w-3 rounded-sm transition-all duration-500 ${
+                isActive ? "bg-brass-bright opacity-90" : "bg-brass/30 opacity-45"
+              } ${index === step + 2 ? "animate-pulse" : ""}`}
+            />
+          );
+        })}
+      </div>
+      <div>
+        <p className="font-caveat text-lg text-parchment">
+          The Librarian is finding something {mood ? `${mood}.` : "right."}
+        </p>
+        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          {LOADING_STEPS.map((label, index) => (
+            <div
+              key={label}
+              className={`flex items-center gap-2 text-xs uppercase tracking-widest transition-colors ${
+                index <= step ? "text-brass-bright" : "text-parchment-dim"
+              }`}
+            >
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${
+                  index <= step ? "bg-brass-bright" : "bg-brass/30"
+                }`}
+              />
+              <span>{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export function LibrarianClient() {
@@ -135,7 +193,7 @@ export function LibrarianClient() {
     <div className="px-4 pt-10 pb-24">
       <h1 className="font-display text-3xl text-brass-bright">The Librarian</h1>
       <p className="mt-1 font-display italic text-parchment-dim">
-        “Pull up a chair. What mood are we in tonight?”
+        Pull up a chair. What mood are we in tonight?
       </p>
 
       <div className="mt-4 flex flex-wrap gap-2">
@@ -172,9 +230,7 @@ export function LibrarianClient() {
           </p>
         )}
 
-        {pending && (
-          <p className="font-caveat text-parchment-dim">The Librarian is reaching for the right shelf…</p>
-        )}
+        {pending && <LibrarianLoading key={activeMood ?? "loading"} mood={activeMood} />}
 
         {error && (
           <p className="font-display italic text-sconce">{error}</p>

@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/lib/supabase/user";
 import { searchBooks, GoogleBooksApiError, type GoogleBook } from "@/lib/books/google-books";
 import { isbnSearchQuery, normalizeIsbn } from "@/lib/books/isbn";
 import { searchOpenLibraryBooks, type OpenLibraryBook } from "@/lib/books/open-library";
+import { missingBookMetadataPatch, type ExistingBookMetadata } from "./book-metadata";
 import { applyShelfStatuses, type ShelfTaggedBook } from "./shelf-status";
 
 export type { UserBookStatus } from "./shelf-status";
@@ -79,6 +80,11 @@ type CatalogBookRow = {
   published_year: number | null;
   subjects: string[] | null;
 };
+
+const BOOK_METADATA_SELECT =
+  "id, google_books_id, open_library_id, isbn_13, cover_url, description, page_count, published_year, subjects";
+
+type ExistingBookRow = ExistingBookMetadata & { id: string };
 
 function catalogScore(book: CatalogBookRow, query: string, isbn: string | null): number {
   if (isbn && book.isbn_13 === isbn) return 1000;
@@ -387,25 +393,26 @@ export async function addToPile(g: GoogleBook): Promise<
     (async () => {
       const sb = await createClient();
       if (g.catalogBookId) {
-        return sb.from("books").select("id").eq("id", g.catalogBookId).maybeSingle();
+        return sb.from("books").select(BOOK_METADATA_SELECT).eq("id", g.catalogBookId).maybeSingle();
       }
       if (g.googleBooksId) {
-        const byGoogle = await sb.from("books").select("id").eq("google_books_id", g.googleBooksId).maybeSingle();
+        const byGoogle = await sb.from("books").select(BOOK_METADATA_SELECT).eq("google_books_id", g.googleBooksId).maybeSingle();
         if (byGoogle.data || byGoogle.error) return byGoogle;
       }
       if (g.openLibraryId) {
-        const byOpenLibrary = await sb.from("books").select("id").eq("open_library_id", g.openLibraryId).maybeSingle();
+        const byOpenLibrary = await sb.from("books").select(BOOK_METADATA_SELECT).eq("open_library_id", g.openLibraryId).maybeSingle();
         if (byOpenLibrary.data || byOpenLibrary.error) return byOpenLibrary;
       }
       if (g.isbn13) {
-        return sb.from("books").select("id").eq("isbn_13", g.isbn13).limit(1).maybeSingle();
+        return sb.from("books").select(BOOK_METADATA_SELECT).eq("isbn_13", g.isbn13).limit(1).maybeSingle();
       }
       return { data: null, error: null };
     })(),
   ]);
   if (!user) return { error: "Not signed in" };
 
-  let bookId = (existingBookResult.data?.id as string | undefined);
+  let existingBook = existingBookResult.data as ExistingBookRow | null;
+  let bookId = existingBook?.id;
   if (!bookId) {
     // Use insert + duplicate fallback instead of Supabase upsert. Production may
     // still have the partial google_books_id index, which cannot satisfy
@@ -432,26 +439,29 @@ export async function addToPile(g: GoogleBook): Promise<
         if (g.googleBooksId) {
           const { data: racedBook } = await supabase
             .from("books")
-            .select("id")
+            .select(BOOK_METADATA_SELECT)
             .eq("google_books_id", g.googleBooksId)
             .maybeSingle();
-          bookId = racedBook?.id as string | undefined;
+          existingBook = racedBook as ExistingBookRow | null;
+          bookId = existingBook?.id;
         }
         if (!bookId && g.openLibraryId) {
           const { data: racedBook } = await supabase
             .from("books")
-            .select("id")
+            .select(BOOK_METADATA_SELECT)
             .eq("open_library_id", g.openLibraryId)
             .maybeSingle();
-          bookId = racedBook?.id as string | undefined;
+          existingBook = racedBook as ExistingBookRow | null;
+          bookId = existingBook?.id;
         }
         if (!bookId && g.isbn13) {
           const { data: racedBook } = await supabase
             .from("books")
-            .select("id")
+            .select(BOOK_METADATA_SELECT)
             .eq("isbn_13", g.isbn13)
             .maybeSingle();
-          bookId = racedBook?.id as string | undefined;
+          existingBook = racedBook as ExistingBookRow | null;
+          bookId = existingBook?.id;
         }
       }
       if (!bookId) return { error: "Could not save that book. Try again." };
@@ -460,6 +470,13 @@ export async function addToPile(g: GoogleBook): Promise<
     }
 
     if (!bookId) return { error: "Could not save that book. Try again." };
+  }
+
+  if (existingBook) {
+    const patch = missingBookMetadataPatch(existingBook, g);
+    if (Object.keys(patch).length > 0) {
+      await supabase.from("books").update(patch).eq("id", bookId);
+    }
   }
 
   // Single round-trip: insert user_books, fall back to read on unique-violation.
