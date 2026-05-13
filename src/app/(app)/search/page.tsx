@@ -5,14 +5,9 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { searchAction, addToPile } from "./actions";
 import type { SearchBook, UserBookStatus } from "./actions";
+import type { IScannerControls } from "@zxing/browser";
 
 type SearchMeta = Extract<Awaited<ReturnType<typeof searchAction>>, { ok: true }>["meta"];
-
-type BarcodeDetectorConstructor = {
-  new (options?: { formats?: string[] }): {
-    detect(source: HTMLVideoElement): Promise<Array<{ rawValue: string }>>;
-  };
-};
 
 type SearchState =
   | { kind: "idle" }
@@ -41,7 +36,7 @@ export default function SearchPage() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const requestIdRef = useRef(0);
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
+  const scannerControlsRef = useRef<IScannerControls | null>(null);
 
   const runSearch = useCallback((query: string) => {
     const trimmed = query.trim();
@@ -87,28 +82,29 @@ export default function SearchPage() {
   };
 
   const stopScan = useCallback(() => {
-    streamRef.current?.getTracks().forEach((track) => track.stop());
-    streamRef.current = null;
+    scannerControlsRef.current?.stop();
+    scannerControlsRef.current = null;
     setScanning(false);
   }, []);
 
   const startScan = async () => {
-    const Detector = (globalThis as typeof globalThis & { BarcodeDetector?: BarcodeDetectorConstructor }).BarcodeDetector;
-    if (!Detector) {
-      setNote("Camera scanning is not available here. Type the ISBN instead.");
-      return;
-    }
     if (!navigator.mediaDevices?.getUserMedia) {
       setNote("Camera access is unavailable. Type the ISBN instead.");
       return;
     }
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: "environment" } },
-        audio: false,
-      });
-      streamRef.current = stream;
+      const [{ BrowserMultiFormatOneDReader }, { BarcodeFormat, DecodeHintType }] = await Promise.all([
+        import("@zxing/browser"),
+        import("@zxing/library"),
+      ]);
+      const hints = new Map();
+      hints.set(DecodeHintType.POSSIBLE_FORMATS, [
+        BarcodeFormat.EAN_13,
+        BarcodeFormat.EAN_8,
+        BarcodeFormat.UPC_A,
+      ]);
+
       setScanning(true);
       await new Promise((resolve) => setTimeout(resolve, 0));
       const video = videoRef.current;
@@ -116,30 +112,26 @@ export default function SearchPage() {
         stopScan();
         return;
       }
-      video.srcObject = stream;
-      await video.play();
 
-      const detector = new Detector({ formats: ["ean_13"] });
-      const scan = async () => {
-        if (!streamRef.current || !videoRef.current) return;
-        try {
-          const matches = await detector.detect(videoRef.current);
-          const code = matches.find((m) => m.rawValue)?.rawValue;
-          if (code) {
-            stopScan();
-            setQ(code);
-            setNote(`Scanned ISBN ${code}.`);
-            runSearch(code);
-            return;
-          }
-        } catch {
-          stopScan();
-          setNote("Could not read the barcode. Type the ISBN instead.");
-          return;
-        }
-        requestAnimationFrame(scan);
-      };
-      requestAnimationFrame(scan);
+      const reader = new BrowserMultiFormatOneDReader(hints, {
+        delayBetweenScanAttempts: 120,
+        delayBetweenScanSuccess: 120,
+      });
+      const controls = await reader.decodeFromConstraints(
+        { video: { facingMode: { ideal: "environment" } }, audio: false },
+        video,
+        (result, _error, activeControls) => {
+          const code = result?.getText()?.trim();
+          if (!code) return;
+          activeControls.stop();
+          scannerControlsRef.current = null;
+          setScanning(false);
+          setQ(code);
+          setNote(`Scanned ISBN ${code}.`);
+          runSearch(code);
+        },
+      );
+      scannerControlsRef.current = controls;
     } catch {
       stopScan();
       setNote("Camera permission was blocked. Type the ISBN instead.");
