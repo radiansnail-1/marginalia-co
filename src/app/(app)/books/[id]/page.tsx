@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -7,6 +6,7 @@ import { affiliateLinksForBook } from "@/lib/books/affiliate";
 import { AffiliateLinks } from "@/components/affiliate-links";
 import { ActionButtons } from "./action-buttons";
 import { ReviewEditor } from "./review-editor";
+import { BackLink } from "./back-link";
 
 export default async function BookDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -47,13 +47,7 @@ export default async function BookDetail({ params }: { params: Promise<{ id: str
     >
       <div className="px-5 pt-10">
         <div className="flex items-center justify-between">
-          <Link
-            href="/home"
-            className="font-body uppercase tracking-[2px] text-brass-bright"
-            style={{ fontSize: "11px" }}
-          >
-            {"< back to room"}
-          </Link>
+          <BackLink />
           <div className="font-display italic" style={{ fontSize: "14px", color: "rgba(236,220,176,0.75)" }}>
             From the shelf
           </div>

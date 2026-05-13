@@ -48,10 +48,11 @@ export function FinishPrompt({
       {open && !closing && (
         <div className="fixed inset-0 z-[150] flex items-end" style={{ background: "rgba(0,0,0,0.55)" }}>
           <div
-            className="parchment relative mx-auto w-full max-w-[440px] px-6 pt-7 pb-6"
+            className="parchment relative mx-auto max-h-[calc(100dvh-20px)] w-full max-w-[440px] overflow-y-auto overscroll-contain px-6 pt-7 pb-6"
             style={{
               boxShadow: "0 -20px 50px rgba(0,0,0,0.7)",
               borderRadius: "8px 8px 0 0",
+              paddingBottom: "calc(24px + env(safe-area-inset-bottom, 0px))",
             }}
           >
             <div

@@ -2,11 +2,30 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { askLibrarian, logLibrarianOpen, markLibrarianNotForMe, saveLibrarianPick } from "./actions";
 import type { Recommendation, RecommendResult } from "@/lib/librarian/recommend";
 
 const MOODS = ["restless", "wistful", "curious", "tender", "fierce", "lost"] as const;
+const STORAGE_KEY = "marginalia:librarian:last-result";
+
+type StoredLibrarianResult = {
+  activeMood: string | null;
+  result: RecommendResult | null;
+};
+
+function readStoredLibrarianResult(): StoredLibrarianResult | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.sessionStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const stored = JSON.parse(raw) as StoredLibrarianResult;
+    return stored.result?.picks?.length ? stored : null;
+  } catch {
+    window.sessionStorage.removeItem(STORAGE_KEY);
+    return null;
+  }
+}
 
 export function LibrarianClient() {
   const router = useRouter();
@@ -18,7 +37,30 @@ export function LibrarianClient() {
   const [hidden, setHidden] = useState<Set<string>>(new Set());
   const [saving, setSaving] = useState<Set<string>>(new Set());
   const [saved, setSaved] = useState<Set<string>>(new Set());
+  const [opening, setOpening] = useState<Set<string>>(new Set());
   const [note, setNote] = useState<string | null>(null);
+
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      const stored = readStoredLibrarianResult();
+      if (!stored) return;
+      setActiveMood(stored.activeMood);
+      setResult(stored.result);
+    }, 0);
+    return () => window.clearTimeout(id);
+  }, []);
+
+  useEffect(() => {
+    try {
+      if (!result) return;
+      window.sessionStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ activeMood, result } satisfies StoredLibrarianResult),
+      );
+    } catch {
+      // Session restore is a convenience; recommendations still work without it.
+    }
+  }, [activeMood, result]);
 
   const ask = (mood: string) => {
     setActiveMood(mood);
@@ -27,6 +69,7 @@ export function LibrarianClient() {
     setShowMore(false);
     setHidden(new Set());
     setNote(null);
+    setOpening(new Set());
     startTransition(async () => {
       const res = await askLibrarian(mood);
       if ("error" in res) {
@@ -70,10 +113,21 @@ export function LibrarianClient() {
   };
 
   const onOpen = (pick: Recommendation) => {
+    const key = pickKey(pick);
+    if (opening.has(key)) return;
+    setOpening((prev) => new Set(prev).add(key));
+    setNote("Opening that volume...");
     void (async () => {
       const res = await logLibrarianOpen(pick, activeMood);
       if ("ok" in res && res.bookId) router.push(`/books/${res.bookId}`);
-      else setNote("Could not open that book yet.");
+      else {
+        setNote("Could not open that book yet.");
+        setOpening((prev) => {
+          const next = new Set(prev);
+          next.delete(key);
+          return next;
+        });
+      }
     })();
   };
 
@@ -132,8 +186,9 @@ export function LibrarianClient() {
               const key = pickKey(p);
               const isSaving = saving.has(key);
               const isSaved = saved.has(key);
+              const isOpening = opening.has(key);
               return (
-              <div key={`${p.title}-${i}`} className="flex gap-4 border-b border-brass/10 pb-4 last:border-b-0 last:pb-0">
+              <div key={`${p.title}-${i}`} className="flex min-w-0 gap-4 border-b border-brass/10 pb-4 last:border-b-0 last:pb-0">
                 <div className="h-28 w-20 shrink-0 rounded-sm bg-mahogany-3 relative overflow-hidden">
                   {p.coverUrl ? (
                     <Image src={p.coverUrl} alt={p.title} fill sizes="80px" className="object-cover" />
@@ -148,15 +203,16 @@ export function LibrarianClient() {
                     </div>
                   )}
                 </div>
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <button
                     type="button"
+                    disabled={isOpening}
                     onClick={() => onOpen(p)}
-                    className="block text-left font-display text-lg text-parchment hover:underline"
+                    className="block max-w-full break-words text-left font-display text-lg leading-snug text-parchment hover:underline disabled:opacity-60"
                   >
                     {p.title}
                   </button>
-                  <div className="text-sm text-parchment-dim">{p.author}</div>
+                  <div className="break-words text-sm text-parchment-dim">{p.author}</div>
                   <p className="mt-2 text-sm leading-relaxed text-parchment">{p.reason}</p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     <button
@@ -178,11 +234,12 @@ export function LibrarianClient() {
                     </button>
                     <button
                       type="button"
+                      disabled={isOpening}
                       onClick={() => onOpen(p)}
-                      className="tap px-2 py-1.5 font-body uppercase text-parchment-dim"
+                      className="tap px-2 py-1.5 font-body uppercase text-parchment-dim disabled:opacity-60"
                       style={{ fontSize: "10px", letterSpacing: "1.8px" }}
                     >
-                      Open
+                      {isOpening ? "Opening" : "Open"}
                     </button>
                   </div>
                 </div>
