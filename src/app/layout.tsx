@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { Cormorant_Garamond, Inter, Caveat } from "next/font/google";
 import "./globals.css";
 
@@ -69,7 +70,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="dns-prefetch" href="https://books.google.com" />
         <link rel="dns-prefetch" href="https://covers.openlibrary.org" />
       </head>
-      <body className="min-h-dvh bg-mahogany text-parchment font-body">{children}</body>
+      <body className="min-h-dvh bg-mahogany text-parchment font-body">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }

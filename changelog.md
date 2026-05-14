@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-05-14
+
+- Installed `@vercel/analytics` in the Marginalia Next.js app.
+- Added the root layout import `import { Analytics } from "@vercel/analytics/next"` and rendered `<Analytics />` inside the app `<body>`.
+- Verified `npx tsc --noEmit --pretty false` passes; `npm run lint` timed out after two minutes without reporting an error.
+- Updated handoff state for the analytics publish scope while keeping pre-existing `PLAY.md` edits out of scope.
+
 ## 2026-05-13
 
 - QA'd Marginalia production and local authenticated flows; core loop works, with launch-confidence gaps remaining around donation URL, Goodreads real CSV import, metadata enrichment/backfill, affiliate attribution dashboards, and broader real-device QA.
@@ -14,4 +21,4 @@
 - Passed `npm test`, `npm run lint`, `npx tsc --noEmit`, and `npm run build`.
 - Committed verified fixes as `903b695 Tighten librarian recommendations`.
 
-**Last updated:** 2026-05-13
+**Last updated:** 2026-05-14

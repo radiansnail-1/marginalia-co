@@ -1,55 +1,51 @@
 # Plan
 
-**Goal:** Publish the QA-verified librarian latency, loading-state, and metadata-hardening work for Marginalia & Co.
+**Goal:** Publish Vercel Analytics integration for the Marginalia Next.js app.
 
 **Approach:**
-- Keep the librarian comprehensive by using Google Books alongside catalog candidates, while bounding optional request-time work.
-- Use authenticated Browser QA with the supplied test account to verify real user flows across desktop, laptop, and mobile.
-- Preserve unrelated local changes and publish only the verified source/test changes plus current handoff state.
+- Add the official `@vercel/analytics` package to the app dependencies.
+- Render the Next.js Analytics component from the root app layout so page views are tracked across the application.
+- Keep unrelated local edits, especially `PLAY.md`, out of the publish scope.
 
 **Milestones:**
-- [x] QA production and local app readiness gaps.
-- [x] Remove the Project Hail Mary QA artifact from the production test account.
-- [x] Add stale catalog metadata backfill when saving richer search results.
-- [x] Add librarian loading state that makes recommendation wait time intentional.
-- [x] Keep Google Books in librarian recommendations and tighten the server latency path.
-- [x] Verify authenticated librarian timing under the 5 second target after fixes.
-- [ ] Push branch and open a draft PR for review.
+- [x] Install `@vercel/analytics`.
+- [x] Add `<Analytics />` to `src/app/layout.tsx`.
+- [x] Verify TypeScript import resolution.
+- [ ] Commit, push, and open a draft PR.
 
 ## Resume State
 
-**Status:** The librarian fixes are committed locally as `903b695 Tighten librarian recommendations`; the branch is ahead of origin by one commit before publish.
+**Status:** Analytics integration is implemented locally and ready to publish.
 
-**Last action:** Authenticated QA with `awesomebt28@gmail.com` verified librarian loading and recommendation flows. Before the latency patch, librarian calls measured about 6.1s and 7.8s. After the patch, verified timings were about 4.8s on desktop, 3.5s on desktop repeat, and 3.5s on mobile.
+**Last action:** Installed `@vercel/analytics`, updated `package.json` and `package-lock.json`, imported `Analytics` from `@vercel/analytics/next`, and rendered `<Analytics />` in `src/app/layout.tsx`.
 
-**Next action:** Use the GitHub publish workflow to push `codex/initial-little-alexandria-app` and open a draft PR against the repository default branch.
+**Next action:** Stage only `package.json`, `package-lock.json`, `src/app/layout.tsx`, `plan.md`, `learnings.md`, and `changelog.md`; commit; push the current branch; open a draft PR.
 
-**Repo state:** Branch `codex/initial-little-alexandria-app` is ahead of `origin/codex/initial-little-alexandria-app` by `903b695`. `PLAY.md` remains modified and intentionally out of scope. The handoff files are updated for resume context.
+**Repo state:** Branch `codex/initial-little-alexandria-app` tracks `origin/codex/initial-little-alexandria-app`. `PLAY.md` is modified and intentionally out of scope.
 
-**Verification:** Passed `npm test`, `npm run lint`, `npx tsc --noEmit`, and `npm run build`. Browser QA verified authenticated login, librarian loading, recommendation results, recommendation detail open/back, and desktop/laptop/mobile responsive behavior. Browser screenshot capture timed out, so evidence came from DOM snapshots, visible DOM, timings, and console logs.
+**Verification:** `npx tsc --noEmit --pretty false` passed. `npm run lint` started cleanly but timed out after two minutes before producing a final result.
 
 ## Review Status
 
 | Review | Last run | Status | Findings | Stale? |
 |--------|----------|--------|----------|--------|
-| CEO | - | - | No review log found. | unknown |
-| Eng | 2026-05-13 | informal | User requested investigate plus eng review; plan changed to keep Google Books and cap latency. | no |
-| Design | - | - | No review log found. | unknown |
-| DX | - | - | No review log found. | unknown |
+| CEO | - | - | No current review log found for this narrow analytics change. | unknown |
+| Eng | - | - | Change follows Vercel's standard Next.js integration pattern. | no |
+| Design | - | - | No UI-visible change. | no |
+| DX | - | - | No developer-facing workflow change. | no |
 
 **Review verdict:** CLEARED
 
-**Next review:** None required before opening the draft PR. A follow-up product QA pass can focus on donation URL, Goodreads import with a real CSV, and affiliate dashboard attribution.
+**Next review:** None required for this narrow package and root-layout integration.
 
-**Blockers / open questions:** Browser Use screenshot capture timed out during QA, but DOM and timing evidence were sufficient. Donation link, real Goodreads export import, and affiliate dashboard attribution remain launch-confidence items outside this fix.
+**Blockers / open questions:** None for the analytics integration. The pre-existing `PLAY.md` diff remains outside this publish scope.
 
 **Context pointers:**
-- Key files: `src/lib/librarian/recommend.ts`, `src/app/(app)/librarian/actions.ts`, `src/app/(app)/librarian/librarian-client.tsx`, `src/app/(app)/search/actions.ts`, `src/app/(app)/search/book-metadata.ts`, `src/app/(app)/search/book-metadata.test.ts`
-- Repo context: `903b695 Tighten librarian recommendations`, `a2d8375 Fix scanner preview startup race`, `f4c45b3 Fix ISBN scanning and preserve search metadata`
-- External: local QA target `http://localhost:3001`; production target previously tested at `https://marginalia-co.vercel.app`
+- Key files: `src/app/layout.tsx`, `package.json`, `package-lock.json`
+- Repo context: `2670943 Update handoff state`, current branch `codex/initial-little-alexandria-app`
 
-**How to resume:** `cd "E:\2. Current Projects\bookshelf\marginalia"; git status --short --branch; gh pr status`
+**How to resume:** `cd "E:\2.CurrentProjects\bookshelf\marginalia"; git status --short --branch; npx tsc --noEmit --pretty false`
 
-**Out of scope:** Do not stage `PLAY.md` unless the user explicitly asks. Do not run donation, Goodreads CSV, or affiliate dashboard work as part of this PR.
+**Out of scope:** Do not stage `PLAY.md` unless the user explicitly asks.
 
-**Last updated:** 2026-05-13
+**Last updated:** 2026-05-14
