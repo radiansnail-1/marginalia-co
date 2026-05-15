@@ -12,6 +12,19 @@ type Token = {
   revoked_at: string | null;
 };
 
+function llmConnectPrompt(token: string) {
+  const origin = typeof window === "undefined" ? "https://marginalia-co.vercel.app" : window.location.origin;
+
+  return `You are helping me use my Marginalia & Co. reading shelf through its HTTP API.
+
+Connect to ${origin}/api/v1 with this header:
+Authorization: Bearer ${token}
+
+First, read GET ${origin}/api/v1 for the API reference and GET ${origin}/api/v1/me to confirm the token works. Then tell me, in plain English, what you can do with my shelf before you make any changes.
+
+You may read my profile and books, add or update one book with POST /api/v1/books, and ask for recommendations with POST /api/v1/recommendations. Ask me before any write action. Do not print the token back to me.`;
+}
+
 export function TokenPanel() {
   const [tokens, setTokens] = useState<Token[]>([]);
   const [label, setLabel] = useState("");
@@ -87,8 +100,15 @@ export function TokenPanel() {
 
         {freshToken && (
           <div className="mt-4 rounded-md border border-brass/40 bg-mahogany-3 p-3">
-            <div className="text-[10px] uppercase tracking-widest text-brass">Copy this now - it won&apos;t be shown again</div>
+            <div className="text-[10px] uppercase tracking-widest text-brass">API token - copy this now</div>
             <code className="mt-2 block break-all text-xs text-parchment">{freshToken.token}</code>
+            <div className="mt-4 text-[10px] uppercase tracking-widest text-brass">Prompt for your LLM</div>
+            <p className="mt-1 text-xs leading-relaxed text-parchment-dim">
+              Paste this into a chat that can make HTTP requests, and it will connect before explaining what it can do.
+            </p>
+            <pre className="mt-2 max-h-64 overflow-auto whitespace-pre-wrap rounded bg-mahogany px-3 py-2 text-xs leading-relaxed text-parchment">
+              {llmConnectPrompt(freshToken.token)}
+            </pre>
           </div>
         )}
 
