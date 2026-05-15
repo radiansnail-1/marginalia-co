@@ -1,0 +1,41 @@
+export const API_REFERENCE = {
+  name: "Marginalia & Co. v1",
+  description: "Personal reading-shelf API. Hook up your LLM, your script, your tool of choice.",
+  auth: "Authorization: Bearer mg_xxx - generate from /profile.",
+  endpoints: [
+    { method: "GET", path: "/api/v1/me", returns: "Your profile + this year's finished count" },
+    {
+      method: "GET",
+      path: "/api/v1/books",
+      query: "status=pile|reading|finished|abandoned (optional)",
+      returns: "Your shelf, including status, personal rating, personal review, shared average_rating, and rating_count for each book",
+    },
+    {
+      method: "POST",
+      path: "/api/v1/books",
+      body: {
+        title: "string",
+        author: "string",
+        status: "pile|reading|finished|abandoned (optional for updates, defaults to pile for new books)",
+        rating: "number 0.5-5 in 0.5 increments, such as 4.5 (optional, null clears it)",
+        review: "string up to 4000 characters (optional, null or empty string clears it)",
+        googleBooksId: "optional",
+        isbn13: "optional",
+        pageCount: "optional",
+        publishedYear: "optional",
+        coverUrl: "optional",
+        startedAt: "ISO (optional)",
+        finishedAt: "ISO (optional)",
+      },
+      returns: "created or updated user_book_id and book_id. Omitted status, rating, and review are preserved when updating an existing shelf book.",
+    },
+    { method: "POST", path: "/api/v1/recommendations", body: { mood: "restless|wistful|curious|tender|fierce|lost" }, returns: "Three picks with reasons" },
+  ],
+  notes: [
+    "Bulk import: POST /api/v1/books per book. The shared books catalog is deduped by googleBooksId, then isbn13, then title/author including common subtitle variants.",
+    "Reviews are supported on GET /api/v1/books and POST /api/v1/books as the review field.",
+    "Ratings support half stars: 0.5, 1, 1.5, ... 4.5, 5.",
+    "Recommendations use the live Librarian when configured; otherwise a deterministic shelf-based fallback.",
+    "Tokens look like mg_xxx. Revoke from /profile.",
+  ],
+} as const;

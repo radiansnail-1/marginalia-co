@@ -1,32 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 import { authenticate, jsonError } from "@/lib/api/auth";
+import { authorMatches, authorSearchToken, buildUserBookPayload, chooseExistingBookCandidate, titleMatches } from "@/lib/api/book-upsert";
+import { BookInputSchema, StatusEnum, type BookInput } from "@/lib/api/books-schema";
 import { ApiTimer, withServerTiming } from "@/lib/api/timing";
 import { createServiceClient } from "@/lib/supabase/service";
 import { searchBooks } from "@/lib/books/google-books";
 
 export const runtime = "nodejs";
 
-const StatusEnum = z.enum(["pile", "reading", "finished", "abandoned"]);
-
-const BookInputSchema = z.object({
-  googleBooksId: z.string().optional(),
-  isbn13: z.string().optional(),
-  title: z.string().min(1),
-  author: z.string().min(1),
-  description: z.string().max(4000).optional(),
-  subjects: z.array(z.string()).max(20).optional(),
-  status: StatusEnum.default("pile"),
-  rating: z.number().min(0.5).max(5).refine((n) => Number.isInteger(n * 2), "Rating must be in 0.5 increments.").optional(),
-  review: z.string().max(4000).optional(),
-  pageCount: z.number().int().positive().optional(),
-  publishedYear: z.number().int().optional(),
-  coverUrl: z.string().url().optional(),
-  startedAt: z.string().datetime().optional(),
-  finishedAt: z.string().datetime().optional(),
-});
-
-type BookInput = z.infer<typeof BookInputSchema>;
+const BOOK_LOOKUP_SELECT = "id, title, author, google_books_id, isbn_13, cover_url, page_count, published_year, subjects, description";
 
 type ResolvedBookMetadata = {
   googleBooksId: string | null;
@@ -37,30 +19,6 @@ type ResolvedBookMetadata = {
   subjects: string[];
   description: string | null;
 };
-
-function normalize(value: string) {
-  return value
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-}
-
-function authorMatches(expected: string, candidate: string) {
-  const a = normalize(expected);
-  const b = normalize(candidate);
-  if (!a || !b) return false;
-  if (a.includes(b) || b.includes(a)) return true;
-  const last = a.split(" ").at(-1);
-  return !!last && b.split(" ").includes(last);
-}
-
-function titleMatches(expected: string, candidate: string) {
-  const a = normalize(expected);
-  const b = normalize(candidate);
-  return !!a && !!b && (a === b || a.includes(b) || b.includes(a));
-}
 
 async function resolveBookMetadata(input: BookInput): Promise<ResolvedBookMetadata> {
   const base: ResolvedBookMetadata = {
@@ -113,14 +71,14 @@ async function lookupExistingBook(
 ) {
   if (metadata.googleBooksId) {
     const { data } = await timer.measure("db.book_google", () =>
-      supabase.from("books").select("id").eq("google_books_id", metadata.googleBooksId).maybeSingle(),
+      supabase.from("books").select(BOOK_LOOKUP_SELECT).eq("google_books_id", metadata.googleBooksId).maybeSingle(),
     );
     if (data?.id) return data;
   }
 
   if (metadata.isbn13) {
     const { data } = await timer.measure("db.book_isbn", () =>
-      supabase.from("books").select("id").eq("isbn_13", metadata.isbn13).limit(1).maybeSingle(),
+      supabase.from("books").select(BOOK_LOOKUP_SELECT).eq("isbn_13", metadata.isbn13).limit(1).maybeSingle(),
     );
     if (data?.id) return data;
   }
@@ -128,14 +86,27 @@ async function lookupExistingBook(
   const { data } = await timer.measure("db.book_title_author", () =>
     supabase
       .from("books")
-      .select("id, google_books_id, isbn_13, cover_url, page_count, published_year, subjects, description")
+      .select(BOOK_LOOKUP_SELECT)
       .ilike("title", input.title.trim())
       .ilike("author", input.author.trim())
       .order("added_at", { ascending: true })
       .limit(1)
       .maybeSingle(),
   );
-  return data ?? null;
+  if (data?.id) return data;
+
+  const token = authorSearchToken(input.author);
+  if (!token) return null;
+
+  const { data: candidates } = await timer.measure("db.book_author_candidates", () =>
+    supabase
+      .from("books")
+      .select(BOOK_LOOKUP_SELECT)
+      .ilike("author", `%${token}%`)
+      .order("added_at", { ascending: true })
+      .limit(20),
+  );
+  return chooseExistingBookCandidate(input, candidates ?? []);
 }
 
 async function patchMissingBookMetadata(
@@ -260,27 +231,20 @@ export async function POST(req: NextRequest) {
     }
     bookId = inserted.id;
   }
+  if (!bookId) {
+    return withServerTiming(jsonError(500, "Could not resolve book."), timer);
+  }
 
   const { data: existing } = await timer.measure("db.user_book_lookup", () =>
     supabase
       .from("user_books")
-      .select("id")
+      .select("id, status, rating, review, started_at, finished_at")
       .eq("user_id", auth.userId)
       .eq("book_id", bookId)
       .maybeSingle(),
   );
 
-  const payload = {
-    user_id: auth.userId,
-    book_id: bookId,
-    status: input.status,
-    rating: input.rating ?? null,
-    review: input.review ? input.review.trim().slice(0, 4000) || null : null,
-    started_at: input.startedAt ?? (input.status === "reading" || input.status === "finished" ? new Date().toISOString() : null),
-    finished_at: input.finishedAt ?? (input.status === "finished" ? new Date().toISOString() : null),
-    added_to_pile_at: existing ? undefined : new Date().toISOString(),
-    added_from: "api",
-  };
+  const payload = buildUserBookPayload(auth.userId, bookId, input, existing, new Date().toISOString());
 
   if (existing) {
     const { error: updErr } = await timer.measure("db.user_book_update", () =>

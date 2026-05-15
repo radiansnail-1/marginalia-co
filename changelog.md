@@ -2,12 +2,23 @@
 
 ## 2026-05-15
 
-- Ran a live QA pass against `https://marginalia-co.vercel.app`, covering `/home`, `/shelf`, `/pile`, `/librarian`, `/profile`, `/search`, and `/api`; no console errors were observed in exercised flows.
-- Verified shelf search/filter and add-book search behavior on production while avoiding live write actions that would mutate the account.
-- Reduced bookshelf spine title size from `8px` to `6.5px` and tightened letter spacing in `src/components/room/spine.tsx`.
-- Added a paste-ready LLM API connection prompt to the fresh token reveal in `src/app/(app)/profile/token-panel.tsx`.
-- Passed `npm test` 22/22, `npm run lint`, and `npm run build`.
-- Committed verified UI changes as `655ed04 Polish spine text and API token prompt`.
+- Prepared Marginalia & Co. for Google Play closed testing as a Trusted Web Activity with package `com.app.marginaliaandco`.
+- Updated Play release documentation in `PLAY.md` with the Vercel production domain, wrapper path, signed AAB workflow, tester guide references, and Digital Asset Links steps.
+- Updated `public/.well-known/assetlinks.template.json` and `scripts/twa-assetlinks.mjs` from the stale package `com.radiansnail.marginalia` to `com.app.marginaliaandco`.
+- Generated `public/.well-known/assetlinks.json` with the Play App Signing SHA-256 fingerprint `8C:E6:E0:FF:94:A9:25:13:5D:5A:EF:E6:BA:D8:71:30:EA:71:A5:B6:A5:58:B1:16:A0:C6:E5:CE:FD:67:03:81`.
+- Confirmed the local asset links file is correct and that production still returns `404` until Vercel is redeployed.
+- Clarified that the Android AAB does not need to be rebuilt for this assetlinks-only browser URL bar fix.
+- Added click-to-copy behavior for the fresh API token LLM prompt in `src/app/(app)/profile/token-panel.tsx`.
+- Added `src/lib/api/reference.ts` so the machine-readable `/api/v1` contract explicitly surfaces review support and half-star ratings.
+- Added `src/lib/api/books-schema.ts` so POST `/api/v1/books` accepts half-star numeric strings, supports explicit rating/review clearing, and preserves omitted `status`, `rating`, and `review` when updating an existing shelf book.
+- Added `src/lib/api/book-upsert.ts` so API book updates can match existing plain title rows when incoming Google Books metadata includes subtitles, reducing duplicate catalog rows for cases like The Trading Game, Humankind, and AI Superpowers.
+- Added regression tests for the API book schema and machine-readable API reference.
+- Ran QA checks for the API sync issue: local `/api/v1` surfaces review and half-star support, production `/api/v1` is still on the old contract until this branch is deployed, `npm test` passed 30/30, `npx tsc --noEmit --pretty false` passed, `npm run lint` passed, and `npm run build` passed.
+- Confirmed the repo already contains `supabase/migrations/0009_half_star_ratings.sql`; if production still rejects half-stars after deploy, the production Supabase migration state needs repair.
+- Committed the Play/TWA/API changes locally as `51bd3f9 Add Play asset links for TWA`.
+- Previously ran a live QA pass against `https://marginalia-co.vercel.app`, covering `/home`, `/shelf`, `/pile`, `/librarian`, `/profile`, `/search`, and `/api`; no console errors were observed in exercised flows.
+- Previously reduced bookshelf spine title size in `src/components/room/spine.tsx` and added a paste-ready LLM API connection prompt in `src/app/(app)/profile/token-panel.tsx`.
+- Previously passed `npm test` 22/22, `npm run lint`, and `npm run build` for the UI polish changes.
 
 ## 2026-05-14
 
