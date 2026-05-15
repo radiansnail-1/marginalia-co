@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const EXPECTED_PACKAGE_NAME = "com.radiansnail.marginalia";
+export const EXPECTED_PACKAGE_NAME = "com.app.marginaliaandco";
 export const PLACEHOLDER_FINGERPRINT = "YOUR:SHA256:FINGERPRINT:HERE";
 
 const __filename = fileURLToPath(import.meta.url);

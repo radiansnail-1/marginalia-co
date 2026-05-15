@@ -22,13 +22,14 @@ Authorization: Bearer ${token}
 
 First, read GET ${origin}/api/v1 for the API reference and GET ${origin}/api/v1/me to confirm the token works. Then tell me, in plain English, what you can do with my shelf before you make any changes.
 
-You may read my profile and books, add or update one book with POST /api/v1/books, and ask for recommendations with POST /api/v1/recommendations. Ask me before any write action. Do not print the token back to me.`;
+You may read my profile and books, add or update one book with POST /api/v1/books, and ask for recommendations with POST /api/v1/recommendations. Book updates support review text and half-star ratings like 3.5 or 4.5. Ask me before any write action. Do not print the token back to me.`;
 }
 
 export function TokenPanel() {
   const [tokens, setTokens] = useState<Token[]>([]);
   const [label, setLabel] = useState("");
   const [freshToken, setFreshToken] = useState<{ id: string; token: string } | null>(null);
+  const [copiedPrompt, setCopiedPrompt] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [loaded, setLoaded] = useState(false);
@@ -44,6 +45,7 @@ export function TokenPanel() {
     e.preventDefault();
     setError(null);
     setFreshToken(null);
+    setCopiedPrompt(false);
     startTransition(async () => {
       const res = await createApiToken(label);
       if ("error" in res) {
@@ -55,6 +57,17 @@ export function TokenPanel() {
       setTokens(refreshed.tokens);
       setLabel("");
     });
+  };
+
+  const copyLlmPrompt = async () => {
+    if (!freshToken) return;
+    try {
+      await navigator.clipboard.writeText(llmConnectPrompt(freshToken.token));
+      setCopiedPrompt(true);
+      window.setTimeout(() => setCopiedPrompt(false), 2000);
+    } catch {
+      setError("Could not copy automatically. Select the prompt text and copy it manually.");
+    }
   };
 
   const onRevoke = (id: string) => {
@@ -106,7 +119,25 @@ export function TokenPanel() {
             <p className="mt-1 text-xs leading-relaxed text-parchment-dim">
               Paste this into a chat that can make HTTP requests, and it will connect before explaining what it can do.
             </p>
-            <pre className="mt-2 max-h-64 overflow-auto whitespace-pre-wrap rounded bg-mahogany px-3 py-2 text-xs leading-relaxed text-parchment">
+            <button
+              type="button"
+              onClick={copyLlmPrompt}
+              className="tap mt-2 rounded-md border border-brass/40 px-3 py-2 font-display text-[10px] uppercase tracking-widest text-brass-bright hover:bg-mahogany"
+            >
+              {copiedPrompt ? "Copied" : "Copy prompt"}
+            </button>
+            <pre
+              role="button"
+              tabIndex={0}
+              onClick={copyLlmPrompt}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  void copyLlmPrompt();
+                }
+              }}
+              className="mt-2 max-h-64 cursor-pointer overflow-auto whitespace-pre-wrap rounded bg-mahogany px-3 py-2 text-xs leading-relaxed text-parchment"
+            >
               {llmConnectPrompt(freshToken.token)}
             </pre>
           </div>

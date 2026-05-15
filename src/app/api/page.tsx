@@ -1,7 +1,7 @@
 const endpoints = [
   ["GET", "/api/v1/me", "Verify a token and read the current profile."],
-  ["GET", "/api/v1/books", "List shelf books, optionally filtered by status."],
-  ["POST", "/api/v1/books", "Add or update one book from an external tool."],
+  ["GET", "/api/v1/books", "List shelf books with status, rating, and review, optionally filtered by status."],
+  ["POST", "/api/v1/books", "Add or update one book, including review text and half-star ratings."],
   ["POST", "/api/v1/recommendations", "Ask the Librarian for three mood-based picks."],
 ];
 
@@ -42,6 +42,9 @@ export default function ApiDocsPage() {
 
         <p className="mt-5 text-xs text-parchment-dim">
           Machine-readable reference: <a href="/api/v1" className="text-brass-bright underline">/api/v1</a>
+        </p>
+        <p className="mt-2 text-xs text-parchment-dim">
+          Book updates support <code className="text-brass-bright">review</code> and half-star <code className="text-brass-bright">rating</code> values such as <code className="text-brass-bright">4.5</code>.
         </p>
       </div>
     </main>
