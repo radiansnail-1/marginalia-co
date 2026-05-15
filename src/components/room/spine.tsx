@@ -71,8 +71,8 @@ export function Spine({ book }: { book: SpineBook }) {
       <span
         className="spine-text font-display"
         style={{
-          fontSize: "8px",
-          letterSpacing: "0.5px",
+          fontSize: "6.5px",
+          letterSpacing: "0.35px",
           padding: "5px 0",
           maxHeight: "86%",
           lineHeight: 1,

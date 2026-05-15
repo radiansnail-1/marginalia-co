@@ -1,51 +1,54 @@
 # Plan
 
-**Goal:** Publish Vercel Analytics integration for the Marginalia Next.js app.
+**Goal:** Publish the Marginalia polish pass for production QA findings, bookshelf spine text, and the profile API token helper prompt.
 
 **Approach:**
-- Add the official `@vercel/analytics` package to the app dependencies.
-- Render the Next.js Analytics component from the root app layout so page views are tracked across the application.
-- Keep unrelated local edits, especially `PLAY.md`, out of the publish scope.
+- Keep the UI change tightly scoped to the existing spine component and profile token panel.
+- Preserve the production account by avoiding mutating live actions during QA.
+- Publish only the verified feature commit and handoff files; leave the unrelated `PLAY.md` edit out of scope.
 
 **Milestones:**
-- [x] Install `@vercel/analytics`.
-- [x] Add `<Analytics />` to `src/app/layout.tsx`.
-- [x] Verify TypeScript import resolution.
-- [ ] Commit, push, and open a draft PR.
+- [x] Run a live QA pass against `https://marginalia-co.vercel.app`.
+- [x] Make book-spine titles smaller in `src/components/room/spine.tsx`.
+- [x] Add a paste-ready LLM API connection prompt to `src/app/(app)/profile/token-panel.tsx`.
+- [x] Run tests, lint, and production build.
+- [x] Commit the verified UI changes as `655ed04 Polish spine text and API token prompt`.
+- [ ] Push the current branch and open a draft PR.
 
 ## Resume State
 
-**Status:** Analytics integration is implemented locally and ready to publish.
+**Status:** The requested UI changes are implemented, verified, and committed locally; the branch is ready to publish.
 
-**Last action:** Installed `@vercel/analytics`, updated `package.json` and `package-lock.json`, imported `Analytics` from `@vercel/analytics/next`, and rendered `<Analytics />` in `src/app/layout.tsx`.
+**Last action:** Updated the handoff files after committing `655ed04`, following live QA and local validation.
 
-**Next action:** Stage only `package.json`, `package-lock.json`, `src/app/layout.tsx`, `plan.md`, `learnings.md`, and `changelog.md`; commit; push the current branch; open a draft PR.
+**Next action:** Stage only `plan.md`, `learnings.md`, and `changelog.md`, commit the handoff update, push branch `codex/initial-little-alexandria-app`, and open a draft PR.
 
-**Repo state:** Branch `codex/initial-little-alexandria-app` tracks `origin/codex/initial-little-alexandria-app`. `PLAY.md` is modified and intentionally out of scope.
+**Repo state:** Branch `codex/initial-little-alexandria-app` tracks `origin/codex/initial-little-alexandria-app` and is ahead by `655ed04` before this handoff update. `PLAY.md` is modified and intentionally out of scope.
 
-**Verification:** `npx tsc --noEmit --pretty false` passed. `npm run lint` started cleanly but timed out after two minutes before producing a final result.
+**Verification:** Live QA exercised `/home`, `/shelf`, `/pile`, `/librarian`, `/profile`, `/search`, and `/api`; shelf search/filter and book search worked; no console errors were observed in exercised flows. `npm test` passed 22/22, `npm run lint` passed, and `npm run build` passed.
 
 ## Review Status
 
 | Review | Last run | Status | Findings | Stale? |
 |--------|----------|--------|----------|--------|
-| CEO | - | - | No current review log found for this narrow analytics change. | unknown |
-| Eng | - | - | Change follows Vercel's standard Next.js integration pattern. | no |
-| Design | - | - | No UI-visible change. | no |
-| DX | - | - | No developer-facing workflow change. | no |
+| CEO | - | - | No CEO review log found for this narrow UI polish. | unknown |
+| Eng | 2026-05-15 | cleared | Low-blast-radius frontend change: isolated spine typography plus token-panel prompt copy. | no |
+| Design | - | - | No formal design review run; visual QA found the smaller spine text appropriate at shelf scale. | unknown |
+| DX | - | - | No developer-facing workflow change beyond clearer API onboarding copy for users. | no |
 
 **Review verdict:** CLEARED
 
-**Next review:** None required for this narrow package and root-layout integration.
+**Next review:** None required before draft PR for this narrow polish pass.
 
-**Blockers / open questions:** None for the analytics integration. The pre-existing `PLAY.md` diff remains outside this publish scope.
+**Blockers / open questions:** None. Production token creation, revocation, Start/DNF, and add-book writes were intentionally skipped to avoid mutating the live account.
 
 **Context pointers:**
-- Key files: `src/app/layout.tsx`, `package.json`, `package-lock.json`
-- Repo context: `2670943 Update handoff state`, current branch `codex/initial-little-alexandria-app`
+- Key files: `src/components/room/spine.tsx:74`, `src/app/(app)/profile/token-panel.tsx:15`
+- Repo context: `655ed04 Polish spine text and API token prompt`, dirty state only from this handoff update plus unrelated `PLAY.md`.
+- External: live app `https://marginalia-co.vercel.app`
 
-**How to resume:** `cd "E:\2.CurrentProjects\bookshelf\marginalia"; git status --short --branch; npx tsc --noEmit --pretty false`
+**How to resume:** `cd "E:\2.CurrentProjects\bookshelf\marginalia"; git status --short --branch; npm test; npm run lint; npm run build`
 
-**Out of scope:** Do not stage `PLAY.md` unless the user explicitly asks.
+**Out of scope:** Do not stage `PLAY.md` unless the user explicitly asks. Do not mutate production reading data during QA without explicit approval.
 
-**Last updated:** 2026-05-14
+**Last updated:** 2026-05-15

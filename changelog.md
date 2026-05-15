@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-05-15
+
+- Ran a live QA pass against `https://marginalia-co.vercel.app`, covering `/home`, `/shelf`, `/pile`, `/librarian`, `/profile`, `/search`, and `/api`; no console errors were observed in exercised flows.
+- Verified shelf search/filter and add-book search behavior on production while avoiding live write actions that would mutate the account.
+- Reduced bookshelf spine title size from `8px` to `6.5px` and tightened letter spacing in `src/components/room/spine.tsx`.
+- Added a paste-ready LLM API connection prompt to the fresh token reveal in `src/app/(app)/profile/token-panel.tsx`.
+- Passed `npm test` 22/22, `npm run lint`, and `npm run build`.
+- Committed verified UI changes as `655ed04 Polish spine text and API token prompt`.
+
 ## 2026-05-14
 
 - Installed `@vercel/analytics` in the Marginalia Next.js app.
@@ -21,4 +30,4 @@
 - Passed `npm test`, `npm run lint`, `npx tsc --noEmit`, and `npm run build`.
 - Committed verified fixes as `903b695 Tighten librarian recommendations`.
 
-**Last updated:** 2026-05-14
+**Last updated:** 2026-05-15
