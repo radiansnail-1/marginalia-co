@@ -1,10 +1,16 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { createServiceClient } from "@/lib/supabase/service";
+import { isValidReferralCode, normalizeReferralCode } from "@/lib/growth/referrals";
 
 type SignupResult = {
   message: string;
   ok: boolean;
+};
+
+type ReferralCodeResult = SignupResult & {
+  code?: string;
 };
 
 function signupErrorMessage(raw: string) {
@@ -35,5 +41,37 @@ export async function createConfirmedAccount(email: string, password: string): P
       ok: false,
       message: signupErrorMessage(error instanceof Error ? error.message : ""),
     };
+  }
+}
+
+export async function saveReferralCode(input: string): Promise<ReferralCodeResult> {
+  const code = normalizeReferralCode(input);
+  if (!code) return { ok: true, message: "" };
+  if (!isValidReferralCode(code)) {
+    return { ok: false, message: "That code looks too short. Check it and try again." };
+  }
+
+  try {
+    const supabase = createServiceClient();
+    const { data, error } = await supabase
+      .from("referral_codes")
+      .select("code")
+      .eq("code", code)
+      .maybeSingle<{ code: string }>();
+
+    if (error) throw error;
+    if (!data?.code) return { ok: false, message: "That code was not found." };
+
+    const cookieStore = await cookies();
+    cookieStore.set("marginalia_referral_code", data.code, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24 * 30,
+      path: "/",
+    });
+    return { ok: true, code: data.code, message: "Promo code saved." };
+  } catch {
+    return { ok: false, message: "Promo codes are not ready yet. Try the invite link instead." };
   }
 }

@@ -6,7 +6,6 @@ import {
   finishOnboarding,
   markPlusPromptSeen,
   markRatingPromptClaimed,
-  markRatingPromptDismissed,
   markReferralPromptSeen,
   type OnboardingAnswers,
 } from "./actions";
@@ -495,14 +494,6 @@ export function OnboardingClient({
           className="tap text-center text-xs font-semibold text-parchment-dim underline underline-offset-4 disabled:opacity-60"
         >
           I rated!
-        </button>
-        <button
-          type="button"
-          disabled={isPending}
-          onClick={() => finish(markRatingPromptDismissed)}
-          className="tap text-center text-xs font-semibold text-parchment-dim underline underline-offset-4 disabled:opacity-60"
-        >
-          Maybe later
         </button>
       </div>
     </PageShell>

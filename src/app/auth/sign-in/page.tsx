@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Letter } from "@/components/letter";
 import { Owl } from "@/components/owl";
-import { createConfirmedAccount } from "./actions";
+import { createConfirmedAccount, saveReferralCode } from "./actions";
 
 function brandedAuthError(raw: string, mode: "signin" | "signup"): string {
   const m = raw.toLowerCase();
@@ -28,6 +28,7 @@ export default function SignInPage() {
   const [mode, setMode] = useState<"signin" | "signup">("signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [referralCode, setReferralCode] = useState("");
 
   function resetFeedback() {
     setStatus("idle");
@@ -40,6 +41,13 @@ export default function SignInPage() {
     setMsg("");
     const supabase = createClient();
     try {
+      const referralResult = await saveReferralCode(referralCode);
+      if (!referralResult.ok) {
+        setMsg(referralResult.message);
+        setStatus("error");
+        return;
+      }
+
       if (mode === "signup") {
         const result = await createConfirmedAccount(email, password);
         setMsg(result.message);
@@ -109,6 +117,17 @@ export default function SignInPage() {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="passphrase"
           className="mt-3 w-full rounded-md border border-brass/30 bg-mahogany-2 px-4 py-3 font-body text-parchment placeholder:text-parchment-dim focus:border-brass focus:outline-none"
+        />
+        <label className="mt-3 block text-[10px] font-semibold uppercase tracking-[0.24em] text-parchment-dim">
+          Promo or invite code
+        </label>
+        <input
+          type="text"
+          autoComplete="off"
+          value={referralCode}
+          onChange={(e) => setReferralCode(e.target.value)}
+          placeholder="BRIAN-READS"
+          className="mt-2 w-full rounded-md border border-brass/30 bg-mahogany-2 px-4 py-3 font-body uppercase tracking-[0.14em] text-parchment placeholder:tracking-normal placeholder:text-parchment-dim focus:border-brass focus:outline-none"
         />
         <button
           disabled={status === "working"}
