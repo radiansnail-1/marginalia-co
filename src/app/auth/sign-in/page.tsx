@@ -51,7 +51,7 @@ export default function SignInPage() {
 
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      router.push("/home");
+      router.push("/onboarding");
       router.refresh();
     } catch (err) {
       setMsg(brandedAuthError(err instanceof Error ? err.message : "", mode));
