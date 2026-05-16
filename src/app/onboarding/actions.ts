@@ -7,6 +7,7 @@ import {
   claimIncomingReferral,
   qualifyReferralForUser,
 } from "@/lib/growth/referral-server";
+import { claimSavedPermanentPromoForUser } from "@/lib/growth/promotions-server";
 import {
   cleanOnboardingAnswers,
   type OnboardingAnswers,
@@ -53,19 +54,6 @@ export async function markRatingPromptClaimed() {
   return { ok: true };
 }
 
-export async function markRatingPromptDismissed() {
-  const user = await requireOnboardingUser();
-  const supabase = await createClient();
-  await supabase
-    .from("profiles")
-    .update({
-      rating_prompt_dismissed_at: new Date().toISOString(),
-      rating_prompt_seen_at: new Date().toISOString(),
-    })
-    .eq("id", user.id);
-  return { ok: true };
-}
-
 export async function finishOnboarding(answers: OnboardingAnswers) {
   const user = await requireOnboardingUser();
 
@@ -82,6 +70,7 @@ export async function finishOnboarding(answers: OnboardingAnswers) {
   if (error) return { ok: false, message: "Could not finish onboarding. Try again." };
 
   try {
+    await claimSavedPermanentPromoForUser(user.id);
     await claimIncomingReferral(user.id);
     await qualifyReferralForUser(user.id);
   } catch {

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Letter } from "@/components/letter";
 import { Owl } from "@/components/owl";
-import { createConfirmedAccount, saveReferralCode } from "./actions";
+import { applySavedPromoCode, createConfirmedAccount, saveReferralCode } from "./actions";
 
 function brandedAuthError(raw: string, mode: "signin" | "signup"): string {
   const m = raw.toLowerCase();
@@ -59,6 +59,7 @@ export default function SignInPage() {
 
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
+      await applySavedPromoCode();
       router.push("/onboarding");
       router.refresh();
     } catch (err) {
@@ -126,7 +127,7 @@ export default function SignInPage() {
           autoComplete="off"
           value={referralCode}
           onChange={(e) => setReferralCode(e.target.value)}
-          placeholder="BRIAN-READS"
+          placeholder="NLBisthebestlibrary"
           className="mt-2 w-full rounded-md border border-brass/30 bg-mahogany-2 px-4 py-3 font-body uppercase tracking-[0.14em] text-parchment placeholder:tracking-normal placeholder:text-parchment-dim focus:border-brass focus:outline-none"
         />
         <button

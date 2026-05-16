@@ -458,7 +458,7 @@ export function OnboardingClient({
   return (
     <PageShell step={step}>
       <h1 className="text-center font-display text-5xl leading-[0.98] text-parchment">
-        Leave a <em className="text-brass-bright">rating?</em>
+        Give us a <em className="text-brass-bright">rating?</em>
       </h1>
       <p className="mx-auto mt-4 max-w-xs text-center font-display text-lg italic leading-snug text-parchment-dim">
         We are a small reading room. A Play Store rating helps other readers find the door.
@@ -485,7 +485,7 @@ export function OnboardingClient({
             window.open(playStoreUrl, "_blank", "noopener,noreferrer");
           }}
         >
-          Rate Marginalia
+          Give us a rating
         </PrimaryButton>
         <button
           type="button"
