@@ -1,5 +1,23 @@
 # Changelog
 
+## 2026-05-16
+
+- Pushed prior Play/TWA/API changes and opened draft PR #17: `https://github.com/radiansnail-1/marginalia-co/pull/17`.
+- Used the Nicole/Superwall source note and CEO review to choose a Marginalia-native onboarding growth direction: Librarian interview first, then locked guide, optional Plus offer, referral invite, and rating prompt suppression.
+- Added static onboarding/pricing/referral/rating mockups to `E:\2.CurrentProjects\bookshelf\design\onboarding-options.html` and linked them from the design index.
+- Added Supabase migration `0015_onboarding_growth.sql` for onboarding completion/answers, prompt timestamps, referral codes, and referral events.
+- Added `/invite/[code]` route to capture referral codes in a cookie before signup.
+- Added growth helpers in `src/lib/growth/` for referral code normalization, share text, referral creation, claiming, qualification, and qualified counts.
+- Added `/onboarding` with a real first-value flow: intent question, avoidance question, first Librarian note, locked guide, Plus offer, invite code, and rating prompt.
+- Updated sign-in/callback redirects to send users to `/onboarding`; updated the app layout to redirect incomplete users to onboarding while degrading to `/home` if the migration is missing.
+- Clarified that `I rated!` only suppresses the rating prompt and does not grant rewards or unlocks.
+- Ran design review/polish on onboarding: reused existing `Owl` and `Letter`, matched Marginalia fonts/colors, replaced placeholder marks with inline SVG icons, rounded controls, and improved the rating illustration.
+- Added referral helper tests and verified `npm test` passed 34/34, `npx tsc --noEmit --pretty false` passed, `npm run lint` passed, and `npm run build` passed after implementation and polish.
+- Ran eng/QA follow-up on onboarding backend wiring: `finishOnboarding` now upserts onboarding completion before best-effort referral side effects, invalid invite codes no longer set cookies, referral normalization trims after max-length slicing, and onboarding answer cleaning moved into a tested helper.
+- Added `src/lib/growth/onboarding.test.ts` and expanded referral tests; verified `npm test` passed 36/36, `npx tsc --noEmit --pretty false` passed, `npm run lint` passed, and `npm run build` passed.
+- Ran focused web/TWA QA locally: sign-in returned 200, valid invite redirected with referral cookie, invalid invite redirected without a cookie, signed-out onboarding redirected to sign-in, and local `assetlinks.json` served package `com.app.marginaliaandco`.
+- Ran a Xiaomi Chrome visual check for the sign-in/create-account page; it fit the phone viewport. Full signed-in onboarding QA remains pending until `0015_onboarding_growth.sql` is applied and a usable authenticated test session exists.
+
 ## 2026-05-15
 
 - Prepared Marginalia & Co. for Google Play closed testing as a Trusted Web Activity with package `com.app.marginaliaandco`.
@@ -41,4 +59,4 @@
 - Passed `npm test`, `npm run lint`, `npx tsc --noEmit`, and `npm run build`.
 - Committed verified fixes as `903b695 Tighten librarian recommendations`.
 
-**Last updated:** 2026-05-15
+**Last updated:** 2026-05-16

@@ -8,6 +8,7 @@ import { createServerClient } from "@supabase/ssr";
 function isPublicPath(path: string) {
   if (path === "/") return true;
   if (path.startsWith("/auth")) return true;
+  if (path.startsWith("/invite/")) return true;
   if (path.startsWith("/api/")) return true;
   if (path === "/api") return true;
   if (path === "/privacy") return true;
