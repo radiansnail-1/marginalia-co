@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -9,6 +10,7 @@ import {
   markReferralPromptSeen,
 } from "./actions";
 import type { OnboardingAnswers } from "@/lib/growth/onboarding";
+import { selectFirstRecommendation } from "@/lib/growth/first-recommendation";
 import { referralShareText } from "@/lib/growth/referrals";
 import { Letter } from "@/components/letter";
 import { Owl } from "@/components/owl";
@@ -221,6 +223,7 @@ export function OnboardingClient({
   const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
   const shareText = useMemo(() => referralShareText(referralCode), [referralCode]);
+  const firstRecommendation = useMemo(() => selectFirstRecommendation(answers), [answers]);
 
   function updateAnswer(key: keyof OnboardingAnswers, value: string) {
     setAnswers((current) => ({ ...current, [key]: value }));
@@ -327,18 +330,34 @@ export function OnboardingClient({
     return (
       <PageShell step={step}>
         <h1 className="font-display text-5xl leading-[0.98] text-parchment">
-          Your first note from the <em className="text-brass-bright">Librarian.</em>
+          Your first book from the <em className="text-brass-bright">Librarian.</em>
         </h1>
-        <div className="parchment mt-8 p-5 shadow-2xl">
-          <div className="font-body text-[10px] font-semibold uppercase tracking-[0.24em] text-mahogany-light">
-            First recommendation
+        <div className="mt-8 overflow-hidden rounded-md border border-brass/30 bg-mahogany-2 shadow-[0_18px_40px_rgba(0,0,0,0.36)]">
+          <div className="relative h-64 bg-[radial-gradient(ellipse_at_50%_35%,rgba(216,176,106,0.18),transparent_62%),linear-gradient(180deg,var(--color-mahogany-3),var(--color-ink))]">
+            <Image
+              src={firstRecommendation.coverUrl}
+              alt={`${firstRecommendation.title} cover`}
+              fill
+              sizes="(max-width: 440px) 100vw, 392px"
+              className="object-contain p-5 drop-shadow-[0_18px_28px_rgba(0,0,0,0.5)]"
+              unoptimized
+              priority
+            />
           </div>
-          <h2 className="mt-2 font-display text-3xl font-semibold leading-none text-mahogany">
-            The Dispossessed
-          </h2>
-          <p className="mt-3 font-display text-lg italic leading-snug text-mahogany/75">
-            For a sharper shelf that still wants a beating heart: political ideas disguised as a human story.
-          </p>
+          <div className="p-5">
+            <div className="font-body text-[10px] font-semibold uppercase tracking-[0.24em] text-brass-bright">
+              First recommendation
+            </div>
+            <h2 className="mt-2 break-words font-display text-4xl font-semibold leading-none text-parchment">
+              {firstRecommendation.title}
+            </h2>
+            <p className="mt-1 text-sm text-parchment-dim">
+              {firstRecommendation.author} | {firstRecommendation.publishedYear}
+            </p>
+            <p className="mt-3 font-display text-lg italic leading-snug text-parchment">
+              {firstRecommendation.reason}
+            </p>
+          </div>
         </div>
         <div className="mt-8 grid gap-3">
           <PrimaryButton disabled={isPending} onClick={() => setStep("guide")}>View my guide</PrimaryButton>
