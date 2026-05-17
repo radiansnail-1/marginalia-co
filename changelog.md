@@ -27,6 +27,9 @@
 - Investigated signup/rating QA failures: removed the redundant post-login promo action and fixed a server-action type re-export crash; verified signup reaches onboarding and `I rated!` reaches `/home`.
 - Reran QA on `http://127.0.0.1:3011` across desktop `1440x900`, laptop `1280x720`, and mobile `390x844`; `npm test -- --test-reporter=spec`, `npm run lint`, and `npm run build` passed.
 - Confirmed configured Supabase still needs `0016_permanent_promo_code.sql` before the permanent promo can record entitlement columns.
+- Investigated onboarding first recommendation sameness; root cause was a hard-coded first note, now replaced with an answer-aware book-cover card and tested curated selector.
+- QA found and fixed a stuck remote-cover load in the onboarding first-book card by bypassing the Next image optimizer for that small curated cover image.
+- Eng review: 0 architecture/code/performance issues, Browser Use verified personalization before a post-fix localhost block, status=clean_with_visual_followup.
 
 ## 2026-05-15
 
