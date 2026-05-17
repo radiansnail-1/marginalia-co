@@ -63,4 +63,62 @@
 
 **Out of scope:** Do not reward ratings. Do not force users to rate before entering the room. Do not rebuild/reupload the AAB for web-only onboarding, referral, API, or assetlinks changes. Do not wire live payments until the Play Billing/TWA billing approach is chosen.
 
-**Last updated:** 2026-05-16
+## Investigation Notes
+
+**2026-05-17, commit `1146edd`:** Investigated the post-promo QA issues around local browser QA, signup-to-onboarding, and the rating completion step.
+
+**Root causes:**
+- The stale `GoalTracker offline` screen was browser/test-environment state, not Marginalia code. The Marginalia repo has no service-worker registration, shell HTTP against `http://127.0.0.1:3011/auth/sign-in` returned Marginalia content with no `GoalTracker`, and a clean Browser Use tab on the rebuilt server rendered the Marginalia sign-in page.
+- The signup flow stalled because `src/app/auth/sign-in/page.tsx` waited on a redundant post-login server action (`applySavedPromoCode`) before navigating to `/onboarding`. Promo claiming already happens from `finishOnboarding`, so the extra auth-boundary server action added a failure point after browser-side Supabase sign-in.
+- The rating completion crash was a runtime server-action bundle bug caused by `src/app/onboarding/actions.ts` re-exporting `type OnboardingAnswers` from a `"use server"` file. Turbopack allowed build/typecheck but the server-action chunk crashed at runtime with `ReferenceError: OnboardingAnswers is not defined` when `I rated!` called `finishOnboarding`.
+- The configured Supabase project still lacks `supabase/migrations/0016_permanent_promo_code.sql`: schema probe returned `ERROR 42703: column profiles.plus_unlocked_at does not exist`. The promo field can save the permanent promo cookie, but the permanent entitlement cannot be recorded until this migration is applied.
+
+**Hypotheses tested and discarded:**
+- Missing app server: discarded. A clean `next start` on `3011` returned the Marginalia page over HTTP.
+- Marginalia service worker/offline cache: discarded. No service-worker registration exists in source, and the clean browser origin showed Marginalia rather than `GoalTracker`.
+- Signup account creation failure: discarded. Supabase admin lookup confirmed the QA account was created and email-confirmed while the browser remained on `Just a moment...`.
+- Source fix not working: discarded after finding a stale `next start` worker was still bound to `3011`; killing the actual listener and restarting from the rebuilt `.next` bundle cleared the old digest.
+
+**Fix summary:**
+- Removed the redundant `applySavedPromoCode` action and post-sign-in await from `src/app/auth/sign-in/actions.ts` and `src/app/auth/sign-in/page.tsx`; promo cookies are claimed during onboarding completion instead.
+- Moved the `OnboardingAnswers` type import in `src/app/onboarding/onboarding-client.tsx` to `@/lib/growth/onboarding` and removed the server-action type re-export from `src/app/onboarding/actions.ts`.
+
+**Verification:**
+- `npm test -- --test-reporter=spec` passed 37/37.
+- `npm run lint` passed.
+- `npm run build` passed.
+- Browser QA on `http://127.0.0.1:3011` verified signup reaches `/onboarding`, rating screen has only `Give us a rating` and `I rated!`, `I rated!` reaches `/home`, and no browser console errors appeared.
+- Viewport QA captured sign-in and rating screens at desktop `1440x900`, laptop `1280x720`, and mobile `390x844` under `tmp/qa-2026-05-17-rerun/`.
+
+**Open follow-ups:**
+- Apply `supabase/migrations/0016_permanent_promo_code.sql` to the configured Supabase project before relying on `NLBisthebestlibrary` for real permanent-free entitlement.
+- The Browser Use input bridge still intermittently reports `Browser Use virtual clipboard is not installed` for `fill()`/`type()` on inputs; DOM/button QA is usable, but fresh-account browser creation may need retrying or an existing session.
+
+**2026-05-16, commit `7842de2`:** Investigated why `$qa` Browser Use could not start and every JavaScript/browser-control call failed with `failed to write kernel assets: The system cannot find the path specified. (os error 3)`.
+
+**Root cause:** This is a Codex desktop helper/runtime failure, not a Marginalia app failure. The `node_repl` MCP transport was bound to stale helper processes from earlier sessions/workspaces. Process inspection showed several orphaned `node_repl.exe` plus stdio `codex.exe app-server` pairs, and the active `node_repl` state directory `C:\Users\aweso\.codex\node_repl\active_execs` had no live entries. Restarting the apparent stale helper pair changed the failure from "failed to write kernel assets" to `Transport closed`, confirming the browser QA bridge itself was wedged and did not respawn inside this thread.
+
+**Hypotheses tested:**
+- Missing Marginalia dev server: discarded. The Next dev server started cleanly on `http://127.0.0.1:3000`.
+- Missing browser-client plugin file: discarded. The active browser plugin file exists at `C:\Users\aweso\.codex\plugins\cache\openai-bundled\browser\0.1.0-alpha2\scripts\browser-client.mjs`.
+- Missing Temp kernel assets: discarded. The kernel asset files existed under `C:\Users\aweso\AppData\Local\Temp\.tmpi9U6EQ`.
+- Stale Codex helper/runtime state: confirmed. Multiple old helpers were alive, the active exec registry was empty, and killing the paired helper closed the transport instead of recovering it.
+
+**Fix needed:** Restart the Codex desktop app or open a fresh Codex thread so the `node_repl` MCP server and browser helper spawn cleanly. If Browser Use still fails in a fresh thread, capture a Codex desktop bug with the exact error and current helper process list.
+
+**Open follow-up:** After restarting/fresh-threading, rerun `$qa` for `http://127.0.0.1:3000/auth/sign-in`, `/invite/BRIAN-READS`, and the signed-in onboarding flow. The app code checks are still green, but browser UI QA remains blocked by the Codex tool transport.
+
+**2026-05-16, commit `7ca32aa`:** Investigated report that a newly created production account did not enter onboarding after PR #18 was merged.
+
+**Root cause:** The website deploy contains the onboarding routes, but the target Supabase database does not have `supabase/migrations/0015_onboarding_growth.sql` applied. A schema check against the configured Supabase project returned `column profiles.onboarding_completed_at does not exist`, and both `public.referral_codes` and `public.referral_events` were missing. Because `src/app/(app)/layout.tsx` intentionally degrades when that profile query errors, users are allowed into `/home` instead of seeing onboarding.
+
+**Hypotheses tested:**
+- Deployment missing: discarded. Live `https://marginalia-co.vercel.app/invite/BRIAN-READS` redirects to `/auth/sign-in?ref=BRIAN-READS`, and live `/onboarding` exists for signed-out users.
+- Code redirect missing: discarded. Local commit `7ca32aa` redirects auth success to `/onboarding` and app layout gates incomplete profiles.
+- DB migration missing: confirmed by Supabase schema check.
+
+**Fix needed:** Apply `supabase/migrations/0015_onboarding_growth.sql` to the production Supabase project. Also apply `supabase/migrations/0009_half_star_ratings.sql` if half-star ratings still fail in production.
+
+**Open follow-up:** After migration, create a fresh test account and verify signed-in `/onboarding` completes and writes `profiles.onboarding_completed_at`.
+
+**Last updated:** 2026-05-17
