@@ -17,6 +17,16 @@
 - Added `src/lib/growth/onboarding.test.ts` and expanded referral tests; verified `npm test` passed 36/36, `npx tsc --noEmit --pretty false` passed, `npm run lint` passed, and `npm run build` passed.
 - Ran focused web/TWA QA locally: sign-in returned 200, valid invite redirected with referral cookie, invalid invite redirected without a cookie, signed-out onboarding redirected to sign-in, and local `assetlinks.json` served package `com.app.marginaliaandco`.
 - Ran a Xiaomi Chrome visual check for the sign-in/create-account page; it fit the phone viewport. Full signed-in onboarding QA remains pending until `0015_onboarding_growth.sql` is applied and a usable authenticated test session exists.
+- Investigated production report that a newly created account skipped onboarding after PR #18 merged; live routes are deployed, but Supabase is missing `profiles.onboarding_completed_at`, `referral_codes`, and `referral_events`, so `0015_onboarding_growth.sql` must be applied.
+- Investigated Browser Use QA failure; root cause is stale Codex `node_repl`/app-server helper state wedging the MCP transport, not Marginalia code. A fresh Codex thread/app restart is needed before browser UI QA can run.
+
+## 2026-05-17
+
+- Added permanent promo code handling for `NLBisthebestlibrary`, including promo-cookie handling, profile entitlement fields, Supabase migration `0016_permanent_promo_code.sql`, and tests.
+- Removed the rating prompt dismiss path; the rating step now offers only `Give us a rating` and `I rated!`.
+- Investigated signup/rating QA failures: removed the redundant post-login promo action and fixed a server-action type re-export crash; verified signup reaches onboarding and `I rated!` reaches `/home`.
+- Reran QA on `http://127.0.0.1:3011` across desktop `1440x900`, laptop `1280x720`, and mobile `390x844`; `npm test -- --test-reporter=spec`, `npm run lint`, and `npm run build` passed.
+- Confirmed configured Supabase still needs `0016_permanent_promo_code.sql` before the permanent promo can record entitlement columns.
 
 ## 2026-05-15
 
@@ -59,4 +69,4 @@
 - Passed `npm test`, `npm run lint`, `npx tsc --noEmit`, and `npm run build`.
 - Committed verified fixes as `903b695 Tighten librarian recommendations`.
 
-**Last updated:** 2026-05-16
+**Last updated:** 2026-05-17

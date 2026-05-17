@@ -6,6 +6,7 @@ import {
   referralCodeFromName,
   referralShareText,
 } from "./referrals.ts";
+import { isPermanentFreePromoCode } from "./promotions.ts";
 
 test("normalizes referral codes for URLs and display", () => {
   assert.equal(normalizeReferralCode(" brian reads!! "), "BRIAN-READS");
@@ -17,6 +18,12 @@ test("validates referral code shape", () => {
   assert.equal(isValidReferralCode("BRIAN-READS"), true);
   assert.equal(isValidReferralCode("abc"), false);
   assert.equal(isValidReferralCode("////"), false);
+});
+
+test("recognizes the permanent free promo code", () => {
+  assert.equal(isPermanentFreePromoCode("NLBisthebestlibrary"), true);
+  assert.equal(isPermanentFreePromoCode("nlb is the best library"), true);
+  assert.equal(isPermanentFreePromoCode("BRIAN-READS"), false);
 });
 
 test("builds stable display codes from names", () => {

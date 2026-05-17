@@ -6,10 +6,9 @@ import {
   finishOnboarding,
   markPlusPromptSeen,
   markRatingPromptClaimed,
-  markRatingPromptDismissed,
   markReferralPromptSeen,
-  type OnboardingAnswers,
 } from "./actions";
+import type { OnboardingAnswers } from "@/lib/growth/onboarding";
 import { referralShareText } from "@/lib/growth/referrals";
 import { Letter } from "@/components/letter";
 import { Owl } from "@/components/owl";
@@ -459,7 +458,7 @@ export function OnboardingClient({
   return (
     <PageShell step={step}>
       <h1 className="text-center font-display text-5xl leading-[0.98] text-parchment">
-        Leave a <em className="text-brass-bright">rating?</em>
+        Give us a <em className="text-brass-bright">rating?</em>
       </h1>
       <p className="mx-auto mt-4 max-w-xs text-center font-display text-lg italic leading-snug text-parchment-dim">
         We are a small reading room. A Play Store rating helps other readers find the door.
@@ -486,7 +485,7 @@ export function OnboardingClient({
             window.open(playStoreUrl, "_blank", "noopener,noreferrer");
           }}
         >
-          Rate Marginalia
+          Give us a rating
         </PrimaryButton>
         <button
           type="button"
@@ -495,14 +494,6 @@ export function OnboardingClient({
           className="tap text-center text-xs font-semibold text-parchment-dim underline underline-offset-4 disabled:opacity-60"
         >
           I rated!
-        </button>
-        <button
-          type="button"
-          disabled={isPending}
-          onClick={() => finish(markRatingPromptDismissed)}
-          className="tap text-center text-xs font-semibold text-parchment-dim underline underline-offset-4 disabled:opacity-60"
-        >
-          Maybe later
         </button>
       </div>
     </PageShell>
