@@ -13,8 +13,6 @@ import {
   type OnboardingAnswers,
 } from "@/lib/growth/onboarding";
 
-export type { OnboardingAnswers };
-
 async function requireOnboardingUser() {
   const user = await getCurrentUser();
   if (!user) throw new Error("Sign in first.");

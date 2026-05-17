@@ -2,12 +2,8 @@
 
 import { cookies } from "next/headers";
 import { createServiceClient } from "@/lib/supabase/service";
-import { getCurrentUser } from "@/lib/supabase/user";
 import { isValidReferralCode, normalizeReferralCode } from "@/lib/growth/referrals";
-import {
-  claimSavedPermanentPromoForUser,
-  savePermanentPromoCookie,
-} from "@/lib/growth/promotions-server";
+import { savePermanentPromoCookie } from "@/lib/growth/promotions-server";
 
 type SignupResult = {
   message: string;
@@ -84,13 +80,4 @@ export async function saveReferralCode(input: string): Promise<ReferralCodeResul
   } catch {
     return { ok: false, message: "Promo codes are not ready yet. Try the invite link instead." };
   }
-}
-
-export async function applySavedPromoCode(): Promise<SignupResult> {
-  const user = await getCurrentUser();
-  if (!user) return { ok: true, message: "" };
-
-  const result = await claimSavedPermanentPromoForUser(user.id);
-  if (!result.ok) return { ok: false, message: result.message ?? "Could not apply the promo code yet." };
-  return { ok: true, message: result.claimed ? "Permanent library pass applied." : "" };
 }

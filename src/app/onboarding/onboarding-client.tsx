@@ -7,8 +7,8 @@ import {
   markPlusPromptSeen,
   markRatingPromptClaimed,
   markReferralPromptSeen,
-  type OnboardingAnswers,
 } from "./actions";
+import type { OnboardingAnswers } from "@/lib/growth/onboarding";
 import { referralShareText } from "@/lib/growth/referrals";
 import { Letter } from "@/components/letter";
 import { Owl } from "@/components/owl";

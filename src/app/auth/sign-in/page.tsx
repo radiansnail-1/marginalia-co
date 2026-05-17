@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Letter } from "@/components/letter";
 import { Owl } from "@/components/owl";
-import { applySavedPromoCode, createConfirmedAccount, saveReferralCode } from "./actions";
+import { createConfirmedAccount, saveReferralCode } from "./actions";
 
 function brandedAuthError(raw: string, mode: "signin" | "signup"): string {
   const m = raw.toLowerCase();
@@ -59,7 +59,6 @@ export default function SignInPage() {
 
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      await applySavedPromoCode();
       router.push("/onboarding");
       router.refresh();
     } catch (err) {
